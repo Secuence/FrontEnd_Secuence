@@ -8,52 +8,10 @@
    Componentes DS: stat cards · Progress bar · Alert (info) · List patient
    alert (4 severidades) · Chips · footer de paginación.
    ===================================================================== */
+import { AlertaService } from '/src/services/external/AlertaService.ts';
+
 (function alertas() {
   "use strict";
-
-  /* Pacientes base (mismos nombres que la tabla de Seguimientos, para que
-     el origen "alertas" sea coherente con el resto de la app). */
-  var NAMES = [
-    "María Fernanda Gómez", "Carlos Andrés Beltrán", "Valentina Ríos Mejía",
-    "Jorge Esteban Niño", "Lucía Naranjo Soto", "Tomás Quiroga Páez",
-    "Daniela Ospina Vargas", "Mateo Salazar Cano", "Camila Rojas Duarte",
-    "Andrés Felipe Mora", "Paula Restrepo Lara", "Santiago Cárdenas Ruiz",
-    "Isabella Torres León", "Sebastián Pérez Díaz", "Mariana Castro Gil",
-    "Nicolás Herrera Pino", "Sara Gutiérrez Vélez", "Emilio Vargas Acosta",
-    "Antonia Mejía Cuervo", "Felipe Arango Suárez", "Gabriela Pardo Nieto",
-    "Juan David Lozano", "Valeria Ramírez Cano", "Esteban Molina Rey"
-  ];
-
-  /* Secuencia de severidades que reproduce el documento de referencia para
-     las primeras filas, luego determinista. */
-  var SEV_SEQ = ["high", "high", "medium", "high", "medium", "high", "low", "medium", "medium", "low", "info", "low"];
-
-  var MSG = {
-    high: [
-      "Disnea en aumento; omitió 3 dosis de inhalador esta semana. SpO₂ descendió a 91%.",
-      "Refiere dolor torácico al esfuerzo; solicita valoración prioritaria.",
-      "Fiebre persistente (38.5 °C) por más de 48 horas.",
-      "Presión arterial sistólica superior a 180 mmHg en la última lectura."
-    ],
-    medium: [
-      "Presión arterial elevada en las últimas 2 mediciones domiciliarias.",
-      "Glucemia en ayunas por encima del rango objetivo durante 4 días.",
-      "Adherencia parcial al tratamiento; refiere dudas sobre la dosis.",
-      "Persisten síntomas leves sin clara mejoría; requiere vigilancia."
-    ],
-    low: [
-      "Adherencia estable; síntomas en mejoría progresiva.",
-      "Completó el seguimiento sin novedades; continúa el plan indicado.",
-      "Evolución favorable; signos vitales dentro de rango.",
-      "Buena tolerancia al tratamiento; sin efectos secundarios."
-    ],
-    info: [
-      "Nuevos resultados de laboratorio disponibles para revisión.",
-      "El paciente respondió todas las preguntas del seguimiento.",
-      "Recordatorio: próxima cita de control programada.",
-      "Documentos clínicos actualizados en la historia."
-    ]
-  };
 
   var SEV = {
     high:   { cls: "al-sev-high",   leg: "al-leg-high",   icon: "notification_important", chip: "Alta",  route: "alta" },
@@ -62,30 +20,22 @@
     info:   { cls: "al-sev-info",   leg: "al-leg-info",   icon: "info",                    chip: "Info",  route: "baja" }
   };
 
-  var MESES = ["ene.", "feb.", "mar.", "abr.", "may.", "jun.", "jul.", "ago.", "sept.", "oct.", "nov.", "dic."];
   function esc(s) { return String(s == null ? "" : s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;"); }
   function seed(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0); }
 
-  /* dataset determinista: una alerta por paciente */
-  var BASE = new Date(2026, 8, 13);
-  var DATA = NAMES.map(function (name, i) {
-    var s = seed(name);
-    var sev = SEV_SEQ[i] || ["high", "medium", "low", "info"][s % 4];
-    var msgs = MSG[sev];
-    var msg = msgs[s % msgs.length];
-    var dt = new Date(BASE.getTime()); dt.setDate(dt.getDate() - i);
-    var fecha = dt.getDate() + " " + MESES[dt.getMonth()] + " " + dt.getFullYear();
-    return {
-      name: name, sev: sev, msg: msg, fecha: fecha,
-      tratIniciado: ((s >> 2) % 10) > 3,       /* ~60% iniciados */
-      estudioRealizado: ((s >> 5) % 10) > 4    /* ~50% realizados */
-    };
-  });
+  /* Alertas: vienen de la plataforma externa (ver
+     src/services/external/AlertaService.ts). Todavía no existe el contrato
+     real, así que por ahora llega como datos de ejemplo. */
+  var DATA = [];
 
-  function init() {
+  async function init() {
     var view = document.querySelector('.view[data-view="alertas"]');
     if (!view || view.__wired) return;
     view.__wired = true;
+
+    DATA = (await AlertaService.getAlertas()).map(function (d) {
+      return { name: d.paciente, sev: d.severidad, msg: d.mensaje, fecha: d.fecha, tratIniciado: d.tratamientoIniciado, estudioRealizado: d.estudioRealizado };
+    });
 
     var listHost = document.getElementById("alList");
     var emptyEl  = document.getElementById("alEmpty");

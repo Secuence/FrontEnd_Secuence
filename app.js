@@ -1,3 +1,5 @@
+import { MedicoService } from '/src/services/external/MedicoService.ts';
+
 (function () {
   "use strict";
 
@@ -133,16 +135,12 @@
     var ESPECS   = ["Cardiología", "Medicina interna", "Endocrinología", "Neumología", "Nefrología", "Pediatría", "Dermatología", "Ginecología", "Neurología"];
     var MESES    = ["ene.", "feb.", "mar.", "abr.", "may.", "jun."];
 
-    /* Cifras canónicas de "Desempeño médico" (Indicadores). El store es la
-       única fuente de verdad: estos 5 médicos muestran las mismas métricas
-       y especialidad tanto en la tabla como en "Detalle de usuario". */
-    var DESEMPENO = {
-      "Camila Rojas":   { title: "Dra.", spec: "Cardiología",      pacientes: 128, alertas: 3, seguimientos: 42, adherencia: 94, estudios: 88, nps: 72 },
-      "Andrés Beltrán": { title: "Dr.",  spec: "Medicina interna", pacientes: 96,  alertas: 5, seguimientos: 37, adherencia: 88, estudios: 81, nps: 65 },
-      "Lucía Naranjo":  { title: "Dra.", spec: "Endocrinología",   pacientes: 74,  alertas: 2, seguimientos: 29, adherencia: 91, estudios: 90, nps: 78 },
-      "Tomás Quiroga":  { title: "Dr.",  spec: "Neumología",       pacientes: 58,  alertas: 7, seguimientos: 21, adherencia: 85, estudios: 76, nps: 61 },
-      "Mateo Salazar":  { title: "Dr.",  spec: "Nefrología",       pacientes: 112, alertas: 4, seguimientos: 33, adherencia: 92, estudios: 85, nps: 70 }
-    };
+    /* Cifras de "Desempeño médico" (Indicadores). Vienen de la plataforma
+       externa (pacientes/historias + médicos) — ver src/services/external/
+       MedicoService.ts. Todavía no existe el contrato real, así que por
+       ahora llega como datos de ejemplo; empieza vacío y se llena cuando
+       resuelve la promesa más abajo. */
+    var DESEMPENO = {};
 
     function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
     function rnd(seed, min, max) { var x = Math.sin(seed) * 10000; x = x - Math.floor(x); return Math.floor(min + x * (max - min + 1)); }
@@ -193,18 +191,6 @@
     }
 
     var users = RAW.map(enrich);
-    /* Aplicar las cifras canónicas de Desempeño médico sobre el store */
-    users.forEach(function (u) {
-      var d = DESEMPENO[u.name];
-      if (!d) return;
-      u.title = d.title;
-      u.espec = d.spec;
-      u.inDesempeno = true;
-      u.clinical = {
-        pacientes: d.pacientes, alertas: d.alertas, seguimientos: d.seguimientos,
-        adherencia: d.adherencia, estudios: d.estudios, nps: d.nps
-      };
-    });
     var listeners = [];
     function emit() { listeners.forEach(function (f) { f(); }); }
     return {
@@ -219,10 +205,35 @@
       remove: function (u) { var i = users.indexOf(u); if (i >= 0) { users.splice(i, 1); emit(); } },
       setState: function (u, s) { u.state = s; emit(); },
       refresh: function () { emit(); },
-      onChange: function (fn) { listeners.push(fn); }
+      onChange: function (fn) { listeners.push(fn); },
+      /* Aplica las cifras de Desempeño médico llegadas de la plataforma
+         externa (ver MedicoService) sobre el store de usuarios. */
+      applyDesempeno: function (list) {
+        list.forEach(function (d) {
+          DESEMPENO[d.nombre] = {
+            title: d.titulo, spec: d.especialidad,
+            pacientes: d.pacientesAtendidos, alertas: d.alertasPorAtender,
+            seguimientos: d.seguimientosEnCurso, adherencia: d.adherenciaTratamiento,
+            estudios: d.estudiosRealizados, nps: d.nps
+          };
+        });
+        users.forEach(function (u) {
+          var d = DESEMPENO[u.name];
+          if (!d) return;
+          u.title = d.title;
+          u.espec = d.spec;
+          u.inDesempeno = true;
+          u.clinical = {
+            pacientes: d.pacientes, alertas: d.alertas, seguimientos: d.seguimientos,
+            adherencia: d.adherencia, estudios: d.estudios, nps: d.nps
+          };
+        });
+        emit();
+      }
     };
   })();
   window.SecuenceUserStore = SecuenceUserStore;
+  MedicoService.getDesempeno().then(function (data) { SecuenceUserStore.applyDesempeno(data); });
 
   /* =====================================================================
      VIEW · Indicadores — Desempeño médico table (unchanged behaviour)

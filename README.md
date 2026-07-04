@@ -29,14 +29,20 @@ auth-flow.html       → Login / onboarding, autocontenido.
 assets/, bienvenida-assets/, fonts/ → Recursos estáticos del export.
 
 src/
-  services/   → Única capa de llamadas HTTP (apiClient.ts centralizado +
-               un archivo por entidad, ej. UserService.ts). Los .js de arriba
-               importan desde aquí — nunca hacen fetch/axios sueltos.
-  models/     → Interfaces TypeScript que reflejan los DTOs del backend
-               ({Entidad}{Acción}Dto, ej. UserCreateDto).
-  state/      → authStore.ts: token JWT en memoria (sin localStorage).
-  config/     → Lectura de variables de entorno (.env).
+  services/          → Backend propio de Secuence: apiClient.ts centralizado +
+                       un archivo por entidad (ej. UserService.ts). Cubre
+                       Login y Roles y permisos.
+  services/external/ → Plataforma externa (pacientes/historias + médicos,
+                       ver sección de abajo). Cubre Indicadores/Alertas y
+                       Seguimientos.
+  models/            → Interfaces TypeScript de ambos backends, con TODOs
+                       explícitos donde el contrato real aún no existe.
+  state/             → authStore.ts: token JWT en memoria (sin localStorage).
+  config/            → Lectura de variables de entorno (.env).
 ```
+
+Los `.js` de cada vista importan desde `src/services/` o `src/services/external/`
+según corresponda — nunca hacen `fetch`/`axios` sueltos.
 
 **Regla al traer una nueva versión de Claude Design:** los archivos que se
 reemplazan son `index.html`/`auth-flow.html`/`*.css`/`*.js` en la raíz y sus
@@ -70,9 +76,26 @@ C# / .NET, REST, PostgreSQL, JWT Bearer. Endpoints documentados hasta ahora
 | DELETE | `/api/User/DeleteUser/{id}` | Sí |
 
 Pendiente por confirmar con el developer de backend: estructura exacta de
-response de cada endpoint, códigos HTTP específicos, ERD actualizado. Hasta
-que no se documenten más endpoints, las vistas fuera de Login/Roles y
-permisos siguen mostrando datos de ejemplo (los mismos que trae el export).
+response de cada endpoint, códigos HTTP específicos, ERD actualizado.
+
+## Plataforma externa (Indicadores / Alertas / Seguimientos)
+
+La primera versión del producto se integra con una plataforma externa ya
+existente, a través de una API que todavía no nos han entregado (sin
+contrato ni documentación aún, al 2026-07-04). Esa API cubrirá datos de
+pacientes/historias clínicas y de médicos, y alimentará las vistas
+**Indicadores/Alertas** y **Seguimientos**.
+
+Como no existe el contrato real, se dejó una capa "intercambiable" en
+`src/services/external/` (`MedicoService`, `SeguimientoService`,
+`AlertaService` + sus modelos en `src/models/external/`): hoy devuelven los
+mismos datos de ejemplo que ya traía el diseño, pero las vistas ya las
+consumen a través de esta capa. Cuando llegue el contrato real, solo hay que
+cambiar la implementación de estos 3 servicios (y `VITE_EXTERNAL_API_BASE_URL`
+en `.env`) — no hay que tocar `index.html` ni las vistas.
+
+"Historias y evoluciones" y "Mi perfil" no están definidas todavía — siguen
+con datos de ejemplo hasta que se aclare su fuente.
 
 ## Control de versiones — flujo Dev → QA → Prod
 
