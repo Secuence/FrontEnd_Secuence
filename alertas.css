@@ -1,0 +1,243 @@
+/* =====================================================================
+   VIEW · Alertas  (#/alertas)
+   Panel de métricas (3 columnas: stat + distribución con barras de
+   progreso) + banner informativo (Alert · info, DS) + panel "Alertas
+   prioritarias" con List patient alert (DS · 4 severidades) y paginación.
+   Reutiliza .topbar, .search, .card, .footer-table/.paged/.pager/.ps.
+   Prefijo `al-`.
+   ===================================================================== */
+
+/* display lo controla `.view.is-active`; aquí sólo padding/gap para que la
+   vista se oculte al navegar a otra pantalla (evita el solape con otras). */
+.al-view.is-active { padding: var(--space-6); gap: var(--space-6); }
+
+/* ───────────────── Panel de métricas ───────────────── */
+.al-metrics { padding: 0; overflow: hidden; }
+
+/* 3 columnas con divisores verticales continuos */
+.al-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.al-col {
+  padding: var(--space-5) var(--space-6);
+  border-right: 1px solid var(--border-primary);
+  display: flex; flex-direction: column;
+}
+.al-col:last-child { border-right: 0; }
+
+/* — stat (fila superior) — */
+.al-stat-head { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.al-stat-title {
+  font: var(--font-weight-bold) var(--font-size-l)/var(--line-height-l) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  text-wrap: pretty;
+}
+.al-stat-ic {
+  flex: 0 0 40px; width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-brand);
+  color: var(--text-brand);
+}
+.al-stat-ic .material-symbols-outlined { font-size: 22px; }
+.al-stat-val { margin-top: var(--space-3); display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.al-stat-num {
+  font: var(--font-weight-bold) var(--font-size-3xl)/var(--line-height-3xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+.al-stat-unit {
+  flex: 1 1 0; min-width: 120px;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+}
+
+.al-col-div { height: 1px; background: var(--border-primary); margin: var(--space-4) 0; }
+
+/* — distribución (fila inferior) — */
+.al-dist-title {
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.al-dist-rows { margin-top: var(--space-3); display: flex; flex-direction: column; gap: var(--space-2); }
+.al-dist-line {
+  display: grid;
+  grid-template-columns: 64px 40px minmax(0, 1fr);
+  align-items: center;
+  gap: var(--space-3);
+}
+.al-dist-lbl {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+.al-dist-val {
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  font-variant-numeric: tabular-nums;
+}
+/* Progress bar (DS) */
+.al-bar { height: 8px; border-radius: var(--radius-full); background: var(--color-neutral-100); overflow: hidden; }
+.al-bar-fill { height: 100%; border-radius: var(--radius-full); transition: width 300ms cubic-bezier(0.4,0,0.2,1); }
+.al-bar-fill.alta, .al-bar-fill.sin    { background: var(--color-pink-400); }
+.al-bar-fill.media                     { background: var(--color-yellow-500); }
+.al-bar-fill.baja, .al-bar-fill.hecho  { background: var(--color-green-600); }
+
+/* banner informativo (Alert · info, DS) */
+.al-banner {
+  margin: 0 var(--space-6) var(--space-5);
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid #0D69D4;
+  border-radius: var(--radius-md);
+  background: #ECF3FE;
+  color: #002C70;
+}
+.al-banner .material-symbols-outlined { font-size: 22px; flex: 0 0 22px; color: #0054D2; }
+.al-banner .al-banner-tx {
+  font: var(--font-weight-bold) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: -0.020em;
+}
+
+/* ───────────────── Alertas prioritarias ───────────────── */
+.al-priority { padding: 0; display: flex; flex-direction: column; }
+.al-pri-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-6);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+}
+.al-pri-titles { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+.al-pri-title {
+  font: var(--font-weight-bold) var(--font-size-xl)/var(--line-height-xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.al-pri-desc {
+  max-width: 70ch;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+  text-wrap: pretty;
+}
+.al-share {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  background: transparent; border: 0; cursor: default;
+  padding: var(--space-2) var(--space-1);
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+.al-share .material-symbols-outlined { font-size: 20px; }
+
+/* leyenda de severidades */
+.al-legend {
+  display: flex; flex-direction: row; flex-wrap: wrap; gap: var(--space-6) var(--space-10);
+  padding: var(--space-2) var(--space-6) var(--space-5);
+}
+.al-legend-item { display: flex; align-items: center; gap: var(--space-3); }
+.al-legend-ic {
+  flex: 0 0 40px; width: 40px; height: 40px;
+  border-radius: var(--radius-full);
+  display: grid; place-items: center;
+}
+.al-legend-ic .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.al-legend-tx {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+
+/* ── Lista · List patient alert (DS) ── */
+.al-list { display: flex; flex-direction: column; border-top: 1px solid var(--border-primary); }
+.al-row {
+  display: flex; flex-direction: row; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-primary);
+  cursor: pointer;
+  transition: background-color 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.al-row:hover  { background: var(--bg-surface-secundary); }
+.al-row:active { background: var(--color-neutral-100); }
+.al-row:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+.al-ic {
+  flex: 0 0 56px; width: 56px; height: 56px;
+  border-radius: var(--radius-full);
+  display: grid; place-items: center;
+}
+.al-ic .material-symbols-outlined {
+  font-size: 24px;
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.al-content { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.al-name {
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.al-meta {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.al-meta .al-date { color: var(--text-brand); }
+.al-meta .al-msg  { color: var(--text-tertiary); }
+
+.al-chip {
+  flex: 0 0 auto;
+  height: 32px; border-radius: var(--radius-full);
+  padding: 4px 12px;
+  display: inline-flex; align-items: center; gap: 4px;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+}
+.al-chip .material-symbols-outlined { font-size: 18px; }
+
+/* ── Severidades (colores DS) ── */
+.al-sev-high   .al-ic, .al-leg-high   { background: var(--bg-error-tertiary); }
+.al-sev-high   .al-ic .material-symbols-outlined,
+.al-leg-high   .material-symbols-outlined { color: var(--text-error); }
+.al-sev-high   .al-chip { background: var(--bg-error-primary); color: var(--text-error); }
+
+.al-sev-medium .al-ic, .al-leg-medium { background: var(--bg-warning-tertiary); }
+.al-sev-medium .al-ic .material-symbols-outlined,
+.al-leg-medium .material-symbols-outlined { color: var(--color-yellow-500); }
+.al-sev-medium .al-chip { background: var(--bg-warning-primary); color: var(--text-warning); }
+
+.al-sev-low    .al-ic, .al-leg-low    { background: var(--bg-success-tertiary); }
+.al-sev-low    .al-ic .material-symbols-outlined,
+.al-leg-low    .material-symbols-outlined { color: var(--color-green-600); }
+.al-sev-low    .al-chip { background: var(--bg-success-primary); color: var(--text-success); }
+
+.al-sev-info   .al-ic, .al-leg-info   { background: var(--bg-info-tertiary); }
+.al-sev-info   .al-ic .material-symbols-outlined,
+.al-leg-info   .material-symbols-outlined { color: var(--color-blue-500); }
+.al-sev-info   .al-chip { background: var(--bg-info-primary); color: var(--text-info); }
+
+.al-empty {
+  display: none;
+  padding: var(--space-10) var(--space-6);
+  text-align: center;
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  color: var(--text-tertiary);
+}
+
+/* ───────── Responsive ───────── */
+@media (max-width: 1080px) {
+  .al-cols { grid-template-columns: 1fr; }
+  .al-col { border-right: 0; border-bottom: 1px solid var(--border-primary); }
+  .al-col:last-child { border-bottom: 0; }
+}
+@media (max-width: 720px) {
+  .al-pri-head { flex-direction: column; gap: var(--space-3); }
+  .al-legend { gap: var(--space-4); }
+}

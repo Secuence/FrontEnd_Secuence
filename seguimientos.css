@@ -1,0 +1,154 @@
+/* =====================================================================
+   VIEW · Seguimientos  (#/seguimientos)
+   Construido sobre componentes del DS ya presentes en el proyecto:
+     · TopBar + Input · Search (pill)         → .topbar / .search
+     · Card header container                  → .card
+     · Cells / Header table container         → .t-grid / .t-row / .th
+     · Footer · Table (paginación)            → .footer-table / .pager
+     · Chips · status                         → .seg-chip (semánticas)
+   Solo se añaden aquí: la fila de tarjetas resumen y el chip de alerta
+   "Media" (amarillo), que no existían como clase reutilizable.
+   ===================================================================== */
+
+/* display lo controla `.view.is-active` (flex column). Aquí sólo padding/gap,
+   para que la vista se oculte correctamente al navegar a otra pantalla. */
+.seg-view.is-active { padding: var(--space-6); gap: var(--space-6); }
+
+/* ── Fila de tarjetas resumen ── */
+.seg-stats {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr 1fr 1fr;
+  gap: var(--space-4);
+}
+.seg-card {
+  box-sizing: border-box;
+  background: var(--bg-surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
+  display: flex; flex-direction: column; gap: var(--space-3);
+  min-height: 132px;
+}
+.seg-card-title {
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+}
+
+/* Tarjeta · Distribución de alertas (desglose con leyenda + barra) */
+.seg-dist { gap: var(--space-3); }
+.seg-dist-bar {
+  display: flex; height: 8px; border-radius: var(--radius-full); overflow: hidden;
+  background: var(--bg-surface-secundary);
+}
+.seg-dist-seg { height: 100%; }
+.seg-dist-seg.alta  { background: var(--bg-error-secundary); }
+.seg-dist-seg.media { background: var(--color-yellow-500); }
+.seg-dist-seg.baja  { background: var(--bg-success-secundary); }
+.seg-dist-legend { display: flex; flex-direction: column; gap: var(--space-2); margin-top: auto; }
+.seg-dist-row { display: flex; align-items: center; gap: var(--space-2); }
+.seg-dot { width: 10px; height: 10px; border-radius: var(--radius-full); flex: none; }
+.seg-dot.alta  { background: var(--bg-error-secundary); }
+.seg-dot.media { background: var(--color-yellow-500); }
+.seg-dot.baja  { background: var(--bg-success-secundary); }
+.seg-dist-lbl {
+  flex: 1;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.seg-dist-val {
+  font: var(--font-weight-bold) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+
+/* Tarjeta · métrica (icono + número grande + subtítulo) */
+.seg-metric { justify-content: flex-start; }
+.seg-metric-top { display: flex; align-items: center; gap: var(--space-3); }
+.seg-ico {
+  width: 44px; height: 44px; flex: none; border-radius: var(--radius-full);
+  background: var(--bg-surface-brand); color: var(--text-brand);
+  display: grid; place-items: center;
+}
+.seg-ico .material-symbols-outlined { font-size: 24px; }
+.seg-metric-num {
+  font: var(--font-weight-bold) var(--font-size-4xl)/var(--line-height-4xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.seg-metric-sub {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary); text-wrap: pretty;
+}
+
+/* ── Tabla de seguimientos ── */
+.seg-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(190px, 1.7fr) repeat(3, minmax(116px, 1fr)) minmax(112px, 0.9fr) minmax(72px, 0.7fr) 116px;
+  align-items: center;
+  min-width: 920px;
+}
+.seg-head .th {
+  padding: 0 var(--space-3);
+  font: var(--font-weight-bold) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+  text-wrap: balance;
+}
+.seg-head .th.left   { text-align: left; }
+.seg-head .th.center { text-align: center; }
+
+.seg-row { cursor: pointer; }
+.seg-cell-name { display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-3); min-width: 0; }
+.seg-avatar {
+  width: 36px; height: 36px; flex: none; border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-invert);
+}
+.seg-cell-name .nm {
+  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.seg-cell-num {
+  padding: 0 var(--space-3); text-align: center;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.seg-cell-alert { display: flex; justify-content: center; padding: 0 var(--space-2); }
+.seg-cell-act { display: flex; justify-content: center; }
+
+/* chip de alerta (semántico) */
+.seg-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  height: 26px; padding: 0 10px; border-radius: var(--radius-full);
+  font: var(--font-weight-medium) var(--font-size-xs)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); white-space: nowrap;
+}
+.seg-chip::before { content: ""; width: 8px; height: 8px; border-radius: var(--radius-full); flex: none; }
+.seg-chip.alta  { background: var(--bg-error-tertiary);   color: var(--text-error); }
+.seg-chip.alta::before  { background: var(--bg-error-secundary); }
+.seg-chip.media { background: var(--bg-warning-tertiary); color: var(--text-warning); }
+.seg-chip.media::before { background: var(--color-yellow-500); }
+.seg-chip.baja  { background: var(--bg-success-tertiary); color: var(--text-success); }
+.seg-chip.baja::before  { background: var(--bg-success-secundary); }
+
+/* botón Ver más (texto/brand, alto 36) */
+.seg-vermas {
+  height: 36px; padding: 0 var(--space-4); border: 0; background: none; cursor: pointer;
+  border-radius: var(--radius-full);
+  font: var(--font-weight-medium) var(--font-size-s)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-brand);
+  transition: background-color 120ms ease;
+}
+.seg-vermas:hover { background: var(--bg-surface-brand); }
+.seg-vermas:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ── Responsive ── */
+@media (max-width: 1100px) {
+  .seg-stats { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .seg-view { padding: var(--space-4); }
+}
+@media (max-width: 560px) {
+  .seg-stats { grid-template-columns: 1fr; }
+}

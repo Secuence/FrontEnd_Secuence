@@ -1,13 +1,1564 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>dashboard</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secuence</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="app.css?v=20260625f">
+<link rel="stylesheet" href="form-inputs.css">
+<link rel="stylesheet" href="perfil.css?v=20260625">
+<link rel="stylesheet" href="usuario.css">
+<link rel="stylesheet" href="welcome.css">
+<link rel="stylesheet" href="historias.css">
+<link rel="stylesheet" href="paciente.css">
+<link rel="stylesheet" href="seguimiento.css?v=20260625e">
+<link rel="stylesheet" href="seguimientos.css?v=20260626">
+<link rel="stylesheet" href="alertas.css?v=20260628b">
+<link rel="stylesheet" href="seguimiento-detalle.css?v=20260626">
+<link rel="stylesheet" href="proximos-seguimientos.css?v=20260626c">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0">
+</head>
+<body class="sc-scope">
+
+<div id="app">
+  <!-- ═══════════ Navigation drawer (shared shell) ═══════════ -->
+  <aside id="sidebar">
+    <div class="nav-logo"><img src="assets/logo-primary.svg" alt="Secuence"></div>
+
+    <div class="nav-section">Gestión</div>
+    <nav class="nav-group" data-group="gestion">
+      <a class="nav-item" data-route="indicadores" href="#/indicadores">
+        <span class="ico material-symbols-outlined">monitoring</span>
+        <span class="lbl">Indicadores</span>
+      </a>
+      <a class="nav-item" data-route="alertas" href="#/alertas">
+        <span class="ico material-symbols-outlined">notifications</span>
+        <span class="lbl">Alertas</span>
+        <span class="badge">12</span>
+      </a>
+      <a class="nav-item" data-route="seguimientos" href="#/seguimientos">
+        <span class="ico material-symbols-outlined">show_chart</span>
+        <span class="lbl">Seguimientos</span>
+        <span class="badge">08</span>
+      </a>
+      <a class="nav-item" data-route="historias" href="#/historias-y-evoluciones">
+        <span class="ico material-symbols-outlined">description</span>
+        <span class="lbl">Historias y evoluciones</span>
+        <span class="badge">248</span>
+      </a>
+    </nav>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">Configuraciones</div>
+    <nav class="nav-group" data-group="config">
+      <a class="nav-item" data-route="roles-y-permisos" href="#/roles-y-permisos">
+        <span class="ico material-symbols-outlined">manage_accounts</span>
+        <span class="lbl">Roles y permisos</span>
+      </a>
+      <a class="nav-item" data-route="mi-perfil" href="#/mi-perfil">
+        <span class="ico material-symbols-outlined">account_circle</span>
+        <span class="lbl">Mi perfil</span>
+      </a>
+    </nav>
+
+    <div class="nav-spacer"></div>
+
+    <div class="nav-user-wrap">
+      <div class="nav-user" role="link" tabindex="0" data-href="auth-flow.html#/auth/login" style="padding: 8px; height: 56px">
+        <div class="avatar">CM</div>
+        <div class="info">
+          <span class="name">Dr. Carlos Méndez</span>
+          <span class="role">Médico</span>
+        </div>
+        <button class="logout" aria-label="Cerrar sesión"><span class="material-symbols-outlined">logout</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════ Main ═══════════ -->
+  <main id="main">
+
+    <!-- ════════════════════ VIEW · Indicadores ════════════════════ -->
+    <section class="view" data-view="indicadores" data-screen-label="Indicadores">
+      <div class="topbar">
+        <h1 class="topbar-title">Indicadores</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <label class="search" id="search">
+            <span class="lead"><span class="material-symbols-outlined">menu</span></span>
+            <input type="text" id="searchInput" placeholder="Buscar" aria-label="Buscar">
+            <button class="trail" id="searchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          </label>
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="btn btn-outlined"><span class="material-symbols-outlined">add</span>Crear historia</button>
+          <button class="btn btn-filled" id="crearSeguimientoBtn"><span class="material-symbols-outlined">add</span>Crear seguimiento</button>
+        </div>
+      </div>
+
+      <!-- ───── Alertas prioritarias ───── -->
+      <section class="card" style="border-radius: 12px">
+        <div class="card-header">
+          <div class="titles">
+            <span class="title">Alertas prioritarias</span>
+            <span class="subtitle">Notificaciones críticas que se generan a partir de la historia médica del paciente y de sus respuestas durante el seguimiento.</span>
+          </div>
+          <div class="actions">
+            <button class="btn-tonal">Ver más</button>
+          </div>
+        </div>
+        <div class="alerts-body" style="padding: 0px">
+          <div class="alert info" id="welcomeAlert" role="link" tabindex="0" style="border-radius: 0px; border-width: 1px 0px 0px">
+            <div class="icon-chip"><span class="material-symbols-outlined">info</span></div>
+            <div class="content">
+              <span class="name">¡Bienvenido al sistema de seguimiento Secuence!</span>
+              <span class="meta">Fecha: 15 may. 2026 <span class="body-rest">— Secuence es una plataforma que ayuda a los profesionales de la salud a monitorear la evolución de sus pacientes de forma estructurada.</span></span>
+            </div>
+            <span class="chip"><span class="material-symbols-outlined">info</span>Info</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ───── Administración del equipo ───── -->
+      <section class="team-card" role="link" tabindex="0" data-href="#/roles-permisos">
+        <div class="team-media"><img src="assets/role-team-on.png" alt="Equipo médico de Secuence"></div>
+        <div class="team-body">
+          <span class="title">Administración del equipo</span>
+          <span class="subtitle">Administre los roles y permisos de su equipo, así como las invitaciones.</span>
+        </div>
+        <div class="team-action" style="padding: 0px 16px 0px 0px">
+          <a class="btn-tonal" href="#/roles-permisos"><span class="material-symbols-outlined">add</span>Agregar usuario</a>
+        </div>
+      </section>
+
+      <!-- ───── Próximos seguimientos ───── -->
+      <section class="card-action">
+        <div class="lead">
+          <div class="icon-chip"><span class="material-symbols-outlined">monitoring</span></div>
+          <div class="labels">
+            <span class="title">Próximos seguimientos</span>
+            <span class="subtitle">Hay 8 próximos seguimientos</span>
+          </div>
+        </div>
+        <button class="btn-tonal">Ver todos</button>
+      </section>
+
+      <!-- ───── Desempeño médico ───── -->
+      <section class="card" style="border-radius: 12px">
+        <div class="card-header">
+          <div class="titles">
+            <span class="title">Desempeño médico</span>
+            <span class="subtitle">Visualizar el desempeño médico así como el nivel de satisfacción de los pacientes hacia la atención brindada (NPS).</span>
+          </div>
+          <div class="actions">
+            <button class="btn-tonal">Ver todos</button>
+          </div>
+        </div>
+
+        <div class="perf-table" style="padding: 0px">
+          <div class="perf-scroll" style="gap: 0px">
+          <div class="t-grid t-head">
+            <div class="t-check"><button class="cbx" id="selectAll" aria-label="Seleccionar todos"><span class="material-symbols-outlined">check_box_outline_blank</span></button></div>
+            <span class="th left">Médico</span>
+            <span class="th center">Pacientes atendidos</span>
+            <span class="th center">Alertas por atender</span>
+            <span class="th center">Seguimientos en curso</span>
+            <span class="th center">Adherencia a tratamiento (%)</span>
+            <span class="th center">Estudios realizados (%)</span>
+            <span class="th center">NPS</span>
+            <span class="th center">Acción</span>
+          </div>
+          <div id="perfRows" style="gap: 0px"></div>
+          <div class="t-empty" id="perfEmpty">No se encontraron médicos para esa búsqueda.</div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ════════════════════ VIEW · Alertas (#/alertas) ════════════════════ -->
+    <section class="view al-view" data-view="alertas" data-screen-label="Alertas">
+      <div class="topbar">
+        <h1 class="topbar-title">Alertas</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <label class="search" id="alSearch">
+            <span class="lead"><span class="material-symbols-outlined">menu</span></span>
+            <input type="text" id="alSearchInput" placeholder="Buscar" aria-label="Buscar">
+            <button class="trail" id="alSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          </label>
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+        </div>
+      </div>
+
+      <!-- ───── Panel de métricas ───── -->
+      <section class="card al-metrics">
+        <div class="al-cols">
+          <!-- Col 1 -->
+          <div class="al-col">
+            <div class="al-stat-head">
+              <span class="al-stat-title">Nº pacientes en seguimiento</span>
+              <span class="al-stat-ic"><span class="material-symbols-outlined">show_chart</span></span>
+            </div>
+            <div class="al-stat-val"><span class="al-stat-num" id="alStatPac">0</span><span class="al-stat-unit">pacientes totales</span></div>
+            <div class="al-col-div"></div>
+            <span class="al-dist-title">Distribución de alerta</span>
+            <div class="al-dist-rows">
+              <div class="al-dist-line"><span class="al-dist-lbl">Alta</span><span class="al-dist-val" id="alDistAlta">0</span><div class="al-bar"><div class="al-bar-fill alta" id="alBarAlta"></div></div></div>
+              <div class="al-dist-line"><span class="al-dist-lbl">Media</span><span class="al-dist-val" id="alDistMedia">0</span><div class="al-bar"><div class="al-bar-fill media" id="alBarMedia"></div></div></div>
+              <div class="al-dist-line"><span class="al-dist-lbl">Baja</span><span class="al-dist-val" id="alDistBaja">0</span><div class="al-bar"><div class="al-bar-fill baja" id="alBarBaja"></div></div></div>
+            </div>
+          </div>
+          <!-- Col 2 -->
+          <div class="al-col">
+            <div class="al-stat-head">
+              <span class="al-stat-title">Avg. de adherencia a tratamiento</span>
+              <span class="al-stat-ic"><span class="material-symbols-outlined">medication</span></span>
+            </div>
+            <div class="al-stat-val"><span class="al-stat-num" id="alStatAdher">0%</span><span class="al-stat-unit">del total de pacientes en seguimiento y alta médica</span></div>
+            <div class="al-col-div"></div>
+            <span class="al-dist-title">Tratamientos iniciados</span>
+            <div class="al-dist-rows">
+              <div class="al-dist-line"><span class="al-dist-lbl">Sin iniciar</span><span class="al-dist-val" id="alTratSin">0</span><div class="al-bar"><div class="al-bar-fill sin" id="alBarTratSin"></div></div></div>
+              <div class="al-dist-line"><span class="al-dist-lbl">Iniciados</span><span class="al-dist-val" id="alTratIni">0</span><div class="al-bar"><div class="al-bar-fill hecho" id="alBarTratIni"></div></div></div>
+            </div>
+          </div>
+          <!-- Col 3 -->
+          <div class="al-col">
+            <div class="al-stat-head">
+              <span class="al-stat-title">Avg. estudios realizados</span>
+              <span class="al-stat-ic"><span class="material-symbols-outlined">stacked_line_chart</span></span>
+            </div>
+            <div class="al-stat-val"><span class="al-stat-num" id="alStatEst">0%</span><span class="al-stat-unit">del total de pacientes en seguimiento y alta médica</span></div>
+            <div class="al-col-div"></div>
+            <span class="al-dist-title">Estudios realizados</span>
+            <div class="al-dist-rows">
+              <div class="al-dist-line"><span class="al-dist-lbl">Sin realizar</span><span class="al-dist-val" id="alEstSin">0</span><div class="al-bar"><div class="al-bar-fill sin" id="alBarEstSin"></div></div></div>
+              <div class="al-dist-line"><span class="al-dist-lbl">Realizados</span><span class="al-dist-val" id="alEstHecho">0</span><div class="al-bar"><div class="al-bar-fill hecho" id="alBarEstHecho"></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="al-banner">
+          <span class="material-symbols-outlined">info</span>
+          <span class="al-banner-tx">Todas las métricas son generadas a partir de las respuestas de seguimiento de los pacientes.</span>
+        </div>
+      </section>
+
+      <!-- ───── Alertas prioritarias ───── -->
+      <section class="card al-priority">
+        <div class="al-pri-head">
+          <div class="al-pri-titles">
+            <span class="al-pri-title">Alertas prioritarias</span>
+            <span class="al-pri-desc">Notificaciones críticas que se generan a partir de la historia médica del paciente y de sus respuestas durante el seguimiento.</span>
+          </div>
+          <button class="al-share" type="button"><span class="material-symbols-outlined">share</span>Crear evolución médica</button>
+        </div>
+        <div class="al-legend">
+          <div class="al-legend-item"><span class="al-legend-ic al-leg-high"><span class="material-symbols-outlined">notification_important</span></span><span class="al-legend-tx">Alta: Alto riesgo de complicaciones</span></div>
+          <div class="al-legend-item"><span class="al-legend-ic al-leg-medium"><span class="material-symbols-outlined">notifications</span></span><span class="al-legend-tx">Media: Ameritan atención médica</span></div>
+          <div class="al-legend-item"><span class="al-legend-ic al-leg-low"><span class="material-symbols-outlined">notifications</span></span><span class="al-legend-tx">Baja: Evolución eficiente</span></div>
+          <div class="al-legend-item"><span class="al-legend-ic al-leg-info"><span class="material-symbols-outlined">info</span></span><span class="al-legend-tx">Info: Notificación informativa</span></div>
+        </div>
+        <div class="al-list" id="alList"></div>
+        <div class="al-empty" id="alEmpty">No se encontraron alertas para esa búsqueda.</div>
+
+        <div class="footer-table">
+          <div class="paged">
+            <span class="total">Registros totales</span>
+            <div class="ps" id="alPageSize">
+              <button class="ps-select" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="value" id="alPageSizeValue">10</span>
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+              </button>
+              <div class="ps-menu" role="listbox" id="alPageSizeMenu">
+                <div class="ps-item is-selected" role="option" data-size="10">10</div>
+                <div class="ps-item" role="option" data-size="25">25</div>
+                <div class="ps-item" role="option" data-size="50">50</div>
+              </div>
+            </div>
+            <span class="range" id="alRange">1–10 de 0</span>
+          </div>
+          <div class="pager">
+            <button class="iconbtn" id="alFirst" aria-label="Primera página"><span class="material-symbols-outlined">first_page</span></button>
+            <button class="iconbtn" id="alPrev" aria-label="Anterior"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="iconbtn" id="alNext" aria-label="Siguiente"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button class="iconbtn" id="alLast" aria-label="Última página"><span class="material-symbols-outlined">last_page</span></button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ════════════════════ VIEW · Seguimientos (#/seguimientos) ════════════════════ -->
+    <section class="view seg-view" data-view="seguimientos" data-screen-label="Seguimientos">
+      <div class="topbar">
+        <h1 class="topbar-title">Seguimientos</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <label class="search" id="segSearch">
+            <span class="lead"><span class="material-symbols-outlined">menu</span></span>
+            <input type="text" id="segSearchInput" placeholder="Buscar" aria-label="Buscar">
+            <button class="trail" id="segSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          </label>
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="btn btn-filled" data-open-seguimiento><span class="material-symbols-outlined">add</span>Crear seguimiento</button>
+        </div>
+      </div>
+
+      <!-- ───── Tarjetas resumen ───── -->
+      <div class="seg-stats">
+        <div class="seg-card seg-dist">
+          <span class="seg-card-title">Distribución de alertas</span>
+          <div class="seg-dist-bar">
+            <span class="seg-dist-seg alta"  id="segBarAlta"></span>
+            <span class="seg-dist-seg media" id="segBarMedia"></span>
+            <span class="seg-dist-seg baja"  id="segBarBaja"></span>
+          </div>
+          <div class="seg-dist-legend">
+            <div class="seg-dist-row"><span class="seg-dot alta"></span><span class="seg-dist-lbl">Alta</span><span class="seg-dist-val" id="segDistAlta">0</span></div>
+            <div class="seg-dist-row"><span class="seg-dot media"></span><span class="seg-dist-lbl">Media</span><span class="seg-dist-val" id="segDistMedia">0</span></div>
+            <div class="seg-dist-row"><span class="seg-dot baja"></span><span class="seg-dist-lbl">Baja</span><span class="seg-dist-val" id="segDistBaja">0</span></div>
+          </div>
+        </div>
+        <div class="seg-card seg-metric">
+          <div class="seg-metric-top"><span class="seg-ico"><span class="material-symbols-outlined">event_upcoming</span></span><span class="seg-metric-num">30</span></div>
+          <span class="seg-card-title">Próximos seguimientos</span>
+          <span class="seg-metric-sub">pacientes totales</span>
+        </div>
+        <div class="seg-card seg-metric">
+          <div class="seg-metric-top"><span class="seg-ico"><span class="material-symbols-outlined">monitoring</span></span><span class="seg-metric-num">21</span></div>
+          <span class="seg-card-title">En seguimiento</span>
+          <span class="seg-metric-sub">pacientes totales</span>
+        </div>
+        <div class="seg-card seg-metric">
+          <div class="seg-metric-top"><span class="seg-ico"><span class="material-symbols-outlined">verified</span></span><span class="seg-metric-num">65%</span></div>
+          <span class="seg-card-title">% de altas médicas</span>
+          <span class="seg-metric-sub">a partir de protocolo de seguimiento.</span>
+        </div>
+      </div>
+
+      <!-- ───── Tabla de seguimientos ───── -->
+      <section class="card" style="border-radius: 12px; padding: 0">
+        <div class="perf-table" style="padding: 0">
+          <div class="perf-scroll" style="gap: 0">
+            <div class="seg-grid seg-head t-head">
+              <span class="th left">Paciente</span>
+              <span class="th center">Último seguimiento</span>
+              <span class="th center">Próximo seguimiento</span>
+              <span class="th center">Última consulta</span>
+              <span class="th center">Alerta</span>
+              <span class="th center">NPS</span>
+              <span class="th center">Acción</span>
+            </div>
+            <div id="segRows"></div>
+            <div class="t-empty" id="segEmpty">No se encontraron seguimientos para esa búsqueda.</div>
+          </div>
+        </div>
+
+        <!-- Footer · Table -->
+        <div class="footer-table">
+          <div class="paged">
+            <span class="total">Registros totales</span>
+            <div class="ps" id="segPageSize">
+              <button class="ps-select" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="value" id="segPageSizeValue">10</span>
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+              </button>
+              <div class="ps-menu" role="listbox" id="segPageSizeMenu">
+                <div class="ps-item is-selected" role="option" data-size="10">10</div>
+                <div class="ps-item" role="option" data-size="25">25</div>
+                <div class="ps-item" role="option" data-size="50">50</div>
+              </div>
+            </div>
+            <span class="range" id="segRange">1–10 de 0</span>
+          </div>
+          <div class="pager">
+            <button class="iconbtn" id="segFirst" aria-label="Primera página"><span class="material-symbols-outlined">first_page</span></button>
+            <button class="iconbtn" id="segPrev" aria-label="Anterior"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="iconbtn" id="segNext" aria-label="Siguiente"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button class="iconbtn" id="segLast" aria-label="Última página"><span class="material-symbols-outlined">last_page</span></button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ════════════════════ VIEW · Roles y permisos ════════════════════ -->
+    <section class="view" data-view="roles-y-permisos" data-screen-label="Roles y permisos">
+      <div class="topbar">
+        <h1 class="topbar-title">Roles y permisos</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <label class="search" id="rolesSearch">
+            <span class="lead"><span class="material-symbols-outlined">menu</span></span>
+            <input type="text" id="rolesSearchInput" placeholder="Buscar" aria-label="Buscar">
+            <button class="trail" id="rolesSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          </label>
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+        </div>
+      </div>
+
+      <!-- ───── Usuarios · Card header + tabla + footer ───── -->
+      <section class="card" style="border-radius: 12px">
+        <div class="card-header">
+          <div class="titles">
+            <span class="title">Usuarios</span>
+            <span class="subtitle">Gestione los usuarios de su equipo, sus roles y los permisos de acceso a la plataforma.</span>
+          </div>
+          <div class="actions">
+            <button class="btn-tonal" id="crearUsuario"><span class="material-symbols-outlined">add</span>Crear usuario</button>
+          </div>
+        </div>
+
+        <div class="users-table" style="padding: 0px">
+          <div class="users-scroll">
+            <!-- Header table cell container -->
+            <div class="u-grid u-head">
+              <div class="t-check"><button class="cbx" id="rolesSelectAll" aria-label="Seleccionar todos"><span class="material-symbols-outlined">check_box_outline_blank</span></button></div>
+              <span class="th">Usuario</span>
+              <span class="th">Correo</span>
+              <span class="th">Estado</span>
+              <span class="th">Rol</span>
+              <span class="th">Fecha de creación</span>
+              <span class="th th-center">Acción</span>
+            </div>
+            <!-- Cells table container -->
+            <div id="rolesRows"></div>
+            <div class="t-empty" id="rolesEmpty">No se encontraron usuarios para esa búsqueda.</div>
+          </div>
+        </div>
+
+        <!-- Footer · Table -->
+        <div class="footer-table">
+          <div class="paged">
+            <span class="total">Registros totales</span>
+            <div class="ps" id="pageSize">
+              <button class="ps-select" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="value" id="pageSizeValue">10</span>
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+              </button>
+              <div class="ps-menu" role="listbox" id="pageSizeMenu">
+                <div class="ps-item is-selected" role="option" data-size="10">10</div>
+                <div class="ps-item" role="option" data-size="25">25</div>
+                <div class="ps-item" role="option" data-size="50">50</div>
+              </div>
+            </div>
+            <span class="range" id="rolesRange">1–10 de 0</span>
+          </div>
+          <div class="pager">
+            <button class="iconbtn" id="pgFirst" aria-label="Primera página"><span class="material-symbols-outlined">first_page</span></button>
+            <button class="iconbtn" id="pgPrev" aria-label="Anterior"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="iconbtn" id="pgNext" aria-label="Siguiente"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button class="iconbtn" id="pgLast" aria-label="Última página"><span class="material-symbols-outlined">last_page</span></button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ════════════════════ VIEW · Nuevo usuario (#/roles-permisos) ════════════════════ -->
+    <section class="view" data-view="nuevo-usuario" data-screen-label="Nuevo usuario">
+      <div class="nu-page">
+
+        <!-- Header -->
+        <div class="nu-head">
+          <button class="nu-back" id="nuBack" type="button" aria-label="Volver"><span class="material-symbols-outlined">arrow_back</span></button>
+          <h1 class="nu-title">Nuevo usuario</h1>
+        </div>
+
+        <!-- Form fields -->
+        <div class="nu-form">
+          <div class="nu-grid2">
+            <!-- Form input (DS) · Nombres -->
+            <div class="ff" id="ffNombres">
+              <div class="ff-box">
+                <input class="ff-input" id="nuNombres" type="text" placeholder="Escriba los nombres" autocomplete="off">
+                <label class="ff-label" for="nuNombres">Nombres <span class="req">(obligatorio)</span></label>
+              </div>
+              <div class="ff-support" id="supNombres" hidden></div>
+            </div>
+            <!-- Form input (DS) · Apellidos -->
+            <div class="ff" id="ffApellidos">
+              <div class="ff-box">
+                <input class="ff-input" id="nuApellidos" type="text" placeholder="Escriba los apellidos" autocomplete="off">
+                <label class="ff-label" for="nuApellidos">Apellidos <span class="req">(obligatorio)</span></label>
+              </div>
+              <div class="ff-support" id="supApellidos" hidden></div>
+            </div>
+            <!-- Form input (DS) · Correo -->
+            <div class="ff" id="ffCorreo">
+              <div class="ff-box">
+                <input class="ff-input" id="nuCorreo" type="email" placeholder="nombre@correo.com" autocomplete="off">
+                <label class="ff-label" for="nuCorreo">Correo <span class="req">(obligatorio)</span></label>
+              </div>
+              <div class="ff-support" id="supCorreo" hidden></div>
+            </div>
+            <!-- Input · Select (DS) · Rol -->
+            <div class="ff ff-select nu-select" id="nuRol">
+              <div class="ff-box" id="nuRolTrigger" role="button" tabindex="0" aria-haspopup="listbox" aria-expanded="false">
+                <span class="ff-value" id="nuRolValue">Médico</span>
+                <label class="ff-label">Rol <span class="req">(obligatorio)</span></label>
+                <span class="ff-icon material-symbols-outlined" id="nuRolIcon">arrow_drop_down</span>
+              </div>
+              <div class="menu nu-menu" role="listbox" id="nuRolMenu">
+                <div class="menu-item nu-opt" role="option" data-role="medico-administrador">Médico administrador</div>
+                <div class="menu-item nu-opt is-selected" role="option" data-role="medico">Médico</div>
+                <div class="menu-item nu-opt" role="option" data-role="administrador">Administrador</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Conditional médico fields (Médico / Médico administrador) -->
+          <div class="nu-medico" id="nuMedico">
+            <!-- Form input (DS) · Licencia médica -->
+            <div class="ff">
+              <div class="ff-box">
+                <input class="ff-input" id="nuLicencia" type="text" placeholder="Número de licencia o registro médico" autocomplete="off">
+                <label class="ff-label" for="nuLicencia">Licencia médica <span class="req">(opcional)</span></label>
+              </div>
+            </div>
+
+            <div class="nu-uploader">
+              <span class="nu-uploader-label">Foto de licencia o título</span>
+              <div class="nu-drop" id="nuDrop" role="button" tabindex="0">
+                <span class="material-symbols-outlined">cloud_upload</span>
+                <span class="nu-cta">Haga click para subir archivos <span class="nu-cta-plain">o arrastre archivos aquí</span></span>
+                <span class="nu-support">Sólo archivos PDF, JPG o JPEG (máximo 10MB)</span>
+              </div>
+              <input id="nuFileInput" type="file" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" multiple hidden>
+              <div class="nu-files" id="nuFiles"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Permisos -->
+        <div class="nu-permisos">
+          <div class="nu-permisos-head">
+            <span class="t">Permisos</span>
+            <span class="s">En esta sección, podrá asignar los permisos al usuario que está registrando en el sistema. Es importante destacar que estos permisos son exclusivamente para el nuevo usuario al que está registrando.</span>
+          </div>
+
+          <!-- Seguimientos -->
+          <div class="perm-card">
+            <div class="perm-icon"><span class="material-symbols-outlined">show_chart</span></div>
+            <div class="perm-body">
+              <span class="perm-title">Seguimientos</span>
+              <span class="perm-desc">Gestione permisos para crear nuevos seguimientos, editar seguimeientos existentes y acceder a informes generados a partir de la historia clínica del paciente y sus respuestas a seguimientos.</span>
+              <div class="perm-checks">
+                <button class="perm-check" type="button" data-perm="seg-crear" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear seguimientos</span></button>
+                <button class="perm-check" type="button" data-perm="seg-editar" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Editar seguimientos</span></button>
+                <button class="perm-check" type="button" data-perm="seg-ver" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver seguimientos</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historias médicas -->
+          <div class="perm-card">
+            <div class="perm-icon"><span class="material-symbols-outlined">description</span></div>
+            <div class="perm-body">
+              <span class="perm-title">Historias médicas</span>
+              <span class="perm-desc">Gestione los permisos para crear nuevas historia y ver historias de pacientes.</span>
+              <div class="perm-checks">
+                <button class="perm-check" type="button" data-perm="his-crear" data-group="historias"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear historias médicas</span></button>
+                <button class="perm-check" type="button" data-perm="his-ver" data-group="historias"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver historias médicas</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Evoluciones médicas -->
+          <div class="perm-card">
+            <div class="perm-icon"><span class="material-symbols-outlined">article</span></div>
+            <div class="perm-body">
+              <span class="perm-title">Evoluciones médicas</span>
+              <span class="perm-desc">Gestione los permisos de acceso a evoluciones médicas de los pacientes de manera eficiente. Otorgue permisos para crear nuevas evoluciones y ver evoluciones existentes de pacientes.</span>
+              <div class="perm-checks">
+                <button class="perm-check" type="button" data-perm="evo-crear" data-group="evoluciones"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear evoluciones médicas</span></button>
+                <button class="perm-check" type="button" data-perm="evo-ver" data-group="evoluciones"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver evoluciones médicas</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Analítica y métricas -->
+          <div class="perm-card">
+            <div class="perm-icon"><span class="material-symbols-outlined">monitoring</span></div>
+            <div class="perm-body">
+              <span class="perm-title">Analítica y métricas</span>
+              <span class="perm-desc">Gestione los permisos de acceso a analíticas y métricas. Ver métricas de desempeño de otros médicos (número de pacientes atendidos, NPS, números de pacientes en seguimeintos, entre otros).</span>
+              <div class="perm-checks">
+                <button class="perm-check" type="button" data-perm="ana-desempeno" data-group="analitica"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver desempeño de otros médicos</span></button>
+                <button class="perm-check" type="button" data-perm="ana-propias" data-group="analitica"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver métricas propias del sistema</span></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Administración -->
+          <div class="perm-card">
+            <div class="perm-icon"><span class="material-symbols-outlined">manage_accounts</span></div>
+            <div class="perm-body">
+              <span class="perm-title">Administración</span>
+              <span class="perm-desc">Asigne permisos para que usuario pueda: crear nuevos usuarios en el sistema, eliminar usuarios y asignar o denegar permisos (no aplica para roles de pacientes).</span>
+              <div class="perm-checks">
+                <button class="perm-check" type="button" data-perm="adm-crear" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear usuarios</span></button>
+                <button class="perm-check" type="button" data-perm="adm-eliminar" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Eliminar usuarios</span></button>
+                <button class="perm-check" type="button" data-perm="adm-asignar" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Asignar y remover permisos</span></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="nu-footer">
+          <button class="nu-link" type="button" id="nuReportar">Reportar problema</button>
+          <div class="nu-actions">
+            <button class="nu-link" type="button" id="nuCancelar">Cancelar</button>
+            <button class="btn btn-filled" type="button" id="nuCrear">Crear usuario</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Detalle de usuario ════════════════════ -->
+    <section class="view" data-view="detalle-usuario" data-screen-label="Detalle de usuario">
+      <div class="topbar du-topbar">
+        <button class="nu-back" id="duBack" type="button" aria-label="Volver"><span class="material-symbols-outlined">arrow_back</span></button>
+        <h1 class="topbar-title">Detalle de usuario</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools" id="duActions"></div>
+      </div>
+      <div class="du-page" id="duPage"></div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Información del paciente (#/informacion-paciente) ════════════════════ -->
+    <section class="view" data-view="informacion-paciente" data-screen-label="Información del paciente">
+      <div class="ip-page" id="ipPage"></div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Detalle de seguimiento (#/seguimiento-detalle) ════════════════════ -->
+    <section class="view" data-view="seguimiento-detalle" data-screen-label="Detalle de seguimiento">
+      <div class="sd-page" id="sdPage"></div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Mi perfil ════════════════════ -->
+    <section class="view" data-view="mi-perfil" data-screen-label="Mi perfil" style="padding: 24px; gap: 24px">
+      <div class="topbar">
+        <h1 class="topbar-title">Mi perfil</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+        </div>
+      </div>
+
+      <div class="perfil-page" id="perfilPage" style="padding: 0px 0px 48px">
+
+        <!-- ───── 1 · Información del centro de salud ───── -->
+        <section class="card perfil-card">
+          <div class="card-header">
+            <div class="titles">
+              <span class="title">Información del centro de salud</span>
+              <span class="subtitle">Datos del centro o institución donde ejerce su actividad clínica.</span>
+            </div>
+          </div>
+          <div class="perfil-body">
+            <div class="pu-field">
+              <span class="pu-label">Logo</span>
+              <div class="picture-uploader is-empty" data-uploader="logo">
+                <div class="preview-icon" aria-hidden="true"><span class="material-symbols-outlined">add_photo_alternate</span></div>
+                <button type="button" class="pu-remove" aria-label="Quitar logo"><span class="material-symbols-outlined">delete</span></button>
+                <button type="button" class="pu-action"><span class="material-symbols-outlined">file_upload</span><span class="pu-action-label">Subir imagen</span></button>
+                <input type="file" class="pu-input" accept="image/png,image/jpeg,image/svg+xml">
+              </div>
+            </div>
+
+            <div class="perfil-list">
+              <div class="li" data-field="centroNombre">
+                <div class="lead"><span class="material-symbols-outlined">domain</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Nombre del centro de salud</span>
+                    <button class="li-edit" type="button" aria-label="Editar nombre del centro de salud"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Clínica Secuence</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="paisCentro">
+                <div class="lead"><span class="material-symbols-outlined">public</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">País</span>
+                    <button class="li-edit" type="button" aria-label="Editar país"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Colombia</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="centroDir">
+                <div class="lead"><span class="material-symbols-outlined">location_on</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Dirección</span>
+                    <button class="li-edit" type="button" aria-label="Editar dirección"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Cra. 7 #71-21, Bogotá</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="centroTel">
+                <div class="lead"><span class="material-symbols-outlined">call</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Teléfono</span>
+                    <button class="li-edit" type="button" aria-label="Editar teléfono"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">+57 601 742 0000</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="centroWeb">
+                <div class="lead"><span class="material-symbols-outlined">language</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Sitio web</span>
+                    <button class="li-edit" type="button" aria-label="Editar sitio web"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">www.clinicasecuence.co</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ───── 2 · Información personal ───── -->
+        <section class="card perfil-card">
+          <div class="card-header">
+            <div class="titles">
+              <span class="title">Información personal</span>
+              <span class="subtitle">Cómo aparece su identidad dentro de la plataforma.</span>
+            </div>
+          </div>
+          <div class="perfil-body">
+            <div class="pu-field">
+              <span class="pu-label">Foto de perfil</span>
+              <div class="picture-uploader is-empty" data-uploader="foto">
+                <div class="preview-icon" aria-hidden="true"><span class="material-symbols-outlined">person</span></div>
+                <button type="button" class="pu-remove" aria-label="Quitar foto"><span class="material-symbols-outlined">delete</span></button>
+                <button type="button" class="pu-action"><span class="material-symbols-outlined">file_upload</span><span class="pu-action-label">Subir imagen</span></button>
+                <input type="file" class="pu-input" accept="image/png,image/jpeg">
+              </div>
+            </div>
+
+            <!-- Firma y sello — sólo Médico / Médico administrador -->
+            <div class="pu-grid2" id="firmaSelloBlock">
+              <div class="pu-field">
+                <span class="pu-label">Firma</span>
+                <div class="picture-uploader is-empty" data-uploader="firma">
+                  <div class="preview-icon" aria-hidden="true"><span class="material-symbols-outlined">ink_pen</span></div>
+                  <button type="button" class="pu-remove" aria-label="Quitar firma"><span class="material-symbols-outlined">delete</span></button>
+                  <button type="button" class="pu-action"><span class="material-symbols-outlined">file_upload</span><span class="pu-action-label">Subir imagen</span></button>
+                  <input type="file" class="pu-input" accept="image/png,image/jpeg">
+                </div>
+              </div>
+              <div class="pu-field">
+                <span class="pu-label">Sello</span>
+                <div class="picture-uploader is-empty" data-uploader="sello">
+                  <div class="preview-icon" aria-hidden="true"><span class="material-symbols-outlined">approval</span></div>
+                  <button type="button" class="pu-remove" aria-label="Quitar sello"><span class="material-symbols-outlined">delete</span></button>
+                  <button type="button" class="pu-action"><span class="material-symbols-outlined">file_upload</span><span class="pu-action-label">Subir imagen</span></button>
+                  <input type="file" class="pu-input" accept="image/png,image/jpeg">
+                </div>
+              </div>
+            </div>
+
+            <div class="perfil-list">
+              <div class="li" data-field="nombres">
+                <div class="lead"><span class="material-symbols-outlined">badge</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Nombres</span>
+                    <button class="li-edit" type="button" aria-label="Editar nombres"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Carlos</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="apellidos">
+                <div class="lead"><span class="material-symbols-outlined">badge</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Apellidos</span>
+                    <button class="li-edit" type="button" aria-label="Editar apellidos"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Méndez</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="toggle-row">
+              <div class="tr-text">
+                <span class="tr-title">Cuenta activa</span>
+                <span class="tr-sub">Al desactivarla, este usuario no podrá iniciar sesión ni recibir seguimientos.</span>
+              </div>
+              <button type="button" class="track on" id="cpCuentaActiva" role="switch" aria-checked="true" aria-label="Cuenta activa"></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ───── 3 · Información profesional ───── -->
+        <section class="card perfil-card">
+          <div class="card-header">
+            <div class="titles">
+              <span class="title">Información profesional</span>
+              <span class="subtitle">Credenciales y datos de contacto de su ejercicio médico.</span>
+            </div>
+          </div>
+          <div class="perfil-body">
+            <div class="perfil-list">
+              <div class="li" data-field="espec">
+                <div class="lead"><span class="material-symbols-outlined">medical_services</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Especialización</span>
+                    <button class="li-edit" type="button" aria-label="Editar especialización"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Cardiología</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="paisEjercicio">
+                <div class="lead"><span class="material-symbols-outlined">public</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Principal país de ejercicio</span>
+                    <button class="li-edit" type="button" aria-label="Editar principal país de ejercicio"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">Colombia</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="profTel">
+                <div class="lead"><span class="material-symbols-outlined">call</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Teléfono</span>
+                    <button class="li-edit" type="button" aria-label="Editar teléfono"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">+57 300 555 0142</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="correo">
+                <div class="lead"><span class="material-symbols-outlined">mail</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Correo</span>
+                    <button class="li-edit" type="button" aria-label="Editar correo"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">carlos.mendez@secuence.co</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="profWeb">
+                <div class="lead"><span class="material-symbols-outlined">language</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Sitio web personal</span>
+                    <button class="li-edit" type="button" aria-label="Editar sitio web personal"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">www.drcarlosmendez.co</span>
+                </div>
+              </div>
+
+              <div class="li" data-field="licencia">
+                <div class="lead"><span class="material-symbols-outlined">badge</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Número de licencia</span>
+                    <button class="li-edit" type="button" aria-label="Editar número de licencia"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1">RM-48213</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pu-field">
+              <span class="pu-label">Foto de licencia médica</span>
+              <div class="picture-uploader is-empty" data-uploader="licencia">
+                <div class="preview-icon" aria-hidden="true"><span class="material-symbols-outlined">badge</span></div>
+                <button type="button" class="pu-remove" aria-label="Quitar foto de licencia"><span class="material-symbols-outlined">delete</span></button>
+                <button type="button" class="pu-action"><span class="material-symbols-outlined">file_upload</span><span class="pu-action-label">Subir imagen</span></button>
+                <input type="file" class="pu-input" accept="image/png,image/jpeg,application/pdf">
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ───── 4 · Configuración de cuenta ───── -->
+        <section class="card perfil-card">
+          <div class="card-header">
+            <div class="titles">
+              <span class="title">Configuración de cuenta</span>
+              <span class="subtitle">Rol asignado y acceso a la plataforma.</span>
+            </div>
+          </div>
+          <div class="perfil-body">
+            <div class="perfil-list">
+              <div class="li" data-field="rol">
+                <div class="lead"><span class="material-symbols-outlined">verified_user</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Rol</span>
+                  </div>
+                  <span class="value"><span class="rol-chip"><span class="material-symbols-outlined">stethoscope</span>Médico</span></span>
+                </div>
+              </div>
+
+              <div class="li" data-field="password">
+                <div class="lead"><span class="material-symbols-outlined">lock</span></div>
+                <div class="main">
+                  <div class="titlerow">
+                    <span class="title">Contraseña</span>
+                    <button class="li-edit" type="button" aria-label="Cambiar contraseña"><span class="material-symbols-outlined">edit</span></button>
+                  </div>
+                  <span class="value clamp-1" id="pwUpdatedValue">Última actualización: 12 may. 2026</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </section>
+
+    <!-- ════════════════════ VIEW · placeholder ════════════════════ -->
+    <section class="view" data-view="placeholder" data-screen-label="Sección">
+      <div class="topbar">
+        <h1 class="topbar-title" id="placeholderTitle">Sección</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+        </div>
+      </div>
+      <div class="empty-view">
+        <div class="empty-icon"><span class="material-symbols-outlined" id="placeholderIcon">construction</span></div>
+        <span class="empty-title" id="placeholderHeading">Sección en construcción</span>
+        <span class="empty-sub">Esta vista todavía no tiene un diseño definido. Selecciona <strong>Indicadores</strong> o <strong>Roles y permisos</strong> para ver las pantallas disponibles.</span>
+      </div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Bienvenida (#/bienvenida) ════════════════════ -->
+    <section class="view" data-view="bienvenida" data-screen-label="Bienvenida">
+      <!-- Asterisco de marca reutilizable -->
+      <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+        <symbol id="wlcAst" viewBox="0 0 24 24">
+          <g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 4 V20"></path>
+            <path d="M5.07 8 L18.93 16"></path>
+            <path d="M18.93 8 L5.07 16"></path>
+          </g>
+        </symbol>
+      </svg>
+
+      <div class="wlc-page">
+        <!-- ════════ Variante · Médico / Médico administrador ════════ -->
+        <div class="wlc-variant" data-role="medico" id="wlcMedico">
+        <!-- ───── Héroe ───── -->
+        <header class="wlc-hero">
+          <div class="wlc-swirl"></div>
+          <img class="wlc-doc" src="bienvenida-assets/physician.png" alt="">
+          <div class="wlc-hero-content">
+            <button type="button" class="wlc-back" id="wlcBack" aria-label="Volver a Indicadores">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 class="wlc-title">Hola <span id="wlcName">Dr. Carlos Méndez</span>,<br>¡Bienvenido a Secuence!</h1>
+            <p class="wlc-sub">Su plataforma de monitoreo y seguimiento de pacientes</p>
+          </div>
+        </header>
+
+        <!-- ───── Bienvenida + capacidades ───── -->
+        <h2 class="wlc-lead-h2">¡Nos complace darle la bienvenida a <span class="wlc-brand">Secuence</span>!</h2>
+        <p class="wlc-para">Ahora cuenta con una plataforma diseñada para ayudarle a dar continuidad al cuidado de sus pacientes de forma más organizada, eficiente y basada en información relevante para apoyar sus decisiones clínicas. Con Secuence podrá:</p>
+
+        <ul class="wlc-cap-list">
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Gestionar pacientes desde un solo lugar</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Crear y programar seguimientos</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Registrar historias médicas y evoluciones clínicas</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Recibir alertas sobre cambios relevantes en pacientes</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Visualizar indicadores clínicos y operativos</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Monitorear adherencia a tratamientos y evolución médica</li>
+        </ul>
+
+        <!-- ───── Trío de features ───── -->
+        <div class="wlc-feat-grid">
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">hub</span></div>
+            <h3 class="wlc-feat-h">Gestión Centralizada</h3>
+            <p class="wlc-feat-p">Administre toda la información de sus pacientes en un solo lugar</p>
+          </div>
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">monitoring</span></div>
+            <h3 class="wlc-feat-h">Seguimientos Programados</h3>
+            <p class="wlc-feat-p">Configure protocolos y automatice el monitoreo continuo de sus pacientes</p>
+          </div>
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">insights</span></div>
+            <h3 class="wlc-feat-h">Reportes Inteligentes</h3>
+            <p class="wlc-feat-p">Reciba análisis que respaldan sus decisiones clínicas</p>
+          </div>
+        </div>
+
+        <!-- ───── Embed del dashboard ───── -->
+        <div class="wlc-dash">
+          <img src="bienvenida-assets/dashboard.png" alt="Vista de la sección Indicadores en Secuence">
+        </div>
+
+        <!-- ───── Métricas del panel (Indicadores) ───── -->
+        <p class="wlc-lead-strong">Su panel principal incluye la sección Indicadores, donde podrás visualizar métricas clave relacionadas con:</p>
+
+        <ul class="wlc-mlist">
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Alertas prioritarias</p><p class="wlc-mp">Notificaciones generadas a partir de cambios relevantes reportados durante los seguimientos de pacientes.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Pacientes en seguimiento</p><p class="wlc-mp">Visualización del número de pacientes actualmente monitoreados.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Adherencia al tratamiento</p><p class="wlc-mp">Indicadores relacionados con el cumplimiento terapéutico reportado por sus pacientes.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Estudios realizados</p><p class="wlc-mp">Métricas sobre cumplimiento de estudios, procedimientos o exámenes médicos indicados.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Diagnósticos más comunes</p><p class="wlc-mp">Tendencias clínicas registradas en historias médicas.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">NPS y satisfacción del paciente</p><p class="wlc-mp">Medición de percepción y experiencia de atención médica.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Altas médicas</p><p class="wlc-mp">Porcentaje de pacientes que completaron exitosamente su seguimiento.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Próximos seguimientos</p><p class="wlc-mp">Resumen de monitoreos programados pendientes.</p></div></li>
+          <li class="wlc-mitem"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><div><p class="wlc-mh">Desempeño médico</p><p class="wlc-mp">Métricas operativas y clínicas del equipo médico<span id="wlcNote"> (disponible según permisos asignados)</span>.</p></div></li>
+        </ul>
+
+        <p class="wlc-para">Estas métricas le permitirán mantener una visión centralizada del estado de sus pacientes y facilitar la identificación temprana de situaciones que requieren atención.</p>
+
+        <!-- ───── Siguientes pasos ───── -->
+        <div class="wlc-bar-h"><h2>Siguientes pasos recomendados</h2></div>
+        <p class="wlc-para">Para comenzar a utilizar Secuence, le recomendamos realizar estas primeras acciones:</p>
+
+        <ul class="wlc-steps">
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Complete su perfil profesional</span><button type="button" class="wlc-step-btn" id="wlcGoPerfil">Completar perfil</button></li>
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Agregue su primer paciente</span><button type="button" class="wlc-step-btn" id="wlcGoPaciente">Agregar paciente</button></li>
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Configure un seguimiento</span><button type="button" class="wlc-step-btn" id="wlcGoSeguimiento">Configurar seguimiento</button></li>
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Explore la sección Indicadores para visualizar el estado general de sus pacientes</span><button type="button" class="wlc-step-btn" id="wlcGoIndicadores">Ver indicadores</button></li>
+        </ul>
+
+        <!-- ───── Cierre ───── -->
+        <div class="wlc-bar-h"><h2>Nuestro objetivo es ayudarle a mejorar la continuidad del cuidado</h2></div>
+        <p class="wlc-para">Mientras más información registre, más útil será el monitoreo y análisis generado por la plataforma.</p>
+        <p class="wlc-para">Si necesita ayuda durante tu experiencia en Secuence, nuestro equipo estará disponible para apoyarle a través de nuestro correo <a class="wlc-link" href="mailto:hisecuence@gmail.com">hisecuence@gmail.com</a></p>
+        <p class="wlc-closing">¡Bienvenido a Secuence!</p>
+        </div><!-- /variante médico -->
+
+        <!-- ════════ Variante · Administrador ════════ -->
+        <div class="wlc-variant" data-role="admin" id="wlcAdmin" hidden>
+        <!-- ───── Héroe ───── -->
+        <header class="wlc-hero">
+          <div class="wlc-swirl"></div>
+          <img class="wlc-doc" src="bienvenida-assets/admin.png" alt="">
+          <div class="wlc-hero-content">
+            <button type="button" class="wlc-back" id="wlcBackAdmin" aria-label="Volver a Indicadores">
+              <span class="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 class="wlc-title">Hola <span id="wlcNameAdmin">Dr. Carlos Méndez</span>,<br>¡Bienvenido a Secuence!</h1>
+            <p class="wlc-sub">Su plataforma de monitoreo y seguimiento de pacientes</p>
+          </div>
+        </header>
+
+        <!-- ───── Bienvenida + capacidades ───── -->
+        <h2 class="wlc-lead-h2">¡Nos complace darle la bienvenida a <span class="wlc-brand">Secuence</span>!</h2>
+        <p class="wlc-para">Ahora cuentas con una plataforma diseñada para ayudar a clínicas y organizaciones médicas a centralizar el monitoreo de pacientes, supervisar el desempeño del equipo médico y obtener mayor visibilidad sobre la continuidad del cuidado clínico. Con Secuence podrá:</p>
+
+        <ul class="wlc-cap-list">
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Supervisar pacientes en seguimiento desde un solo lugar</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Monitorear indicadores clínicos y operativos en tiempo real</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Visualizar alertas relevantes generadas durante seguimientos</li>
+          <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Medir adherencia a tratamientos y cumplimiento de estudios médicos</li>
+        </ul>
+
+        <!-- ───── Trío de features ───── -->
+        <div class="wlc-feat-grid">
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">hub</span></div>
+            <h3 class="wlc-feat-h">Integración con los softwares de su ecosistema*</h3>
+            <p class="wlc-feat-p">Integre Secuence con sus sistemas de gestión clínica. *Casos específicos</p>
+          </div>
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">star</span></div>
+            <h3 class="wlc-feat-h">Evaluar desempeño médico</h3>
+            <p class="wlc-feat-p">A través de métrica NPS (Net Promoter Score) y carga operativa del equipo médico.</p>
+          </div>
+          <div class="wlc-feat-col">
+            <div class="wlc-feat-ico"><span class="material-symbols-outlined">manage_accounts</span></div>
+            <h3 class="wlc-feat-h">Gestión de roles</h3>
+            <p class="wlc-feat-p">Gestione usuarios, roles y permisos según la estructura clínica.</p>
+          </div>
+        </div>
+
+        <!-- ───── Embed del dashboard ───── -->
+        <div class="wlc-dash">
+          <img src="bienvenida-assets/dashboard-admin.png" alt="Vista de la sección Indicadores en Secuence">
+        </div>
+
+        <!-- ───── Métricas del panel (Indicadores) ───── -->
+        <p class="wlc-lead-strong">Desde la sección Indicadores podrás acceder a métricas clave como:</p>
+
+        <ul class="wlc-mlist-simple">
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Pacientes activos en seguimiento</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Alertas clínicas pendientes de atención</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Adherencia promedio a tratamientos</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Porcentaje de estudios realizados</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Diagnósticos más frecuentes</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Satisfacción de pacientes (NPS)</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Porcentaje de altas médicas</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Desempeño individual del equipo médico</li>
+          <li class="wlc-mrow"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Carga operativa por profesional</li>
+        </ul>
+
+        <p class="wlc-para">Estas métricas te permitirán identificar oportunidades de mejora, detectar riesgos operativos y mantener una visión centralizada sobre el estado clínico y operativo de tu organización.</p>
+
+        <!-- ───── Siguientes pasos ───── -->
+        <div class="wlc-bar-h"><h2>Siguientes pasos recomendados</h2></div>
+        <p class="wlc-para">Para comenzar a configurar su centro de salud en Secuence, te recomendamos:</p>
+
+        <ul class="wlc-steps">
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Completar la información de su organización</span><button type="button" class="wlc-step-btn" id="wlcAdmCompletar">Completar información</button></li>
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Agregar usuarios y asignar roles y permisos</span><button type="button" class="wlc-step-btn" id="wlcAdmUsuario">Agregar usuario</button></li>
+          <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Explorar la sección Indicadores para monitorear la actividad clínica y operativa</span><button type="button" class="wlc-step-btn" id="wlcAdmIndicadores">Ver indicadores</button></li>
+        </ul>
+
+        <!-- ───── Cierre ───── -->
+        <div class="wlc-bar-h"><h2>Nuestro objetivo es ayudarle a mejorar la continuidad del cuidado</h2></div>
+        <p class="wlc-para"><strong>Una configuración adecuada permitirá obtener métricas más precisas y mejorar la visibilidad sobre el desempeño clínico de tu equipo.</strong></p>
+        <p class="wlc-para">Si necesita ayuda durante tu experiencia en Secuence, nuestro equipo estará disponible para apoyarle a través de nuestro correo <a class="wlc-link" href="mailto:hisecuence@gmail.com">hisecuence@gmail.com</a></p>
+        <p class="wlc-closing">¡Bienvenido a Secuence!</p>
+        </div><!-- /variante admin -->
+      </div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Historias y evoluciones (#/historias-y-evoluciones) ════════════════════ -->
+    <section class="view" data-view="historias-y-evoluciones" data-screen-label="Historias y evoluciones">
+      <div class="topbar">
+        <h1 class="topbar-title">Historias</h1>
+        <div class="topbar-grow"></div>
+        <div class="topbar-tools">
+          <label class="search" id="heSearch">
+            <span class="lead"><span class="material-symbols-outlined">menu</span></span>
+            <input type="text" id="heSearchInput" placeholder="Buscar" aria-label="Buscar">
+            <button class="trail" id="heSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          </label>
+          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="btn btn-outlined"><span class="material-symbols-outlined">add</span>Crear evolución</button>
+          <button class="btn btn-filled"><span class="material-symbols-outlined">add</span>Crear historia</button>
+        </div>
+      </div>
+
+      <!-- ───── Pacientes · Card header + lista + footer ───── -->
+      <section class="card" style="border-radius: 12px">
+        <div class="card-header">
+          <div class="titles">
+            <span class="title">Pacientes</span>
+            <span class="subtitle">Secuence podrá entregarle informes acerca de la evolución de sus pacientes a partir de la información cargada en las historias y evoluciones. Procure ser lo más explícito posible en la información de cada paciente.</span>
+          </div>
+        </div>
+
+        <div class="he-list" id="heRows" style="gap: 0px; padding: 0px; background-color: rgb(255, 255, 255); border-radius: 0px; border-width: 0px"></div>
+        <div class="t-empty" id="heEmpty">No se encontraron pacientes para esa búsqueda.</div>
+
+        <!-- Footer · Table -->
+        <div class="footer-table">
+          <div class="paged">
+            <span class="total">Registros totales</span>
+            <div class="ps" id="hePageSize">
+              <button class="ps-select" type="button" aria-haspopup="listbox" aria-expanded="false">
+                <span class="value" id="hePageSizeValue">10</span>
+                <span class="material-symbols-outlined">arrow_drop_down</span>
+              </button>
+              <div class="ps-menu" role="listbox" id="hePageSizeMenu">
+                <div class="ps-item is-selected" role="option" data-size="10">10</div>
+                <div class="ps-item" role="option" data-size="25">25</div>
+                <div class="ps-item" role="option" data-size="50">50</div>
+              </div>
+            </div>
+            <span class="range" id="heRange">1–10 de 0</span>
+          </div>
+          <div class="pager">
+            <button class="iconbtn" id="heFirst" aria-label="Primera página"><span class="material-symbols-outlined">first_page</span></button>
+            <button class="iconbtn" id="hePrev" aria-label="Anterior"><span class="material-symbols-outlined">chevron_left</span></button>
+            <button class="iconbtn" id="heNext" aria-label="Siguiente"><span class="material-symbols-outlined">chevron_right</span></button>
+            <button class="iconbtn" id="heLast" aria-label="Última página"><span class="material-symbols-outlined">last_page</span></button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+  </main>
+</div>
+
+<!-- ════════════════════ Dialog · System status (DS) ════════════════════ -->
+<div class="scrim" id="dlgScrim" aria-hidden="true">
+  <div class="dlg" id="dlgCard" role="dialog" aria-modal="true" aria-labelledby="dlgTitle" aria-describedby="dlgDesc">
+    <div class="dlg-header">
+      <div class="dlg-icon"><div class="dlg-icon-inner"><span class="material-symbols-outlined" id="dlgIcon">check_circle</span></div></div>
+      <div class="dlg-title" id="dlgTitle"></div>
+      <button class="dlg-close" id="dlgClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="dlg-desc" id="dlgDesc"></div>
+    <div class="dlg-footer" id="dlgFooter"></div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Cambiar contraseña ════════════════════ -->
+<div class="scrim" id="pwScrim" aria-hidden="true">
+  <div class="pw-card" role="dialog" aria-modal="true" aria-labelledby="pwTitle">
+    <div class="pw-head">
+      <div class="pw-titles">
+        <span class="pw-title" id="pwTitle">Cambiar contraseña</span>
+        <span class="pw-sub">Introduzca su contraseña actual y defina una nueva.</span>
+      </div>
+      <button class="pw-close" id="pwClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="pw-body">
+      <div class="ff" id="ffPwActual">
+        <div class="ff-box">
+          <input class="ff-input" id="pwActual" type="password" placeholder="Contraseña actual" autocomplete="current-password">
+          <label class="ff-label" for="pwActual">Contraseña actual <span class="req">(obligatorio)</span></label>
+          <span class="ff-icon material-symbols-outlined" data-pw-toggle="pwActual" role="button" aria-label="Mostrar contraseña">visibility</span>
+        </div>
+        <div class="ff-support" id="supPwActual" hidden></div>
+      </div>
+      <div class="ff" id="ffPwNueva">
+        <div class="ff-box">
+          <input class="ff-input" id="pwNueva" type="password" placeholder="Nueva contraseña" autocomplete="new-password">
+          <label class="ff-label" for="pwNueva">Nueva contraseña <span class="req">(obligatorio)</span></label>
+          <span class="ff-icon material-symbols-outlined" data-pw-toggle="pwNueva" role="button" aria-label="Mostrar contraseña">visibility</span>
+        </div>
+        <div class="ff-support" id="supPwNueva">Mínimo 8 caracteres.</div>
+      </div>
+      <div class="ff" id="ffPwConfirm">
+        <div class="ff-box">
+          <input class="ff-input" id="pwConfirm" type="password" placeholder="Confirmar nueva contraseña" autocomplete="new-password">
+          <label class="ff-label" for="pwConfirm">Confirmar nueva contraseña <span class="req">(obligatorio)</span></label>
+          <span class="ff-icon material-symbols-outlined" data-pw-toggle="pwConfirm" role="button" aria-label="Mostrar contraseña">visibility</span>
+        </div>
+        <div class="ff-support" id="supPwConfirm" hidden></div>
+      </div>
+    </div>
+    <div class="pw-footer">
+      <button class="bt-text" id="pwCancelar" type="button"><span>Cancelar</span></button>
+      <button class="bt-tonal" id="pwGuardar" type="button"><span>Actualizar contraseña</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Editar campo (List variant) ════════════════════ -->
+<div class="scrim" id="editScrim" aria-hidden="true">
+  <div class="pw-card edit-card" role="dialog" aria-modal="true" aria-labelledby="editTitle">
+    <div class="pw-head">
+      <div class="pw-titles">
+        <span class="pw-title" id="editTitle">Editar campo</span>
+        <span class="pw-sub" id="editSub">Actualice el valor y guarde los cambios.</span>
+      </div>
+      <button class="pw-close" id="editClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="pw-body" id="editBody"></div>
+    <div class="pw-footer">
+      <button class="bt-text" id="editCancel" type="button"><span>Cancelar</span></button>
+      <button class="bt-tonal" id="editSave" type="button"><span>Guardar</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Cambiar rol del usuario (Mi perfil) ════════════════════ -->
+<div class="scrim" id="rolScrim" aria-hidden="true">
+  <div class="pw-card rol-card" role="dialog" aria-modal="true" aria-labelledby="rolTitle">
+    <div class="pw-head">
+      <div class="pw-titles">
+        <span class="pw-title" id="rolTitle">Cambiar rol del usuario</span>
+        <span class="pw-sub">Seleccione un rol. Los permisos se asignan automáticamente según el rol elegido.</span>
+      </div>
+      <button class="pw-close" id="rolClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="pw-body">
+      <div class="rol-options" id="rolOptions" role="radiogroup" aria-label="Rol del usuario">
+        <button class="rol-option" type="button" role="radio" data-role="medico">
+          <span class="rol-option-ico material-symbols-outlined">stethoscope</span>
+          <span class="rol-option-main">
+            <span class="rol-option-name">Médico</span>
+            <span class="rol-option-desc">Acceso clínico completo a seguimientos, historias y evoluciones de sus pacientes.</span>
+          </span>
+          <span class="rol-option-radio material-symbols-outlined">radio_button_unchecked</span>
+        </button>
+        <button class="rol-option" type="button" role="radio" data-role="medico-administrador">
+          <span class="rol-option-ico material-symbols-outlined">shield_person</span>
+          <span class="rol-option-main">
+            <span class="rol-option-name">Médico administrador</span>
+            <span class="rol-option-desc">Todos los permisos clínicos más la administración de usuarios y permisos del equipo.</span>
+          </span>
+          <span class="rol-option-radio material-symbols-outlined">radio_button_unchecked</span>
+        </button>
+        <button class="rol-option" type="button" role="radio" data-role="administrador">
+          <span class="rol-option-ico material-symbols-outlined">admin_panel_settings</span>
+          <span class="rol-option-main">
+            <span class="rol-option-name">Administrador</span>
+            <span class="rol-option-desc">Gestión de analítica y administración del equipo, sin acceso clínico a pacientes.</span>
+          </span>
+          <span class="rol-option-radio material-symbols-outlined">radio_button_unchecked</span>
+        </button>
+      </div>
+
+      <div class="rol-medico" id="rolMedico" hidden>
+        <div class="ff" id="rolFfLicencia">
+          <div class="ff-box">
+            <input class="ff-input" id="rolLicencia" type="text" placeholder="Número de licencia o registro médico" autocomplete="off">
+            <label class="ff-label" for="rolLicencia">Licencia médica <span class="req">(obligatorio)</span></label>
+          </div>
+          <div class="ff-support" id="rolSupLicencia" hidden></div>
+        </div>
+
+        <div class="nu-uploader">
+          <span class="nu-uploader-label">Foto de licencia o título <span class="req">(obligatorio)</span></span>
+          <div class="nu-drop" id="rolDrop" role="button" tabindex="0">
+            <span class="material-symbols-outlined">cloud_upload</span>
+            <span class="nu-cta">Haga click para subir archivos <span class="nu-cta-plain">o arrastre archivos aquí</span></span>
+            <span class="nu-support">Sólo archivos PDF, JPG o JPEG (máximo 10MB)</span>
+          </div>
+          <input id="rolFileInput" type="file" accept=".pdf,.jpg,.jpeg,application/pdf,image/jpeg" multiple hidden>
+          <div class="nu-files" id="rolFiles"></div>
+          <div class="ff-support" id="rolSupFoto" hidden></div>
+        </div>
+      </div>
+
+      <div class="rol-permisos">
+        <div class="nu-permisos-head">
+          <span class="t">Permisos del rol</span>
+          <span class="s">Estos son los permisos preestablecidos para el rol seleccionado. Se asignan automáticamente y no pueden modificarse individualmente desde aquí.</span>
+        </div>
+
+        <!-- Seguimientos -->
+        <div class="perm-card">
+          <div class="perm-icon"><span class="material-symbols-outlined">show_chart</span></div>
+          <div class="perm-body">
+            <span class="perm-title">Seguimientos</span>
+            <span class="perm-desc">Crear nuevos seguimientos, editar seguimientos existentes y acceder a informes generados a partir de la historia clínica del paciente.</span>
+            <div class="perm-checks">
+              <button class="perm-check" type="button" data-perm="seg-crear" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear seguimientos</span></button>
+              <button class="perm-check" type="button" data-perm="seg-editar" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Editar seguimientos</span></button>
+              <button class="perm-check" type="button" data-perm="seg-ver" data-group="seguimientos"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver seguimientos</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Historias médicas -->
+        <div class="perm-card">
+          <div class="perm-icon"><span class="material-symbols-outlined">description</span></div>
+          <div class="perm-body">
+            <span class="perm-title">Historias médicas</span>
+            <span class="perm-desc">Crear nuevas historias y ver historias de pacientes.</span>
+            <div class="perm-checks">
+              <button class="perm-check" type="button" data-perm="his-crear" data-group="historias"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear historias médicas</span></button>
+              <button class="perm-check" type="button" data-perm="his-ver" data-group="historias"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver historias médicas</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Evoluciones médicas -->
+        <div class="perm-card">
+          <div class="perm-icon"><span class="material-symbols-outlined">article</span></div>
+          <div class="perm-body">
+            <span class="perm-title">Evoluciones médicas</span>
+            <span class="perm-desc">Crear nuevas evoluciones y ver evoluciones existentes de pacientes.</span>
+            <div class="perm-checks">
+              <button class="perm-check" type="button" data-perm="evo-crear" data-group="evoluciones"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear evoluciones médicas</span></button>
+              <button class="perm-check" type="button" data-perm="evo-ver" data-group="evoluciones"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver evoluciones médicas</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Analítica y métricas -->
+        <div class="perm-card">
+          <div class="perm-icon"><span class="material-symbols-outlined">monitoring</span></div>
+          <div class="perm-body">
+            <span class="perm-title">Analítica y métricas</span>
+            <span class="perm-desc">Ver métricas de desempeño de otros médicos y métricas propias del sistema.</span>
+            <div class="perm-checks">
+              <button class="perm-check" type="button" data-perm="ana-desempeno" data-group="analitica"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver desempeño de otros médicos</span></button>
+              <button class="perm-check" type="button" data-perm="ana-propias" data-group="analitica"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Ver métricas propias del sistema</span></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Administración -->
+        <div class="perm-card">
+          <div class="perm-icon"><span class="material-symbols-outlined">manage_accounts</span></div>
+          <div class="perm-body">
+            <span class="perm-title">Administración</span>
+            <span class="perm-desc">Crear nuevos usuarios, eliminar usuarios y asignar o remover permisos del equipo.</span>
+            <div class="perm-checks">
+              <button class="perm-check" type="button" data-perm="adm-crear" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Crear usuarios</span></button>
+              <button class="perm-check" type="button" data-perm="adm-eliminar" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Eliminar usuarios</span></button>
+              <button class="perm-check" type="button" data-perm="adm-asignar" data-group="administracion"><span class="box"><span class="material-symbols-outlined">check_box_outline_blank</span></span><span class="lbl">Asignar y remover permisos</span></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pw-footer">
+      <button class="bt-text" id="rolCancel" type="button"><span>Cancelar</span></button>
+      <button class="bt-tonal" id="rolSave" type="button"><span>Guardar cambios</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Editar campo de usuario (Detalle) ════════════════════ -->
+<div class="scrim" id="duEditScrim" aria-hidden="true">
+  <div class="pw-card edit-card" role="dialog" aria-modal="true" aria-labelledby="duEditTitle">
+    <div class="pw-head">
+      <div class="pw-titles">
+        <span class="pw-title" id="duEditTitle">Editar campo</span>
+        <span class="pw-sub" id="duEditSub">Actualice el valor y guarde los cambios.</span>
+      </div>
+      <button class="pw-close" id="duEditClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="pw-body" id="duEditBody"></div>
+    <div class="pw-footer">
+      <button class="bt-text" id="duEditCancel" type="button"><span>Cancelar</span></button>
+      <button class="bt-tonal" id="duEditSave" type="button"><span>Guardar</span></button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Desempeño médico (métricas) ════════════════════ -->
+<div class="scrim" id="duModalScrim" aria-hidden="true">
+  <div class="du-modal" role="dialog" aria-modal="true" aria-labelledby="duModalTitle">
+    <!-- Header dialog (DS) · sin barra de progreso -->
+    <div class="hd">
+      <div class="hd-top">
+        <div class="hd-title" id="duModalTitle">Desempeño médico</div>
+        <button class="hd-close" id="duModalClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+      </div>
+    </div>
+    <div class="du-modal-body" id="duModalBody"></div>
+    <!-- Footer dialog (DS) · Large · con acción izquierda -->
+    <div class="ft ft--large">
+      <div class="ft-left"><button class="bt bt-text-brand" id="duModalReportar" type="button">Reportar problema</button></div>
+      <div class="ft-right">
+        <button class="bt bt-text-brand" id="duModalCerrar" type="button">Cerrar</button>
+        <button class="bt bt-filled" id="duModalEditar" type="button"><span class="material-symbols-outlined">edit</span>Editar usuario</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Modal · Nuevo seguimiento ════════════════════ -->
+<div class="scrim" id="nsScrim" aria-hidden="true">
+  <div class="du-modal ns-modal" role="dialog" aria-modal="true" aria-labelledby="nsTitle" data-screen-label="Nuevo seguimiento">
+    <!-- Header dialog (DS) · con barra de progreso -->
+    <div class="hd">
+      <div class="hd-top">
+        <div class="hd-title" id="nsTitle">Nuevo seguimiento</div>
+        <button class="hd-close" id="nsClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+      </div>
+      <div class="hd-progress">
+        <span class="pg-label">Seguimientos disponibles: <span id="nsAvail">50</span>/<span id="nsTotal">100</span></span>
+        <div class="pg-track"><div class="pg-fill" id="nsFill" style="width: 50%"></div></div>
+      </div>
+    </div>
+
+    <!-- Body · Input search -->
+    <div class="ns-body">
+      <div class="ns-field">
+        <label class="ns-label" for="nsDni">Documento/DNI del paciente</label>
+        <div class="ns-search" id="nsSearch">
+          <input class="ns-value" id="nsDni" type="text" inputmode="numeric" autocomplete="off" placeholder="Escriba número de documento/DNI del paciente" aria-label="Documento/DNI del paciente">
+          <button class="ns-trail" id="nsTrail" type="button" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
+          <div class="ns-menu" id="nsMenu" role="listbox" hidden></div>
+        </div>
+        <div class="ns-hint" id="nsHint">Buscamos al paciente en su lista activa a medida que escribe.</div>
+      </div>
+    </div>
+
+    <!-- Footer dialog (DS) · Large · con acción izquierda -->
+    <div class="ft ft--large">
+      <div class="ft-left"><button class="bt bt-text-brand" id="nsReportar" type="button">Reportar problema</button></div>
+      <div class="ft-right">
+        <button class="bt bt-text-brand" id="nsCancelar" type="button">Cancelar</button>
+        <button class="bt bt-filled" id="nsCrear" type="button">Crear seguimiento</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ Dialog · Próximos seguimientos ════════════════════ -->
+<div class="scrim" id="psScrim" aria-hidden="true">
+  <div class="du-modal ps-modal" role="dialog" aria-modal="true" aria-labelledby="psTitle" data-screen-label="Próximos seguimientos">
+    <!-- Header dialog (DS) -->
+    <div class="hd">
+      <div class="hd-top">
+        <div class="hd-title" id="psTitle">Próximos seguimientos</div>
+        <button class="hd-close" id="psClose" type="button" aria-label="Cerrar"><span class="material-symbols-outlined">close</span></button>
+      </div>
+    </div>
+
+    <!-- Body · Accordion + Progress bar + Outlined button -->
+    <div class="du-modal-body">
+      <div class="ps-accordion" id="psAccordion"></div>
+      <div class="ps-avail">
+        <span class="pg-label">Seguimientos disponibles: 50/100</span>
+        <div class="pg-track"><div class="pg-fill" style="width: 50%"></div></div>
+      </div>
+      <div class="ps-add-row">
+        <button class="ps-add" id="psAdd" type="button"><span class="material-symbols-outlined">add</span>Agregar seguimiento</button>
+      </div>
+    </div>
+
+    <!-- Footer dialog (DS) · Large · acción izquierda -->
+    <div class="ft ft--large">
+      <div class="ft-left"><button class="bt bt-text-brand" id="psReportar" type="button">Reportar problema</button></div>
+      <div class="ft-right"></div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/app.js"></script>
+<script type="module" src="/perfil.js"></script>
+<script type="module" src="/usuario.js"></script>
+<script type="module" src="/paciente.js"></script>
+<script type="module" src="/seguimiento.js"></script>
+<script type="module" src="/seguimientos.js"></script>
+<script type="module" src="/alertas.js"></script>
+<script type="module" src="/seguimiento-detalle.js"></script>
+<script type="module" src="/proximos-seguimientos.js"></script>
+
+</body>
 </html>
+
+<style id="__om-edit-overrides">
+#perfRows >div:nth-child(1) { border-width: 1px 0px 0px !important }
+#heRows >div:nth-child(1) { border-radius: 0px !important }
+#heRows >div:nth-child(1) { border-width: 0px 1px 1px !important }
+#heRows >div:nth-child(1) { border-width: 0px 0px 1px !important }
+#heRows >div:nth-child(2) { border-width: 0px 0px 1px !important }
+#heRows >div:nth-child(2) { border-radius: 0px !important }
+#heRows >div:nth-child(3) { border-width: 0px 0px 1px !important }
+#heRows >div:nth-child(3) { border-radius: 0px !important }
+#heRows >div:nth-child(4) { border-width: 0px 1px 1px !important }
+#heRows >div:nth-child(4) { border-width: 0px 0px 1px !important }
+#heRows >div:nth-child(5) { border-width: 0px 1px 1px !important }
+#heRows >div:nth-child(5) { border-width: 0px 0px 1px !important }
+#heRows >div:nth-child(6) { border-width: 0px 1px 1px !important }
+#heRows >div:nth-child(7) { border-width: 0px 0px 1px 1px !important }
+#heRows >div:nth-child(7) { border-radius: 0px !important }
+#heRows >div:nth-child(8) { border-width: 0px 0px 1px 1px !important }
+#heRows >div:nth-child(8) { border-radius: 0px !important }
+#heRows >div:nth-child(9) { border-width: 0px 0px 1px 1px !important }
+#heRows >div:nth-child(9) { border-radius: 0px !important }
+#heRows >div:nth-child(10) { border-width: 0px 0px 1px 1px !important }
+#heRows >div:nth-child(10) { border-width: 0px 0px 1px !important; border-radius: 0px !important }
+#duPage [aria-label="Editar rol del usuario"] { border-width: 0px !important }
+#ipPage [role="tablist"] { background-color: rgb(255, 255, 255) !important }
+#ipPage [role="tablist"] { padding: 16px 0px 16px 16px !important }
+#ipPage [role="tablist"] { padding: 16px 0px !important }
+#ipTabHis { background-color: rgb(255, 255, 255) !important }
+</style>

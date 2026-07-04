@@ -1,0 +1,280 @@
+/* =====================================================================
+   VIEW · Detalle de usuario — estilos
+   Apegado al Secuence DS. Reutiliza .card / .perfil-card / .perfil-body /
+   .li / .rol-chip / .status-chip / .btn*. Sólo añade lo propio del
+   detalle: cabecera de identidad, métricas (stat cards · barras · donut)
+   y resumen de permisos por grupo.
+   ===================================================================== */
+
+/* La vista hereda el padding estándar de .view.is-active; topbar y página
+   comparten el mismo max-width para alinearse con las tarjetas. */
+.du-topbar { max-width: 1640px; width: 100%; margin: 0 auto; box-sizing: border-box; }
+.du-page {
+  max-width: 1640px; width: 100%; margin: 0 auto; box-sizing: border-box;
+  display: flex; flex-direction: column; gap: var(--space-8);
+}
+.du-topbar .topbar-title { white-space: nowrap; }
+.du-topbar .topbar-tools { gap: var(--space-3); }
+
+/* Filas clickeables que abren "Detalle de usuario" */
+.t-row, .u-row { cursor: pointer; }
+
+/* ─────────────────────────────────────────────────────────────────
+   Modal grande · Desempeño médico (métricas)
+   Reutiliza la shell .scrim; .du-modal es la tarjeta flotante.
+   ───────────────────────────────────────────────────────────────── */
+.du-modal {
+  box-sizing: border-box;
+  width: min(744px, 100%);
+  max-height: calc(100vh - var(--space-12));
+  background: var(--bg-surface-primary);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-5xl);             /* 28px */
+  box-shadow: var(--shadow-3);
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.scrim.is-open .du-modal { animation: dlg-in 200ms cubic-bezier(0.4,0,0.2,1); }
+@media (prefers-reduced-motion: reduce) { .scrim.is-open .du-modal { animation: none; } }
+
+/* ── Header dialog (DS) · sin barra de progreso ── */
+.du-modal .hd {
+  flex: none; display: flex; flex-direction: column; gap: var(--space-4);
+  padding: var(--space-8);
+}
+.du-modal .hd-top { display: flex; align-items: flex-start; gap: var(--space-2); }
+.du-modal .hd-title {
+  flex: 1; min-width: 0;
+  font: var(--font-weight-bold) var(--font-size-3xl)/var(--line-height-3xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); text-wrap: pretty;
+}
+.du-modal .hd-close {
+  flex: none; width: 56px; height: 56px; border: 0; padding: var(--space-4);
+  background: transparent; border-radius: var(--radius-full);
+  display: grid; place-items: center; cursor: pointer; color: var(--text-primary);
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.du-modal .hd-close .material-symbols-outlined { font-size: 24px; }
+.du-modal .hd-close:hover  { background: var(--bg-surface-secundary); }
+.du-modal .hd-close:active { background: var(--color-neutral-100); }
+
+.du-modal-body {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto;
+  padding: var(--space-1) var(--space-8) 0;
+  display: flex; flex-direction: column; gap: var(--space-6);
+  background: var(--bg-surface-primary);
+}
+/* Un único scroll vertical para toda la modal: las tarjetas conservan su
+   altura natural (no se encogen) y el body es el que desplaza. */
+.du-modal-body > * { flex: 0 0 auto; }
+
+/* ── Footer dialog (DS) · Size=Large · acción izquierda ── */
+.du-modal .ft {
+  flex: none; display: flex; justify-content: space-between; align-items: center;
+  gap: var(--space-4); flex-wrap: wrap;
+}
+.du-modal .ft--large { padding: var(--space-8); }
+.du-modal .ft-left  { display: flex; align-items: center; }
+.du-modal .ft-right { display: flex; gap: var(--space-4); justify-content: flex-end; align-items: center; flex-wrap: wrap; }
+.du-modal .bt {
+  box-sizing: border-box; height: 56px; border: 0; border-radius: var(--radius-full);
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1), color 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.du-modal .bt-text-brand { padding: 0 var(--space-3); background: transparent; color: var(--color-purple-400); }
+.du-modal .bt-text-brand:hover  { color: var(--color-purple-300); }
+.du-modal .bt-text-brand:active { color: var(--color-purple-500); }
+.du-modal .bt-filled { padding: 0 var(--space-4); background: var(--color-purple-400); color: var(--text-invert); }
+.du-modal .bt-filled:hover  { background: var(--color-purple-450); }
+.du-modal .bt-filled:active { background: var(--color-purple-500); }
+.du-modal .bt-filled .material-symbols-outlined { font-size: 20px; }
+
+/* Tarjetas internas: el cuerpo ahora es superficie clara · grid a 2 col por el ancho 744 */
+.du-modal-body .du-metrics-card .du-stats { grid-template-columns: repeat(2, 1fr); }
+@media (max-width: 560px) {
+  .du-modal-body .du-metrics-card .du-stats { grid-template-columns: 1fr; }
+}
+
+/* Acciones compactas en la barra superior */
+.du-topbar .btn { height: 44px; padding: 0 var(--space-4); }
+.du-topbar .btn .material-symbols-outlined { font-size: 20px; }
+
+/* Botón destructivo (Eliminar) */
+.btn-danger {
+  background: #FFFFFF; color: var(--text-error);
+  border: var(--stroke-default) solid var(--border-error);
+}
+.btn-danger:hover  { background: var(--bg-error-tertiary); }
+.btn-danger:active { background: var(--bg-error-secundary); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Cabecera de identidad
+   ───────────────────────────────────────────────────────────────── */
+.du-identity {
+  position: relative;
+  display: flex; align-items: center; gap: var(--space-5);
+  padding: var(--space-5) var(--space-6);
+}
+.du-id-edit {
+  position: absolute; top: var(--space-4); right: var(--space-4);
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 1px solid var(--border-secundary);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-primary);
+  color: var(--icon-secundary);
+  cursor: pointer;
+  transition: background-color 120ms ease, color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+}
+.du-id-edit:hover { background: var(--bg-surface-brand); border-color: var(--border-brand); color: var(--icon-brand); }
+.du-id-edit:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.du-id-edit .material-symbols-outlined { font-size: 20px; }
+.du-id-avatar {
+  flex: none; width: 72px; height: 72px; border-radius: var(--radius-full);
+  background: var(--bg-surface-brand-selected); color: var(--text-brand);
+  display: grid; place-items: center;
+  font: var(--font-weight-semibold) var(--font-size-xxl)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+}
+.du-id-main { min-width: 0; display: flex; flex-direction: column; gap: var(--space-2); }
+.du-id-name {
+  margin: 0;
+  font: var(--font-weight-bold) var(--font-size-xxl)/var(--line-height-xxl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.du-id-chips { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.du-id-meta { display: flex; align-items: center; gap: var(--space-5); flex-wrap: wrap; margin-top: var(--space-1); }
+.du-id-mi {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+}
+.du-id-mi .material-symbols-outlined { font-size: 18px; color: var(--icon-tertiary); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Grid de tarjetas de información (2 columnas)
+   ───────────────────────────────────────────────────────────────── */
+.du-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); align-items: start; }
+
+/* ─────────────────────────────────────────────────────────────────
+   Métricas — stat cards
+   ───────────────────────────────────────────────────────────────── */
+.du-metrics-card .perfil-body { gap: var(--space-6); }
+.du-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.du-stats.grow { grid-template-columns: repeat(3, minmax(0, 1fr)); flex: 1 1 auto; }
+.du-stat {
+  display: flex; flex-direction: column; gap: var(--space-2);
+  padding: var(--space-4);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-xl); background: var(--bg-surface-secundary);
+}
+.du-stat.is-accent { background: var(--bg-surface-brand); border-color: var(--border-brand); }
+.du-stat-label {
+  font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-xs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-eyebrow); text-transform: uppercase; color: var(--text-tertiary);
+}
+.du-stat-value {
+  font: var(--font-weight-bold) var(--font-size-3xl)/var(--line-height-3xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.du-stat.is-accent .du-stat-value { color: var(--text-brand); }
+
+/* Barras horizontales (porcentajes) */
+.du-bars { display: flex; flex-direction: column; gap: var(--space-3); }
+.du-bar { display: grid; grid-template-columns: 220px 1fr 56px; align-items: center; gap: var(--space-4); }
+.du-bar-label {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.du-bar-track { height: 10px; border-radius: var(--radius-full); background: var(--bg-surface-secundary); overflow: hidden; }
+.du-bar-fill { height: 100%; border-radius: var(--radius-full); background: var(--bg-fill-accent-primary); }
+.du-bar-pct {
+  text-align: right;
+  font: var(--font-weight-semibold) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+
+/* Sub-encabezado dentro de métricas (Médico administrador) */
+.du-sub-head {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding-top: var(--space-4); margin-top: var(--space-1);
+  border-top: var(--stroke-default) solid var(--border-primary);
+  font: var(--font-weight-semibold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.du-sub-head .material-symbols-outlined { font-size: 22px; color: var(--icon-brand); }
+
+.du-admin-row { display: flex; gap: var(--space-6); align-items: center; flex-wrap: wrap; }
+
+/* Donut (activos vs inactivos) */
+.du-donut-wrap { display: flex; align-items: center; gap: var(--space-4); flex: none; }
+.du-donut { width: 120px; height: 120px; flex: none; }
+.du-donut-num { font: var(--font-weight-bold) 26px/1 var(--font-family-geist); fill: var(--text-primary); }
+.du-donut-cap { font: var(--font-weight-regular) 11px/1 var(--font-family-geist); fill: var(--text-tertiary); text-transform: uppercase; letter-spacing: .08em; }
+.du-donut-legend { display: flex; flex-direction: column; gap: var(--space-2); }
+.du-donut-legend .lg {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.du-donut-legend .dot { width: 10px; height: 10px; border-radius: var(--radius-full); }
+.du-donut-legend .dot.on  { background: var(--bg-fill-accent-primary); }
+.du-donut-legend .dot.off { background: var(--border-primary); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Resumen de permisos por grupo
+   ───────────────────────────────────────────────────────────────── */
+.du-perms { display: flex; flex-direction: column; }
+.du-perm {
+  display: grid; grid-template-columns: 36px 1fr auto auto; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-top: var(--stroke-default) solid var(--border-primary);
+}
+.du-perm:first-child { border-top: 0; }
+.du-perm-ico {
+  width: 36px; height: 36px; border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  background: var(--bg-surface-secundary); color: var(--icon-secundary);
+}
+.du-perm-ico .material-symbols-outlined { font-size: 20px; }
+.du-perm-name {
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.du-perm-count {
+  font: var(--font-weight-semibold) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  color: var(--text-tertiary); font-variant-numeric: tabular-nums;
+}
+.du-perm-status {
+  height: 26px; padding: 0 var(--space-3); border-radius: var(--radius-full);
+  display: inline-flex; align-items: center;
+  font: var(--font-weight-medium) var(--font-size-xs)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); white-space: nowrap;
+}
+.du-perm.is-full    .du-perm-status { background: var(--bg-success-tertiary); color: var(--color-green-650); }
+.du-perm.is-full    .du-perm-ico    { background: var(--bg-success-tertiary); color: var(--color-green-650); }
+.du-perm.is-partial .du-perm-status { background: var(--bg-surface-brand); color: var(--text-brand); }
+.du-perm.is-partial .du-perm-ico    { background: var(--bg-surface-brand); color: var(--text-brand); }
+.du-perm.is-none    .du-perm-status { background: var(--bg-surface-secundary); color: var(--text-tertiary); }
+.du-perm.is-none    .du-perm-name   { color: var(--text-tertiary); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 1240px) {
+  .du-stats { grid-template-columns: repeat(2, 1fr); }
+  .du-stats.grow { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 1100px) {
+  .du-grid2 { grid-template-columns: 1fr; gap: var(--space-6); }
+  .du-bar { grid-template-columns: 160px 1fr 48px; }
+  .du-admin-row { flex-direction: column; align-items: stretch; }
+}
+@media (max-width: 720px) {
+  .du-identity { flex-direction: column; align-items: flex-start; }
+  .du-stats, .du-stats.grow { grid-template-columns: 1fr 1fr; }
+  .du-bar { grid-template-columns: 1fr; gap: var(--space-1); }
+  .du-bar-pct { text-align: left; }
+  .du-topbar .topbar-title { white-space: normal; }
+}

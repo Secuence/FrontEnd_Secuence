@@ -1,0 +1,446 @@
+/* =====================================================================
+   VIEW · Mi perfil
+   Apegado al Secuence DS. Reutiliza: .card / .card-header, Form inputs
+   (form-inputs.css · .ff), Input·Select (.ff-select), botones (.btn*),
+   y el diálogo System status (.dlg / openStatusDialog).
+   Componentes portados verbatim del DS:
+     · Picture uploader  (preview/picture-uploader.html)
+     · Slide toggle      (preview/slide-toggle.html)
+   ===================================================================== */
+
+.view[data-view="mi-perfil"].is-active { padding: 0; gap: 0; }
+
+/* Topbar alineado con las tarjetas: mismo max-width y centrado que .perfil-page */
+.view[data-view="mi-perfil"] .topbar {
+  max-width: 1640px;
+  width: 100%;
+  margin: 0 auto var(--space-2);
+  box-sizing: border-box;
+}
+
+.perfil-page {
+  max-width: 1640px;
+  margin: 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  padding: var(--space-10) var(--space-12) var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* Section card — reuses the DS card surface */
+.perfil-card { border-radius: var(--radius-xl); }
+.perfil-body {
+  padding: var(--space-6) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.perfil-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-5); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Picture uploader (DS · preview/picture-uploader.html)
+   358×140 → here fills its column, min-height 140.
+   ───────────────────────────────────────────────────────────────── */
+.pu-field { display: flex; flex-direction: column; gap: var(--space-2); }
+.pu-label {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+
+.picture-uploader {
+  position: relative;
+  width: 100%;
+  min-height: 140px;
+  border-radius: var(--radius-lg);                 /* 8px */
+  box-sizing: border-box;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: var(--space-4);
+  overflow: hidden;
+}
+/* Empty */
+.picture-uploader.is-empty {
+  background: var(--bg-surface-brand);             /* #FBF3FF */
+  border: var(--stroke-default) dashed var(--border-tertiary);
+}
+.picture-uploader.is-empty .preview-icon {
+  position: absolute;
+  left: var(--space-4); top: var(--space-3);
+  width: 112px; height: 112px;
+  color: var(--color-purple-300);                  /* #B388C9 decorative */
+  display: grid; place-items: center;
+  pointer-events: none;
+}
+.picture-uploader.is-empty .preview-icon .material-symbols-outlined {
+  font-size: 112px; font-variation-settings: 'wght' 300; line-height: 1;
+}
+/* Filled — background-image set inline by JS */
+.picture-uploader.is-filled {
+  background-color: var(--bg-surface-brand);
+  background-size: cover; background-position: center; background-repeat: no-repeat;
+  border: var(--stroke-default) solid var(--border-secundary);   /* #D9D9D9 */
+}
+.picture-uploader.is-filled::before {
+  content: ""; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(11,11,11,0) 40%, rgba(11,11,11,0.28) 100%);
+  pointer-events: none;
+}
+
+/* Action button — Filled-tonal, large, leading icon */
+.pu-action {
+  position: relative;
+  height: 56px;
+  padding: 0 var(--space-6) 0 var(--space-5);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-brand);             /* #FBF3FF */
+  color: var(--text-primary);
+  border: 0; cursor: pointer;
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.pu-action:hover  { background: var(--bg-fill-tonal-hovered); color: var(--text-secundary-hovered); }
+.pu-action:active { background: var(--bg-fill-tonal-pressed); color: var(--text-primary); }
+.pu-action:focus-visible { outline: none; background: var(--bg-fill-tonal-hovered); box-shadow: 0 0 0 1px var(--border-brand); }
+.pu-action .material-symbols-outlined { font-size: 24px; }
+
+/* Remove button — only on filled */
+.pu-remove {
+  position: absolute; top: var(--space-3); right: var(--space-3);
+  width: 40px; height: 40px; border: 0; border-radius: var(--radius-full);
+  background: rgba(252,252,252,0.92); color: var(--text-primary);
+  display: none; align-items: center; justify-content: center; cursor: pointer;
+  transition: background 120ms ease;
+}
+.picture-uploader.is-filled .pu-remove { display: inline-flex; }
+.pu-remove:hover { background: #FFFFFF; color: var(--text-error); }
+.pu-remove .material-symbols-outlined { font-size: 20px; }
+.pu-input { display: none; }
+
+/* Firma + sello — dos uploaders lado a lado */
+.pu-grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+@media (max-width: 720px) { .pu-grid2 { grid-template-columns: 1fr; } }
+
+/* ─────────────────────────────────────────────────────────────────
+   Slide toggle (DS · preview/slide-toggle.html) — account active row
+   ───────────────────────────────────────────────────────────────── */
+.toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface-secundary);         /* #F7F7F7 */
+}
+.toggle-row .tr-text { display: flex; flex-direction: column; gap: var(--space-0_5); min-width: 0; }
+.toggle-row .tr-title {
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.toggle-row .tr-sub {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+}
+/* DS · FigmaSlideToggle (refined to Figma spec):
+   52×32 track, 16×16 thumb at 8px inset → 20px travel, neutral-350 off /
+   purple-400 on, 160ms ease. Disabled = dimmed + not-allowed. */
+.track {
+  position: relative; width: 52px; height: 32px; flex: 0 0 auto;
+  border-radius: var(--radius-full); border: 0; cursor: pointer; padding: 0;
+  background: var(--bg-surface-tertiary);
+  transition: background 160ms cubic-bezier(0.4,0,0.2,1);
+}
+.track.on { background: var(--bg-fill-accent-primary); }
+.track::after {
+  content: ""; position: absolute; top: 8px; left: 8px;
+  width: 16px; height: 16px; border-radius: var(--radius-full);
+  background: var(--bg-surface-primary);
+  transform: translateX(0);
+  transition: transform 160ms cubic-bezier(0.4,0,0.2,1);
+}
+.track.on::after { transform: translateX(20px); }
+.track:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.track:disabled,
+.track[aria-disabled="true"] { cursor: not-allowed; opacity: 0.6; }
+
+/* ─────────────────────────────────────────────────────────────────
+   Configuración de cuenta — info rows (rol chip + change password)
+   ───────────────────────────────────────────────────────────────── */
+.info-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-lg);
+}
+.info-row .ir-text { display: flex; flex-direction: column; gap: var(--space-0_5); min-width: 0; }
+.info-row .ir-label {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+}
+.info-row .ir-value {
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.rol-chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  height: 32px; padding: 0 var(--space-3);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-brand-selected);    /* #EEE0F5 */
+  color: var(--text-brand);
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+}
+.rol-chip .material-symbols-outlined { font-size: 18px; }
+
+/* footer (Cancelar / Guardar) — reuses .nu-footer pattern */
+.perfil-footer {
+  display: flex; align-items: center; justify-content: flex-end;
+  gap: var(--space-6); flex-wrap: wrap;
+  padding-top: var(--space-2);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Change-password modal — DS surface (28px) + Form inputs + footer
+   Uses the shared .scrim shell.
+   ───────────────────────────────────────────────────────────────── */
+.pw-card {
+  box-sizing: border-box;
+  width: 520px; max-width: 100%;
+  background: var(--bg-surface-primary);
+  border-radius: var(--radius-5xl);                /* 28px */
+  box-shadow: var(--shadow-3);
+  overflow: hidden;
+}
+.scrim.is-open .pw-card { animation: dlg-in 200ms cubic-bezier(0.4,0,0.2,1); }
+.pw-head {
+  display: flex; align-items: flex-start; gap: var(--space-3);
+  padding: var(--space-8) var(--space-8) var(--space-2);
+}
+.pw-head .pw-titles { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.pw-title {
+  font: var(--font-weight-bold) var(--font-size-xl)/var(--line-height-xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.pw-sub {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.pw-close {
+  flex: none; width: 44px; height: 44px; border: 0; background: transparent;
+  border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--text-primary); transition: background 120ms ease;
+}
+.pw-close:hover { background: var(--bg-surface-secundary); }
+.pw-body { padding: var(--space-4) var(--space-8) var(--space-2); display: flex; flex-direction: column; gap: var(--space-5); }
+.pw-footer { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-4); padding: var(--space-4) var(--space-8) var(--space-8); }
+
+/* password field trailing toggle re-uses .ff-icon (cursor pointer) */
+.ff-icon[data-pw-toggle] { cursor: pointer; }
+
+/* ─────────────────────────────────────────────────────────────────
+   List variant (DS · preview/list-variants.html) — Lines=2, sin divisores
+   Cada dato del perfil es una fila: ícono guía · título (label) · valor,
+   con botón-ícono "Editar" que abre el modal de edición.
+   ───────────────────────────────────────────────────────────────── */
+.perfil-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1) var(--space-9);
+}
+.li {
+  display: flex; flex-direction: row; gap: var(--space-1);
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-md);
+}
+.li .lead {
+  flex: 0 0 24px; width: 24px;
+  padding: var(--space-1_5) 0;
+  display: flex; align-items: flex-start; justify-content: center;
+}
+.li .lead .material-symbols-outlined {
+  font-size: 24px; color: var(--text-secundary);
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.li .main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.li .titlerow { display: flex; flex-direction: row; gap: var(--space-2); align-items: center; min-height: 36px; }
+.li .title {
+  flex: 1 1 auto; min-width: 0;
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.li .value {
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); text-wrap: pretty;
+}
+.li .value.clamp-1 { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1; overflow: hidden; }
+.li .value .rol-chip { margin-top: var(--space-0_5); }
+
+/* trailing icon button — State=Enabled, Size=Small · 36px (DS) */
+.li-edit {
+  flex: 0 0 36px; width: 36px; height: 36px;
+  border: 0; padding: 0; background: transparent;
+  border-radius: var(--radius-full);
+  display: grid; place-items: center; cursor: pointer;
+  color: var(--text-primary);
+  transition: background-color 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.li-edit .material-symbols-outlined { font-size: 24px; }
+.li-edit:hover  { background: var(--bg-surface-secundary); }   /* #F7F7F7 */
+.li-edit:active { background: var(--color-neutral-100); }      /* #EBEBEB */
+.li-edit:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ─────────────────────────────────────────────────────────────────
+   Edit modal — reuses .pw-card shell but allows the select dropdown
+   to overflow the rounded card.
+   ───────────────────────────────────────────────────────────────── */
+.edit-card { width: 480px; overflow: visible; }
+.edit-card .ff-select .ff-box { cursor: pointer; }
+
+/* Teléfono = código país (select) + número (form input) lado a lado */
+.edit-card .phone-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: var(--space-4);
+  align-items: start;
+}
+@media (max-width: 520px) {
+  .edit-card .phone-grid { grid-template-columns: 1fr; }
+}
+
+/* Input · Select "Open con búsqueda" (DS) — search pinned + scroll list */
+.edit-card .ds-search-select .nu-menu { overflow: hidden; }
+.edit-card .menu-search {
+  display: flex; align-items: center; gap: var(--space-2);
+  height: 48px;
+  padding: 0 var(--space-4);
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+  flex: 0 0 auto;
+}
+.edit-card .menu-search .material-symbols-outlined {
+  flex: 0 0 auto; font-size: 20px; color: var(--color-neutral-450);
+}
+.edit-card .menu-search input {
+  flex: 1; min-width: 0;
+  border: 0; outline: none; background: transparent; padding: 0;
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+.edit-card .menu-search input::placeholder { color: var(--text-tertiary); }
+.edit-card .menu-scroll {
+  max-height: 224px;
+  overflow-y: auto;
+  display: flex; flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-secundary) transparent;
+}
+.edit-card .menu-scroll::-webkit-scrollbar { width: 8px; }
+.edit-card .menu-scroll::-webkit-scrollbar-thumb {
+  background: var(--border-secundary);
+  border-radius: 99px;
+  border: 2px solid var(--bg-surface-primary);
+}
+.edit-card .menu-item .check { margin-left: auto; font-size: 20px; color: var(--text-brand); }
+.edit-card .menu-item.is-active { background: var(--color-purple-50); }
+.edit-card .menu-empty {
+  padding: 14px var(--space-4);
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .perfil-grid2, .perfil-list { grid-template-columns: 1fr; }
+  .perfil-page { padding: var(--space-8) var(--space-10) var(--space-10); }
+}
+@media (max-width: 720px) {
+  .perfil-page { padding: var(--space-6); }
+  .toggle-row, .info-row { flex-direction: row; }
+}
+
+/* ─────────────────────────────────────────────────────────────────
+   Modal · Cambiar rol del usuario (Mi perfil)
+   Reuses .pw-card shell; wider, with scrollable body + role picker +
+   read-only preset permissions (perm-card / perm-check from app.css).
+   ───────────────────────────────────────────────────────────────── */
+.rol-card { width: 680px; max-height: 88vh; display: flex; flex-direction: column; }
+.rol-card .pw-body { overflow-y: auto; gap: var(--space-6); padding-top: var(--space-5); padding-bottom: var(--space-4); }
+.rol-card .pw-body::-webkit-scrollbar { width: 8px; }
+.rol-card .pw-body::-webkit-scrollbar-thumb {
+  background: var(--border-secundary); border-radius: 99px;
+  border: 2px solid var(--bg-surface-primary);
+}
+
+/* Role picker — selectable radio cards */
+.rol-options { display: flex; flex-direction: column; gap: var(--space-3); }
+.rol-option {
+  display: flex; align-items: flex-start; gap: var(--space-4);
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--bg-surface-primary);
+  border: 1px solid var(--border-secundary);
+  border-radius: var(--radius-xl);
+  padding: var(--space-4);
+  transition: border-color 120ms ease, background-color 120ms ease, box-shadow 120ms ease;
+}
+.rol-option:hover { border-color: var(--border-tertiary); background: var(--bg-surface-secundary); }
+.rol-option.is-selected { border-color: var(--border-brand); background: var(--bg-surface-brand); }
+.rol-option:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.rol-option-ico {
+  flex: 0 0 44px; width: 44px; height: 44px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-secundary);
+  color: var(--icon-secundary);
+  font-size: 24px;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.rol-option.is-selected .rol-option-ico { background: var(--bg-surface-brand-selected); color: var(--icon-brand); }
+.rol-option-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.rol-option-name {
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.rol-option-desc {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  text-wrap: pretty;
+}
+.rol-option-radio { flex: 0 0 auto; font-size: 24px; color: var(--icon-tertiary); transition: color 120ms ease; }
+.rol-option.is-selected .rol-option-radio { color: var(--icon-brand); }
+
+/* Médico fields (Licencia + Foto) — shown when promoting an Administrador */
+.rol-medico { display: flex; flex-direction: column; gap: var(--space-5); }
+.rol-medico[hidden] { display: none; }
+.rol-medico .nu-drop.is-error { border-color: var(--border-error); background: var(--bg-error-tertiary); }
+.rol-medico .ff-support { color: var(--text-error); }
+
+/* Preset permisos block inside the modal */
+.rol-permisos { display: flex; flex-direction: column; gap: var(--space-4); }
+.rol-permisos .nu-permisos-head { display: flex; flex-direction: column; gap: var(--space-1_5); }
+.rol-permisos .nu-permisos-head .t {
+  font: var(--font-weight-bold) var(--font-size-l)/var(--line-height-l) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.rol-permisos .nu-permisos-head .s {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  text-wrap: pretty;
+}
+.rol-permisos .perm-checks { grid-template-columns: 1fr 1fr; }
+
+@media (max-width: 720px) {
+  .rol-permisos .perm-checks { grid-template-columns: 1fr; }
+}

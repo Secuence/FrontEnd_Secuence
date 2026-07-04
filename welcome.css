@@ -1,0 +1,382 @@
+/* =====================================================================
+   VIEW · Bienvenida — pantalla de bienvenida (Médico / Médico admin).
+   Se abre desde la alerta "¡Bienvenido al sistema de seguimiento
+   Secuence!" (Indicadores). Full-page: el drawer se oculta.
+   Estructura de layout; color / tipografía / espaciado desde tokens.
+   ===================================================================== */
+.view[data-view="bienvenida"].is-active { padding: 0; gap: 0; }
+
+.wlc-page {
+  max-width: 912px;
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6) var(--space-20);
+}
+
+/* Variantes por rol (Médico / Administrador) — alternadas por el Tweak */
+.wlc-variant[hidden] { display: none; }
+
+/* Asterisco de marca (bullet) */
+.wlc-ast { width: 20px; height: 20px; color: var(--text-brand); flex: none; }
+
+/* ───────────── Héroe ───────────── */
+.wlc-hero {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-2xl);
+  min-height: 248px;
+  background:
+    linear-gradient(80deg,
+      #E1007E 0%, #C20D80 18%, #A6208A 38%,
+      #8E3597 60%, #82439B 84%, #7C3F9A 100%);
+  display: flex;
+  box-shadow: var(--shadow-2);
+}
+.wlc-swirl {
+  position: absolute;
+  top: 50%; right: 0;
+  width: 72%; height: 200%;
+  transform: translateY(-50%);
+  background: url("bienvenida-assets/swirl.png") right center / cover no-repeat;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.wlc-doc {
+  position: absolute;
+  right: clamp(0px, 3%, 36px);
+  bottom: 0;
+  height: 102%;
+  width: auto;
+  object-fit: contain;
+  object-position: bottom right;
+  pointer-events: none;
+  -webkit-user-select: none; user-select: none;
+}
+/* La imagen del Administrador queda siempre pegada al margen derecho */
+#wlcAdmin .wlc-doc { right: 0; }
+.wlc-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 64%;
+  min-width: 0;
+  padding: var(--space-7) var(--space-8) var(--space-8);
+  display: flex;
+  flex-direction: column;
+}
+.wlc-back {
+  width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(252, 252, 252, 0.18);
+  color: var(--text-invert);
+  cursor: pointer;
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.wlc-back:hover { background: rgba(252, 252, 252, 0.30); }
+.wlc-back:focus-visible { outline: none; box-shadow: 0 0 0 var(--stroke-focused) rgba(252,252,252,0.45); }
+.wlc-back .material-symbols-outlined { font-size: 22px; }
+.wlc-title {
+  margin: auto 0 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-xxl);
+  line-height: var(--line-height-xxl);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-invert);
+  text-wrap: balance;
+}
+.wlc-sub {
+  margin: var(--space-2) 0 0;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: rgba(252, 252, 252, 0.92);
+}
+
+/* ───────────── Bloques de texto ───────────── */
+.wlc-lead-h2 {
+  margin: var(--space-10) 0 var(--space-4);
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-l);
+  line-height: var(--line-height-l);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.wlc-brand { color: var(--text-brand); }
+.wlc-link { color: var(--text-brand); font-weight: var(--font-weight-medium); }
+.wlc-link:hover { color: var(--text-brand-hovered); }
+
+.wlc-para {
+  margin: 0 0 var(--space-5);
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  text-wrap: pretty;
+}
+
+/* ───────────── Barras de capacidades ───────────── */
+.wlc-cap-list {
+  list-style: none; margin: 0 0 var(--space-10); padding: 0;
+  display: flex; flex-direction: column; gap: var(--space-2_5);
+}
+.wlc-cap {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3_5) var(--space-5);
+  background: var(--bg-surface-brand);
+  border-radius: var(--radius-lg);
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+
+/* ───────────── Trío de features ───────────── */
+.wlc-feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-6);
+  margin: 0 0 var(--space-12);
+}
+.wlc-feat-ico {
+  width: 48px; height: 48px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-xl);
+  background: var(--color-purple-50);
+  color: var(--icon-brand);
+  margin-bottom: var(--space-3);
+}
+.wlc-feat-ico .material-symbols-outlined { font-size: 26px; }
+.wlc-feat-h {
+  margin: 0 0 var(--space-1);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+.wlc-feat-p {
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+}
+
+/* ───────────── Embed del dashboard ───────────── */
+.wlc-dash {
+  margin: 0 0 var(--space-12);
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+}
+.wlc-dash img { display: block; width: 100%; height: auto; }
+
+/* ───────────── Lista de métricas (Indicadores) ───────────── */
+.wlc-lead-strong {
+  margin: 0 0 var(--space-5);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.wlc-mlist { list-style: none; margin: 0 0 var(--space-6); padding: 0; }
+.wlc-mitem {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: var(--space-3);
+  align-items: start;
+  padding: var(--space-4) 0;
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+}
+.wlc-mitem:first-child { padding-top: 0; }
+.wlc-mh {
+  margin: 0 0 var(--space-0_5);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+.wlc-mp {
+  margin: 0;
+  font-weight: var(--font-weight-regular);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+
+/* ───────────── Lista de métricas simple (una sola línea · Administrador) ───────────── */
+.wlc-mlist-simple { list-style: none; margin: 0 0 var(--space-6); padding: 0; }
+.wlc-mrow {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+}
+.wlc-mrow:first-child { padding-top: 0; }
+
+/* ───────────── Encabezados con barra ───────────── */
+.wlc-bar-h {
+  display: flex; align-items: center; gap: var(--space-3);
+  margin: var(--space-10) 0 var(--space-4);
+}
+.wlc-bar-h::before {
+  content: ""; flex: none;
+  width: var(--space-1); align-self: stretch; min-height: 24px;
+  background: var(--bg-fill-accent-primary);
+  border-radius: var(--radius-full);
+}
+.wlc-bar-h h2 {
+  margin: 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-m);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+
+/* ───────────── Pasos recomendados ───────────── */
+.wlc-steps { list-style: none; margin: 0; padding: 0; }
+.wlc-step {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: var(--space-3);
+  align-items: center;
+  padding: var(--space-4) 0;
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+}
+.wlc-step:first-child { padding-top: var(--space-1); }
+.wlc-step-label {
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.wlc-step-btn {
+  flex: none;
+  height: 36px;
+  padding: 0 var(--space-4);
+  border: var(--stroke-default) solid var(--border-secundary);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-primary);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-tight);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1), border-color 120ms cubic-bezier(0.4,0,0.2,1);
+}
+.wlc-step-btn:hover { background: var(--bg-surface-secundary); border-color: var(--border-tertiary); }
+.wlc-step-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+.wlc-closing {
+  margin: var(--space-4) 0 0;
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-s);
+  line-height: var(--line-height-m);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+
+/* ───────────── Responsivo ───────────── */
+@media (max-width: 720px) {
+  .wlc-page { padding: var(--space-6) var(--space-4) var(--space-16); }
+  .wlc-hero { min-height: 220px; }
+  .wlc-hero-content { width: 70%; padding: var(--space-5) var(--space-5) var(--space-6); }
+  .wlc-doc { opacity: 0.85; }
+  .wlc-title { font-size: var(--font-size-xl); line-height: var(--line-height-xl); }
+  .wlc-feat-grid { grid-template-columns: 1fr; gap: var(--space-7); }
+  .wlc-step { grid-template-columns: 20px 1fr; }
+  .wlc-step .wlc-step-btn { grid-column: 2; justify-self: start; margin-top: var(--space-1); }
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   Panel de Tweaks — switch de rol de la vista de bienvenida.
+   Sólo visible cuando el host activa el modo de edición.
+   ═════════════════════════════════════════════════════════════════════ */
+#wlcTweaks {
+  position: fixed; right: var(--space-5); bottom: var(--space-5);
+  width: 320px; max-width: calc(100vw - var(--space-10));
+  background: var(--bg-surface-primary);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-2xl); box-shadow: var(--shadow-3);
+  z-index: 99999; display: flex; flex-direction: column;
+  font-family: var(--font-family-geist); overflow: hidden;
+}
+#wlcTweaks[hidden] { display: none; }
+#wlcTweaks .tw-head {
+  display: flex; align-items: center; gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+}
+#wlcTweaks .tw-title {
+  flex: 1; font-weight: var(--font-weight-bold); font-size: var(--font-size-m);
+  line-height: var(--line-height-m); letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+#wlcTweaks .tw-close {
+  width: 32px; height: 32px; border: 0; background: transparent;
+  border-radius: var(--radius-full); display: grid; place-items: center;
+  cursor: pointer; color: var(--icon-secundary);
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+}
+#wlcTweaks .tw-close:hover { background: var(--bg-surface-secundary); }
+#wlcTweaks .tw-close .material-symbols-outlined { font-size: 20px; }
+#wlcTweaks .tw-body { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-5); }
+#wlcTweaks .tw-label {
+  font-size: var(--font-size-s); font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-s); letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary); margin-bottom: var(--space-1);
+}
+#wlcTweaks .tw-hint {
+  font-size: var(--font-size-xxs); line-height: var(--line-height-xs);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+  margin-top: var(--space-2);
+}
+/* Segmented control de rol */
+#wlcTweaks .tw-seg {
+  display: flex; flex-direction: column; gap: var(--space-1_5);
+}
+#wlcTweaks .tw-seg-btn {
+  display: flex; align-items: center; gap: var(--space-2_5);
+  height: 44px; padding: 0 var(--space-3);
+  border: var(--stroke-default) solid var(--border-secundary);
+  border-radius: var(--radius-md); background: var(--bg-surface-primary);
+  font-family: inherit; font-size: var(--font-size-s);
+  font-weight: var(--font-weight-medium); letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary); cursor: pointer; text-align: left;
+  transition: background 120ms cubic-bezier(0.4,0,0.2,1),
+              border-color 120ms cubic-bezier(0.4,0,0.2,1),
+              color 120ms cubic-bezier(0.4,0,0.2,1);
+}
+#wlcTweaks .tw-seg-btn:hover { background: var(--bg-surface-secundary); }
+#wlcTweaks .tw-seg-btn .tw-dot {
+  width: 16px; height: 16px; flex: none; border-radius: var(--radius-full);
+  border: var(--stroke-active) solid var(--border-tertiary);
+  display: grid; place-items: center;
+}
+#wlcTweaks .tw-seg-btn[aria-pressed="true"] {
+  background: var(--bg-surface-brand); border-color: var(--border-brand);
+  color: var(--text-brand);
+}
+#wlcTweaks .tw-seg-btn[aria-pressed="true"] .tw-dot {
+  border-color: var(--bg-fill-accent-primary);
+}
+#wlcTweaks .tw-seg-btn[aria-pressed="true"] .tw-dot::after {
+  content: ""; width: 8px; height: 8px; border-radius: var(--radius-full);
+  background: var(--bg-fill-accent-primary);
+}
+#wlcTweaks .tw-seg-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }

@@ -1,0 +1,103 @@
+/* =====================================================================
+   Secuence DS · Form inputs  (Figma "Input · Form field")
+   ---------------------------------------------------------------------
+   SINGLE SOURCE OF TRUTH for the form-input component.
+   Linked from the app screens (index.html) AND the DS card (_ds_inputs.html)
+   so they can never drift. Mirrors the design-system component verbatim
+   (project preview/inputs.html).
+
+   Outlined container · 56px · radius 4 · 1px hairline border.
+   Label is ALWAYS floated (notched at top, brand) in every state.
+   Placeholder is a visible hint inside the field. No focus glow.
+   States (add the class on .ff): is-hovered · is-focused · is-error · is-disabled.
+   ===================================================================== */
+
+.ff { position: relative; min-width: 0; }
+
+.ff-box {
+  position: relative;
+  height: 56px;
+  display: flex; align-items: center; gap: var(--space-1);
+  padding: 0 var(--space-4);
+  border: var(--stroke-default) solid var(--border-secundary);   /* #D9D9D9 */
+  border-radius: var(--radius-md);                               /* 4px */
+  background: transparent;
+  transition: border-color 120ms ease;
+}
+.ff-box:hover,
+.ff.is-hovered  .ff-box  { border-color: var(--color-neutral-650); }   /* #272727 */
+.ff-box:focus-within,
+.ff.is-focused  .ff-box  { border-color: var(--border-brand); }        /* #8D53AA · no glow */
+.ff.is-error    .ff-box  { border-color: var(--border-error); }        /* #C9006F */
+.ff.is-disabled .ff-box  {
+  border-color: var(--border-disabled);                          /* #BEBEBE */
+  background: var(--bg-surface-secundary);                       /* #F7F7F7 */
+}
+
+.ff-input {
+  flex: 1 1 auto; min-width: 0;
+  border: 0; outline: 0; padding: 0; background: transparent;
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);                                  /* #393939 */
+}
+.ff-box:hover .ff-input,
+.ff.is-hovered  .ff-input { color: var(--text-secundary-hovered); }    /* #4C4C4C */
+.ff.is-disabled .ff-input { color: var(--text-disabled); }            /* #767676 */
+/* Placeholder is a visible hint inside the field */
+.ff-input::placeholder { color: var(--text-tertiary); opacity: 1; }    /* #626262 */
+.ff.is-disabled .ff-input::placeholder { color: var(--text-disabled); }
+
+/* Floating label — always floated (notched top, brand) in every state */
+.ff-label {
+  position: absolute; left: var(--space-4); top: 0;
+  transform: translateY(-50%);
+  pointer-events: none;
+  padding: 0 var(--space-1);
+  background: var(--bg-surface-primary);                         /* #FCFCFC notch */
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);                                      /* #82439B */
+  white-space: nowrap;
+}
+.ff-label .req { color: var(--text-brand); font-weight: var(--font-weight-regular); }
+.ff.is-error .ff-label,
+.ff.is-error .ff-label .req { color: var(--text-error); }              /* #B10060 */
+.ff.is-disabled .ff-label {
+  color: var(--text-disabled);                                   /* #767676 */
+  background: var(--bg-surface-secundary);                       /* #F7F7F7 */
+}
+
+/* Suffix text */
+.ff-suffix {
+  flex: 0 0 auto;
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);                                   /* #626262 */
+}
+.ff.is-disabled .ff-suffix { color: var(--text-disabled); }
+
+/* Trailing icon */
+.ff-icon {
+  flex: 0 0 auto;
+  font-size: 24px;
+  color: var(--color-neutral-450);                               /* #767676 */
+  cursor: pointer;
+  user-select: none;
+}
+.ff-box:hover .ff-icon,
+.ff.is-hovered  .ff-icon { color: var(--text-secundary-hovered); }     /* #4C4C4C */
+.ff.is-error    .ff-icon { color: var(--color-pink-500); }             /* #990053 */
+.ff.is-disabled .ff-icon { color: var(--text-tertiary); cursor: not-allowed; }  /* #626262 */
+
+/* Supporting text */
+.ff-support {
+  padding: var(--space-1) var(--space-4);
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);                                  /* #393939 */
+}
+.ff-box:hover ~ .ff-support,
+.ff.is-hovered  .ff-support { color: var(--text-secundary-hovered); }
+.ff.is-error    .ff-support { color: var(--text-error); }              /* #B10060 */
+.ff.is-disabled .ff-support { color: var(--text-disabled); }

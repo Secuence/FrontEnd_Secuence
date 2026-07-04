@@ -1,0 +1,188 @@
+/* =====================================================================
+   Dialog · Próximos seguimientos (#psScrim)
+   Se abre al pulsar una tarjeta "Card open follow-up" en el Detalle de
+   seguimiento. Reutiliza la shell de modal (.du-modal: header/footer
+   dialog) y compone: Accordion (DS) con el calendario de preguntas de
+   cada seguimiento · Progress bar (DS) · Outlined button (DS).
+   Prefijo `ps-`.
+   ===================================================================== */
+
+/* ═════════════════════════════════════════════════════════════════
+   Altura del modal · el modal CRECE con su contenido y el scrim hace
+   scroll, igual que "Nuevo seguimiento". Necesario para que el dropdown
+   de Frecuencia (z-index 6) no quede recortado al editar. Sólo aplica a
+   #psScrim para no afectar a otros modales que comparten la shell.
+   ═════════════════════════════════════════════════════════════════ */
+#psScrim.is-open {
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+#psScrim .ps-modal {
+  margin: auto;
+  max-height: none;
+  overflow: visible;
+}
+#psScrim .du-modal-body { overflow: visible; }
+
+/* el cuerpo desplaza; el modal mantiene un alto máximo de la shell .du-modal */
+.ps-modal .du-modal-body { padding: var(--space-2) var(--space-8) var(--space-2); display: flex; flex-direction: column; gap: var(--space-6); }
+
+/* ── Accordion (DS) · contenedor con divisores internos ── */
+.ps-accordion {
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface-primary);
+  overflow: hidden;
+  padding: 0 var(--space-4);
+}
+.ps-fu { border-bottom: 1px solid var(--border-secundary); }
+.ps-fu:last-child { border-bottom: 0; }
+
+.ps-head {
+  display: flex; align-items: center; gap: var(--space-4);
+  padding: var(--space-4) 0;
+  cursor: pointer; width: 100%;
+  background: transparent; border: 0; text-align: left;
+}
+.ps-labels { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+.ps-title {
+  font: var(--font-weight-bold) var(--font-size-xl)/var(--line-height-xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+}
+.ps-sub {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+}
+.ps-chev {
+  flex: 0 0 40px; width: 40px; height: 40px;
+  display: grid; place-items: center;
+  border-radius: var(--radius-full);
+  color: var(--icon-primary);
+  transition: background-color 120ms ease, transform 200ms cubic-bezier(0.4,0,0.2,1);
+}
+.ps-head:hover .ps-chev { background: var(--color-neutral-50); }
+.ps-head:focus-visible { outline: none; }
+.ps-head:focus-visible .ps-chev { box-shadow: var(--shadow-focus); }
+.ps-fu.is-open .ps-chev { transform: rotate(180deg); }
+.ps-chev .material-symbols-outlined { font-size: 24px; }
+
+.ps-panel { padding: var(--space-2) 0 var(--space-5); }
+.ps-fu:not(.is-open) .ps-panel { display: none; }
+
+/* Preguntas · encabezado con lápiz de edición */
+.ps-q-head {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);
+  min-height: 40px; margin-bottom: var(--space-2);
+}
+.ps-q-title {
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+}
+.ps-q-edit {
+  flex: 0 0 40px; width: 40px; height: 40px;
+  border: 0; padding: 0; margin: 0;
+  border-radius: var(--radius-full);
+  background: transparent; color: var(--text-primary);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.ps-q-edit:hover { background: var(--color-neutral-100); }
+.ps-q-edit:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.ps-q-edit .material-symbols-outlined { font-size: 20px; }
+
+/* lista numerada de preguntas */
+.ps-qlist {
+  margin: 0; padding-left: 24px;
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.ps-qlist li {
+  font: var(--font-weight-regular) var(--font-size-m)/var(--line-height-l) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  text-wrap: pretty;
+  padding-left: var(--space-2);
+}
+
+/* ── Progress bar (DS) ── */
+.ps-avail { display: flex; align-items: center; gap: var(--space-4); }
+.ps-avail .pg-label {
+  flex: none;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  white-space: nowrap;
+}
+.ps-avail .pg-track {
+  flex: 1; min-width: 0; height: 8px;
+  background: var(--bg-surface-brand);
+  border-radius: var(--radius-full); overflow: hidden;
+}
+.ps-avail .pg-fill { height: 100%; background: var(--color-purple-400); border-radius: var(--radius-full); }
+
+/* ── Outlined button (DS) · Agregar seguimiento ── */
+.ps-add-row { display: flex; justify-content: center; padding: var(--space-2) 0; }
+.ps-add {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: 56px; padding: 0 24px;
+  border: 1px solid var(--border-secundary);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--text-secundary);
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.ps-add:hover { background: var(--bg-surface-brand); border-color: var(--border-brand); color: var(--text-brand); }
+.ps-add:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.ps-add .material-symbols-outlined { font-size: 20px; }
+
+/* footer: sólo acción izquierda (Reportar problema) */
+.ps-modal .ft-right { min-height: 0; }
+
+/* ── Modo edición inline ── */
+.ps-fu--editing { padding: var(--space-4) 0; }
+.ps-edit { display: flex; flex-direction: column; gap: var(--space-3); }
+.ps-edit-lbl, .ps-edit .ns-q-label {
+  font: var(--font-weight-regular) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.ps-edit-lbl { margin-top: var(--space-1); }
+
+/* mensaje de error (oculto salvo .is-error) */
+.ps-edit-err {
+  display: none; align-items: center; gap: var(--space-2);
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-error);
+}
+.ps-edit-err .material-symbols-outlined { font-size: 18px; }
+.ps-fu--editing.is-error .ps-edit-err { display: flex; }
+
+/* acciones Guardar / Cancelar */
+.ps-edit-actions { display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3); margin-top: var(--space-2); }
+.ps-cancel {
+  height: 44px; padding: 0 var(--space-4);
+  border: 0; background: transparent; cursor: pointer;
+  border-radius: var(--radius-full);
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+  transition: color 120ms ease;
+}
+.ps-cancel:hover { color: var(--text-secundary-hovered); }
+.ps-cancel:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.ps-save {
+  height: 44px; padding: 0 24px;
+  border: 0; border-radius: var(--radius-full); cursor: pointer;
+  background: var(--bg-fill-accent-primary); color: var(--text-invert);
+  font: var(--font-weight-medium) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  transition: background-color 120ms ease;
+}
+.ps-save:hover { background: var(--bg-fill-accent-hovered); }
+.ps-save:active { background: var(--bg-fill-accent-pressed); }
+.ps-save:focus-visible { outline: none; box-shadow: var(--shadow-focus); }

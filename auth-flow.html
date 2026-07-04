@@ -1,0 +1,3345 @@
+<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secuence</title>
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
+<style data-page-styles>
+  /* ===========================================================
+     Structural layout only. Every color / font / spacing value
+     is a token from colors_and_type.css. No hardcoded values.
+     =========================================================== */
+  *, *::before, *::after { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; height: 100%; }
+  body {
+    font-family: var(--font-family-geist);
+    color: var(--text-primary);
+    background: var(--bg-surface-primary);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  button { font-family: inherit; }
+  a { color: inherit; text-decoration: none; }
+
+  /* Material symbols sizing */
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+
+  /* ───────────── App shell (sidebar + topbar + view) ───────── */
+  #app {
+    display: grid;
+    grid-template-columns: 264px 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "sidebar topbar" "sidebar view";
+    min-height: 100vh;
+  }
+  #app[data-shell="hidden"] {
+    display: block;
+    min-height: 100vh;
+  }
+  #app[data-shell="hidden"] > #sidebar,
+  #app[data-shell="hidden"] > #topbar { display: none; }
+  #app[data-shell="hidden"] > #view {
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  /* ───────────── Sidebar ───────────── */
+  #sidebar {
+    grid-area: sidebar;
+    background: #FFFFFF;
+    border-right: var(--stroke-default) solid var(--border-primary);
+    display: flex;
+    flex-direction: column;
+    padding-bottom: var(--space-4);
+  }
+  .ds-sidebar-brand {
+    padding: var(--space-5) var(--space-7) var(--space-2);
+    display: flex; align-items: center; gap: var(--space-2_5);
+  }
+  .ds-sidebar-brand img { height: 26px; }
+  .ds-sidebar-section {
+    padding: var(--space-3_5) var(--space-6) var(--space-2);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xxs);
+    letter-spacing: var(--letter-spacing-eyebrow);
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+  }
+  .ds-nav-item {
+    height: 48px;
+    width: calc(100% - var(--space-3));
+    margin-right: var(--space-3);
+    padding: 0 var(--space-6);
+    display: flex; align-items: center; gap: var(--space-3);
+    background: transparent;
+    color: var(--text-secundary);
+    border: 0;
+    border-radius: 0 var(--radius-5xl) var(--radius-5xl) 0;
+    cursor: pointer;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    text-align: left;
+    transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-nav-item:hover { background: var(--bg-surface-secundary); }
+  .ds-nav-item[aria-current="page"] {
+    background: var(--bg-surface-brand-selected);
+    color: var(--color-purple-550);
+    font-weight: var(--font-weight-bold);
+  }
+  .ds-nav-item[aria-current="page"] .material-symbols-outlined {
+    color: var(--color-purple-450);
+    font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+  .ds-nav-item .material-symbols-outlined {
+    color: var(--text-tertiary);
+    font-size: 22px;
+  }
+  .ds-nav-item-label { flex: 1; }
+  .ds-nav-badge {
+    min-width: 18px; height: 18px; padding: 0 var(--space-1_5);
+    border-radius: var(--radius-full);
+    background: var(--color-neutral-100);
+    color: var(--text-secundary);
+    font-weight: var(--font-weight-medium);
+    font-size: 11px; line-height: 100%;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .ds-nav-item[aria-current="page"] .ds-nav-badge {
+    background: var(--color-purple-400);
+    color: var(--text-invert);
+  }
+  .ds-sidebar-user {
+    margin: 0 var(--space-4);
+    padding: var(--space-3);
+    background: var(--bg-surface-brand);
+    border: var(--stroke-default) solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    display: flex; align-items: center; gap: var(--space-2_5);
+  }
+  .ds-sidebar-user .ds-avatar { flex: 0 0 auto; }
+  .ds-sidebar-user-meta { flex: 1; min-width: 0; }
+  .ds-sidebar-user-name {
+    font-weight: var(--font-weight-semibold);
+    font-size: 13px; line-height: 16px;
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-sidebar-user-role {
+    font-weight: var(--font-weight-regular);
+    font-size: 11px; line-height: 14px;
+    color: var(--text-tertiary);
+  }
+
+  /* ───────────── Topbar ───────────── */
+  #topbar {
+    grid-area: topbar;
+    display: flex; align-items: center; gap: var(--space-4);
+    padding: var(--space-5) var(--space-8);
+    background: #FFFFFF;
+    border-bottom: var(--stroke-default) solid var(--border-primary);
+  }
+  .ds-topbar-title {
+    margin: 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xl);
+    line-height: var(--line-height-xl);
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+  .ds-topbar-grow { flex: 1; }
+
+  /* ───────────── View container ───────────── */
+  #view {
+    grid-area: view;
+    padding: var(--space-12);
+    min-width: 0;
+    background: var(--bg-surface-brand);
+  }
+
+  /* ───────────── Atoms: button ───────────── */
+  .ds-btn {
+    height: 56px;
+    padding: 0 var(--space-6);
+    border-radius: var(--radius-full);
+    border: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: var(--space-2);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    cursor: pointer;
+    transition: background 120ms cubic-bezier(0.4,0,0.2,1),
+                color 120ms cubic-bezier(0.4,0,0.2,1),
+                box-shadow 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-btn:focus-visible { outline: 0; box-shadow: var(--shadow-focus); }
+  .ds-btn[data-variant="filled"] {
+    background: var(--bg-fill-accent-primary);
+    color: var(--text-invert);
+  }
+  .ds-btn[data-variant="filled"]:hover { background: var(--bg-fill-accent-hovered); }
+  .ds-btn[data-variant="filled"]:active { background: var(--bg-fill-accent-pressed); }
+  .ds-btn[data-variant="outlined"] {
+    background: #FFFFFF;
+    color: var(--text-primary);
+    border: var(--stroke-default) solid var(--border-secundary);
+  }
+  .ds-btn[data-variant="outlined"]:hover {
+    background: var(--bg-surface-secundary);
+    border-color: var(--border-tertiary);
+  }
+  .ds-btn[data-variant="text-brand"] {
+    background: transparent;
+    color: var(--text-brand);
+    height: auto; padding: 0;
+  }
+  .ds-btn[data-variant="text-brand"]:hover { color: var(--text-brand-hovered); }
+  .ds-btn[disabled],
+  .ds-btn[aria-busy="true"] {
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  .ds-btn-block { width: 100%; }
+
+  /* ───────────── Atoms: avatar (placeholder, used in sidebar) ── */
+  .ds-avatar {
+    width: 36px; height: 36px; border-radius: var(--radius-full);
+    background: var(--bg-fill-accent-primary);
+    color: var(--text-invert);
+    display: grid; place-items: center;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-semibold);
+    font-size: 13px; line-height: 100%;
+    letter-spacing: var(--letter-spacing-tight);
+  }
+
+  /* ───────────── Outlined text field with notched floating label
+     (Material-style). The Atoms.jsx Input in the design system is
+     a flat outlined input without a floating notch label; the
+     screenshot clearly uses the notched-label variant, so this is
+     the closest valid combination of tokens. */
+  .ds-field {
+    position: relative;
+    display: block;
+  }
+  .ds-field + .ds-field { margin-top: var(--space-5); }
+  .ds-field-input {
+    width: 100%;
+    height: 56px;
+    padding: 0 var(--space-4);
+    background: transparent;
+    color: var(--text-primary);
+    border: var(--stroke-default) solid var(--border-secundary);
+    border-radius: var(--radius-md);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    outline: 0;
+    transition: border-color 120ms cubic-bezier(0.4,0,0.2,1),
+                border-width 120ms cubic-bezier(0.4,0,0.2,1),
+                box-shadow 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  /* Placeholder is a visible hint inside the field (DS "Form inputs").
+     The floating label is ALWAYS floated, so the placeholder shows at rest. */
+  .ds-field-input::placeholder {
+    color: var(--text-tertiary);
+    opacity: 1;
+  }
+  .ds-field-input:disabled::placeholder {
+    color: var(--text-disabled);
+  }
+  .ds-field[data-has-suffix="true"] .ds-field-input { padding-right: 56px; }
+  .ds-field-input:hover { border-color: var(--color-neutral-650); }
+  .ds-field-input:focus {
+    border-color: var(--border-brand);
+  }
+  .ds-field-input[aria-invalid="true"] {
+    border-color: var(--border-error);
+  }
+  /* Notched floating label — ALWAYS floated (notched at top, brand) in
+     every state. Verbatim from the DS "Form inputs" component
+     (form-inputs.css · .ff-label). */
+  .ds-field-label {
+    position: absolute;
+    top: 0;
+    left: var(--space-4);
+    transform: translateY(-50%);
+    padding: 0 var(--space-1);
+    background: #FFFFFF;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xxs);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-brand);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+  .ds-field-input[aria-invalid="true"] + .ds-field-label {
+    color: var(--text-error);
+  }
+  .ds-field-suffix {
+    position: absolute;
+    top: 50%; right: var(--space-2);
+    transform: translateY(-50%);
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: var(--radius-full);
+    background: transparent; border: 0;
+    color: var(--icon-tertiary);
+    cursor: pointer;
+    transition: background 120ms;
+  }
+  .ds-field-suffix:hover { background: var(--bg-surface-secundary); color: var(--icon-secundary); }
+  .ds-field-error {
+    margin: var(--space-1_5) var(--space-4) 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xxs);
+    color: var(--text-error);
+    letter-spacing: var(--letter-spacing-tight);
+    min-height: var(--line-height-xxs);
+  }
+
+  /* ───────────── Atoms: checkbox ─────────────
+     The Atoms.jsx file does not export a checkbox component; this
+     follows the Figma checkbox spec (18×18, purple-400 filled when
+     checked, 2 px radius). */
+  .ds-checkbox {
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    cursor: pointer;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+    user-select: none;
+  }
+  .ds-checkbox input { position: absolute; opacity: 0; pointer-events: none; }
+  .ds-checkbox-box {
+    width: 20px; height: 20px;
+    border-radius: var(--radius-sm);
+    border: var(--stroke-active) solid var(--text-tertiary);
+    background: transparent;
+    display: inline-grid; place-items: center;
+    transition: background 120ms, border-color 120ms;
+    flex: 0 0 auto;
+  }
+  .ds-checkbox-box .material-symbols-outlined {
+    font-size: 16px;
+    color: var(--text-invert);
+    opacity: 0;
+    transition: opacity 120ms;
+  }
+  .ds-checkbox input:checked + .ds-checkbox-box,
+  .ds-terms-row  input:checked + .ds-checkbox-box {
+    background: var(--bg-fill-accent-primary);
+    border-color: var(--bg-fill-accent-primary);
+  }
+  .ds-checkbox input:checked + .ds-checkbox-box .material-symbols-outlined,
+  .ds-terms-row  input:checked + .ds-checkbox-box .material-symbols-outlined { opacity: 1; }
+  .ds-checkbox input:focus-visible + .ds-checkbox-box,
+  .ds-terms-row  input:focus-visible + .ds-checkbox-box { box-shadow: var(--shadow-focus); }
+
+  /* ───────────── Auth (full-screen, no shell) ───────────── */
+  .ds-auth {
+    min-height: 100vh;
+    display: grid; place-items: center;
+    padding: var(--space-8) var(--space-4);
+    background: var(--bg-surface-brand);
+  }
+  .ds-auth-card {
+    width: 100%;
+    max-width: 520px;
+    background: #FFFFFF;
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-2);
+    padding: var(--space-10) var(--space-10) var(--space-8);
+    display: flex; flex-direction: column;
+    gap: var(--space-6);
+  }
+  .ds-auth-header { display: flex; flex-direction: column; gap: var(--space-4); }
+  .ds-auth-logo { width: auto; height: 56px; display: block; align-self: flex-start; margin-right: auto; }
+  .ds-auth-title {
+    margin: 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-4xl);
+    line-height: var(--line-height-4xl);
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+  .ds-auth-form { display: flex; flex-direction: column; gap: 0; }
+  .ds-auth-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: var(--space-4);
+    margin-top: var(--space-2);
+  }
+  .ds-auth-actions {
+    display: flex; flex-direction: column; gap: var(--space-3);
+    margin-top: var(--space-2);
+  }
+  .ds-auth-footer {
+    display: flex; justify-content: center;
+    padding-top: var(--space-4);
+  }
+  .ds-auth-google-g {
+    width: 20px; height: 20px;
+    flex: 0 0 auto;
+  }
+
+  /* ───────────── Wizard (configuración de cuenta) ─────────
+     Reuses .ds-auth + .ds-auth-card. Adds back-arrow, progress
+     bar (the design system has ProgressBar in Forms.jsx — these
+     classes follow the same spec: 8 px track on
+     --bg-fill-tonal-primary, fill --bg-fill-accent-primary). */
+  .ds-wizard-card {
+    /* Same card shell as .ds-auth-card but with extra top padding
+       for the back arrow row. */
+    padding: var(--space-8) var(--space-10) var(--space-8);
+    gap: var(--space-5);
+  }
+  .ds-wizard-back {
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    border-radius: var(--radius-full);
+    border: 0; background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+    align-self: flex-start;
+    margin-left: calc(var(--space-2) * -1);
+  }
+  .ds-wizard-back:hover { background: var(--bg-surface-secundary); }
+  .ds-wizard-back:focus-visible { outline: 0; box-shadow: var(--shadow-focus); }
+  .ds-wizard-header { display: flex; flex-direction: column; gap: var(--space-4); }
+  .ds-wizard-progress {
+    display: flex; align-items: center; gap: var(--space-3);
+  }
+  .ds-progress {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-fill-tonal-primary);
+    border-radius: var(--radius-full);
+    overflow: hidden;
+    position: relative;
+  }
+  .ds-progress-fill {
+    position: absolute; left: 0; top: 0; bottom: 0;
+    background: var(--bg-fill-accent-primary);
+    border-radius: var(--radius-full);
+    transition: width 200ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-progress-label {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+    min-width: 28px;
+    text-align: right;
+  }
+  .ds-form-stack { display: flex; flex-direction: column; gap: var(--space-5); }
+  /* Wizard paso 1: match the Login form spacing — gap 0 on the
+     container, space-5 margin between consecutive fields. */
+  #wizard-form { gap: 0; }
+  #wizard-form .ds-field + .ds-field { margin-top: var(--space-5); }
+  #wizard-form .ds-terms-row { margin-top: var(--space-5); }
+  #wizard-form .ds-btn-block { margin-top: var(--space-5); }
+
+  /* Paso 3 & Paso 4: uniform field rhythm (single space-5 via flex gap,
+     matching the Login form) — drop the extra adjacent-field margin. */
+  #paso3-form .ds-field + .ds-field,
+  #paso4-form .ds-field + .ds-field { margin-top: 0; }
+  /* Invitación paso 1: el gap de .ds-form-stack maneja el ritmo; sin margen extra. */
+  #invitacion-form .ds-field + .ds-field { margin-top: 0; }
+  .ds-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+  .ds-field-row .ds-field { margin-top: 0; }
+  .ds-field-row .ds-field + .ds-field { margin-top: 0; }
+  @media (max-width: 560px) {
+    .ds-field-row { grid-template-columns: 1fr; }
+  }
+  .ds-terms-row {
+    display: flex; align-items: flex-start; gap: var(--space-2);
+    flex-wrap: wrap;
+    cursor: pointer;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-terms-row .ds-checkbox-box { margin-top: 1px; }
+  .ds-terms-text {
+    display: inline; flex: 1; min-width: 0;
+  }
+  .ds-link-info {
+    background: transparent; border: 0; padding: 0;
+    color: var(--text-info);
+    font: inherit;
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    text-align: left;
+  }
+  .ds-link-info:hover { text-decoration: underline; }
+
+  /* ───────────── Wizard wide variant (paso 2: card grid) ───── */
+  .ds-wizard-card.ds-wizard-card-wide {
+    max-width: 1240px;
+    padding: var(--space-8) var(--space-10);
+    gap: var(--space-6);
+  }
+  .ds-wizard-subtitle {
+    margin: var(--space-1_5) 0 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+
+  /* ───────────── Invitación · tarjeta del centro de salud ─────────
+     Centro que cursa la invitación. Outer card · radius 2xl (16) ·
+     border primary · logo placeholder sobre surface.brand. */
+  .ds-centro-card {
+    display: flex; align-items: center; gap: var(--space-5);
+    padding: var(--space-4);
+    border: var(--stroke-default) solid var(--border-primary);
+    border-radius: var(--radius-2xl);
+    background: var(--bg-surface-primary);
+  }
+  .ds-centro-logo {
+    flex: 0 0 auto;
+    width: 112px; height: 112px;
+    border-radius: var(--radius-xl);
+    background: var(--bg-surface-brand);
+    display: grid; place-items: center;
+    color: var(--color-purple-250);
+  }
+  .ds-centro-logo .material-symbols-outlined { font-size: 48px; }
+  .ds-centro-info { min-width: 0; display: flex; flex-direction: column; gap: var(--space-1_5); }
+  .ds-centro-name {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-centro-line {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-l);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+    word-break: break-word;
+  }
+  /* Lápiz del campo "Nombre y apellido": estado enabled (no es toggle de contraseña) */
+  .ds-field-suffix[data-edit] { color: var(--icon-secundary); }
+  @media (max-width: 560px) {
+    .ds-centro-card { flex-direction: column; align-items: flex-start; }
+  }
+
+  /* ───────────── Card · Filled (design system component) ───── */
+  /* Spec: /preview/card-filled.html · 280×333 · radius xl (12) ·
+     bg surface.primary · border secundary · 160 px media area.
+     The subtitle and footer slots are dynamic and omitted here. */
+  .ds-card-filled {
+    background: var(--bg-surface-primary);
+    border: var(--stroke-default) solid var(--border-secundary);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    transition: border-color 120ms cubic-bezier(0.4,0,0.2,1),
+                background-color 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-card-filled:hover { border-color: var(--color-neutral-650); }
+  .ds-card-filled:active {
+    background: var(--color-purple-50);
+    border-color: var(--border-primary);
+  }
+  .ds-card-filled:focus-visible {
+    outline: 0;
+    box-shadow: var(--shadow-focus);
+    border-color: var(--color-purple-450);
+  }
+  .ds-card-filled-media {
+    width: 100%;
+    height: 160px;
+    background: var(--bg-surface-primary);
+    border-bottom: var(--stroke-default) solid var(--border-secundary);
+    overflow: hidden;
+  }
+  .ds-card-filled-media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+  }
+  .ds-card-filled:active .ds-card-filled-media {
+    border-bottom-color: var(--border-primary);
+  }
+  .ds-card-filled-content {
+    padding: var(--space-4);
+    display: flex; flex-direction: column;
+    gap: var(--space-1);
+  }
+  .ds-card-filled-title {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-card-filled-subtitle {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xxs);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+  .ds-card-filled-body {
+    margin-top: var(--space-2);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+  .ds-card-filled-footer {
+    margin-top: auto;
+    padding: var(--space-2) var(--space-2) var(--space-3);
+    display: flex; gap: var(--space-2); align-items: center;
+  }
+
+  /* ───────────── Role grid (paso 2) ───────────── */
+  .ds-role-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+  @media (max-width: 900px) {
+    .ds-role-grid { grid-template-columns: 1fr; }
+  }
+  /* On narrow desktops keep 3 columns; only collapse on tablets/mobile.
+     2-column would split awkwardly (one orphan card). */
+
+  /* ───────────── Wizard medium card (paso 3+ forms) ─────── */
+  .ds-wizard-card.ds-wizard-card-medium {
+    max-width: 800px;
+    padding: var(--space-8) var(--space-10);
+    gap: var(--space-6);
+  }
+
+  /* ───────────── Picture uploader (DS component) ────────────
+     Spec: /preview/picture-uploader.html · 358 × 140 · 2 states.
+     We render the full-width variant per design request; all
+     other tokens (bg, action, icon size) follow the DS verbatim. */
+  .ds-picture-uploader {
+    position: relative;
+    width: 100%;
+    height: 140px;
+    border-radius: var(--radius-lg);
+    box-sizing: border-box;
+    padding: var(--space-4);
+    display: flex; align-items: flex-end; justify-content: flex-end;
+    background: var(--bg-surface-brand);
+    border: var(--stroke-default) solid transparent;
+    cursor: pointer;
+    overflow: hidden;
+    transition: background-color 120ms cubic-bezier(0.4,0,0.2,1),
+                border-color 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-picture-uploader.is-dragging {
+    border-color: var(--border-brand);
+    background: var(--color-purple-50);
+  }
+  .ds-picture-uploader-icon {
+    position: absolute;
+    left: var(--space-4);
+    top: var(--space-3);
+    width: 112px;
+    height: 112px;
+    color: var(--color-purple-300);
+    display: grid; place-items: center;
+    pointer-events: none;
+  }
+  .ds-picture-uploader-icon .material-symbols-outlined {
+    font-size: 112px;
+    font-variation-settings: 'wght' 300;
+    line-height: 1;
+  }
+  .ds-picture-uploader[data-state="filled-image"] {
+    background-color: var(--bg-surface-brand);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border-color: var(--border-secundary);
+  }
+  .ds-picture-uploader[data-state="filled-image"] .ds-picture-uploader-icon { display: none; }
+  /* PDF preview — DS Picture Uploader only specs image. Reusing the
+     filled-state border and a DS file glyph; replace if DS adds a
+     PDF state. */
+  .ds-picture-uploader[data-state="filled-pdf"] {
+    background: var(--bg-surface-brand);
+    border-color: var(--border-secundary);
+  }
+  .ds-picture-uploader[data-state="filled-pdf"] .ds-picture-uploader-icon { display: none; }
+  .ds-picture-uploader-pdf {
+    position: absolute;
+    inset: 0;
+    display: none;
+    flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: var(--space-1);
+    color: var(--text-brand);
+    pointer-events: none;
+    padding: var(--space-4);
+  }
+  .ds-picture-uploader[data-state="filled-pdf"] .ds-picture-uploader-pdf { display: flex; }
+  .ds-picture-uploader-pdf .material-symbols-outlined { font-size: 56px; }
+  .ds-picture-uploader-pdf-name {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .ds-pu-action {
+    position: relative;
+    height: 56px;
+    padding: 0 var(--space-6) 0 var(--space-5);
+    border-radius: var(--radius-full);
+    background: var(--bg-surface-brand);
+    color: var(--text-primary);
+    border: 0;
+    cursor: pointer;
+    display: inline-flex; align-items: center; gap: var(--space-2);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    transition: background-color 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-pu-action:hover  { background: var(--color-purple-50); }
+  .ds-pu-action:active { background: var(--color-purple-150); }
+  .ds-pu-action .material-symbols-outlined { font-size: 24px; }
+  .ds-picture-uploader-input {
+    position: absolute;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0);
+    border: 0;
+  }
+  .ds-picture-uploader[data-state="filled-image"] .ds-pu-action,
+  .ds-picture-uploader[data-state="filled-pdf"]   .ds-pu-action {
+    background: rgba(252,252,252,0.92);
+  }
+
+  /* ───────────── Select (Input · Select + search hybrid) ───
+     Spec: /preview/input-select.html for closed/hovered/focused/
+     open menu. The screenshot of paso 3 uses the same notched-
+     label outlined wrapper as the other wizard inputs, so we
+     compose Input · Select INSIDE our .ds-field wrapper rather
+     than the DS top-label pattern.
+     Search-as-you-type: the DS has no Input · Search yet, so the
+     value cell is a real editable <input> that filters the list.
+     Refactor to Input · Search once that component is added. */
+  /* ───────────── Select · Input · Select "Open con búsqueda" (DS) ───
+     Variante canónica (preview/input-select.html · "Open · con búsqueda"):
+     el valor es una caja estática; el campo de búsqueda va PINNED en la
+     parte superior del menú flotante, seguido de una lista de opciones
+     scrolleable (max-height 224px). La opción seleccionada muestra un
+     check final. Conserva la etiqueta notched de los Form inputs. */
+  .ds-select-box {
+    width: 100%;
+    height: 56px;
+    box-sizing: border-box;
+    padding: 0 var(--space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    background: transparent;
+    border: var(--stroke-default) solid var(--border-secundary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    outline: 0;
+    transition: border-color 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-select-box:hover { border-color: var(--color-neutral-650); }
+  .ds-field[data-open="true"] .ds-select-box,
+  .ds-select-box:focus-visible { border-color: var(--border-brand); }
+  .ds-select-field:has(input[aria-invalid="true"]) .ds-select-box { border-color: var(--border-error); }
+  .ds-select-field:has(input[aria-invalid="true"]) .ds-field-label { color: var(--text-error); }
+  .ds-select-value {
+    flex: 1 1 auto; min-width: 0;
+    text-align: left;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .ds-select-value[data-placeholder="true"] { color: var(--text-tertiary); }
+  .ds-select-caret {
+    flex: 0 0 auto;
+    font-size: 24px;
+    color: var(--color-neutral-450);
+    user-select: none;
+  }
+  .ds-field[data-open="true"] .ds-select-caret { color: var(--text-brand); }
+
+  .ds-select-menu {
+    position: absolute;
+    left: 0; right: 0; top: calc(100% + var(--space-1));
+    z-index: 20;
+    background: var(--bg-surface-primary);
+    border-radius: var(--radius-md);
+    box-shadow: 0 1px 3px 1px rgba(0,0,0,0.15), 0 1px 2px 0 rgba(0,0,0,0.30);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+  .ds-field[data-open="true"] .ds-select-menu { display: flex; }
+  .ds-select-search {
+    display: flex; align-items: center; gap: var(--space-2);
+    height: 48px;
+    padding: 0 var(--space-4);
+    border-bottom: var(--stroke-default) solid var(--border-primary);
+  }
+  .ds-select-search .material-symbols-outlined {
+    flex: 0 0 auto; font-size: 20px; color: var(--color-neutral-450);
+  }
+  .ds-select-search input {
+    flex: 1; min-width: 0;
+    border: 0; outline: none; background: transparent; padding: 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+  .ds-select-search input::placeholder { color: var(--text-tertiary); }
+  .ds-select-scroll {
+    max-height: 224px;
+    overflow-y: auto;
+    display: flex; flex-direction: column;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-secundary) transparent;
+  }
+  .ds-select-scroll::-webkit-scrollbar { width: 8px; }
+  .ds-select-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-secundary);
+    border-radius: 99px;
+    border: 2px solid var(--bg-surface-primary);
+  }
+  .ds-select-option {
+    display: flex; align-items: center; width: 100%;
+    height: 56px;
+    flex: 0 0 auto;          /* no encoger: con muchas opciones el scroll desborda, no colapsa la fila */
+    padding: 0 var(--space-4);
+    background: transparent; border: 0;
+    text-align: left;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+    cursor: pointer;
+    transition: background-color 120ms cubic-bezier(0.4,0,0.2,1);
+  }
+  .ds-select-option:hover,
+  .ds-select-option.is-active { background: var(--color-purple-50); }
+  .ds-select-option[aria-selected="true"] { background: var(--bg-surface-brand-selected); }
+  .ds-select-option .check {
+    margin-left: auto;
+    font-size: 20px;
+    color: var(--text-brand);
+  }
+  .ds-select-empty {
+    padding: 14px var(--space-4);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    color: var(--text-tertiary);
+  }
+
+  /* ───────────── 404 ───────────── */
+  .ds-empty {
+    min-height: 60vh;
+    display: grid; place-items: center; text-align: center;
+    padding: var(--space-10);
+  }
+  .ds-empty-inner { max-width: 420px; display: flex; flex-direction: column; gap: var(--space-3); align-items: center; }
+  .ds-empty-icon {
+    width: 64px; height: 64px;
+    display: grid; place-items: center;
+    border-radius: var(--radius-full);
+    background: var(--bg-surface-secundary);
+    color: var(--text-tertiary);
+  }
+  .ds-empty-icon .material-symbols-outlined { font-size: 32px; }
+  .ds-empty-title {
+    margin: 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-xxl);
+    line-height: var(--line-height-xxl);
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+  }
+  .ds-empty-body {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-m);
+    line-height: var(--line-height-m);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+
+  /* ───────────── Generic card surface (placeholder home) ──── */
+  .ds-card {
+    background: #FFFFFF;
+    border: var(--stroke-default) solid var(--border-primary);
+    border-radius: var(--radius-lg);
+    padding: var(--space-4);
+  }
+
+  /* ───────────── Spinner ───────────── */
+  .ds-spinner {
+    width: 18px; height: 18px;
+    border-radius: var(--radius-full);
+    border: 2px solid rgba(252, 252, 252, 0.35);
+    border-top-color: var(--text-invert);
+    animation: ds-spin 700ms linear infinite;
+  }
+  @keyframes ds-spin { to { transform: rotate(360deg); } }
+
+  /* ───────────── Términos y condiciones (standalone) ─────── */
+  .ds-terms-page {
+    min-height: 100vh;
+    background: var(--bg-surface-primary);
+  }
+  .ds-terms-banner {
+    background: var(--bg-surface-brand);
+    padding: var(--space-7) var(--space-12);
+    position: relative;
+    overflow: hidden;
+    border-bottom: var(--stroke-default) solid var(--border-primary);
+  }
+  .ds-terms-banner-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .ds-terms-banner-logo { height: 30px; display: block; }
+  .ds-terms-banner-title {
+    margin: var(--space-1_5) 0 0;
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-l);
+    line-height: var(--line-height-l);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-terms-banner-decoration {
+    position: absolute;
+    top: 50%;
+    right: -260px;
+    transform: translate(0, -50%) rotate(-18deg);
+    width: 480px;
+    height: 480px;
+    pointer-events: none;
+    opacity: 0.85;
+  }
+  .ds-terms-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: var(--space-10) var(--space-6) var(--space-12);
+  }
+  .ds-terms-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+  .ds-terms-section + .ds-terms-section { margin-top: var(--space-7); }
+  .ds-terms-section[data-divider="top"] {
+    padding-top: var(--space-7);
+    border-top: var(--stroke-default) solid var(--border-primary);
+  }
+  .ds-terms-section h2 {
+    margin: 0 0 var(--space-1);
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-s);
+    line-height: var(--line-height-s);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-primary);
+  }
+  .ds-terms-section p,
+  .ds-terms-section li {
+    font-family: var(--font-family-geist);
+    font-weight: var(--font-weight-regular);
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--letter-spacing-tight);
+    color: var(--text-secundary);
+  }
+  .ds-terms-section p { margin: 0; }
+  .ds-terms-section ul {
+    list-style: disc;
+    padding-left: var(--space-5);
+    margin: 0;
+    display: flex; flex-direction: column;
+    gap: var(--space-1);
+  }
+  .ds-terms-section li::marker { color: var(--text-tertiary); }
+  .ds-terms-mail {
+    color: var(--text-info);
+    text-decoration: none;
+  }
+  .ds-terms-mail:hover { text-decoration: underline; }
+
+  /* ───────────── Responsive: collapse sidebar on mobile ──── */
+  @media (max-width: 768px) {
+    #app {
+      grid-template-columns: 1fr;
+      grid-template-areas: "topbar" "view";
+    }
+    #sidebar {
+      position: fixed; inset: 0 auto 0 0;
+      width: 264px;
+      transform: translateX(-100%);
+      transition: transform 200ms cubic-bezier(0.4,0,0.2,1);
+      z-index: 20;
+      box-shadow: var(--shadow-3);
+    }
+    #app[data-sidebar="open"] #sidebar { transform: translateX(0); }
+    #app[data-sidebar="open"]::after {
+      content: "";
+      position: fixed; inset: 0;
+      background: var(--bg-fill-opacity-80);
+      z-index: 10;
+    }
+    #view { padding: var(--space-6); }
+    .ds-auth-card { padding: var(--space-6); }
+    .ds-terms-banner { padding: var(--space-5) var(--space-5); }
+    .ds-terms-banner-decoration { display: none; }
+    .ds-terms-content { padding: var(--space-8) var(--space-5); }
+  }
+</style>
+</head>
+<body class="sc-scope">
+
+<div id="app" data-shell="hidden">
+  <aside id="sidebar"></aside>
+  <header id="topbar"></header>
+  <main id="view"></main>
+</div>
+
+<script>
+/* ============================================================
+   Secuence — single-file app
+   · appState           (camelCase global)
+   · Hash router
+   · Render functions per view (PascalCase, each fills the view)
+   · Atom factories     (camelCase, each returns a string of HTML)
+   ============================================================ */
+(function () {
+  "use strict";
+
+  // ────────── appState ──────────
+  const appState = {
+    user: { name: "Admin", role: "admin", loggedIn: false, email: null },
+    data: {},
+    set(key, val) { this[key] = val; },
+  };
+
+  // Restore "Recordar sesión" preference (only the preference itself,
+  // not auto-login — the user still has to submit).
+  try {
+    const remembered = localStorage.getItem("sc.rememberSession") === "true";
+    const rememberedEmail = localStorage.getItem("sc.rememberedEmail") || "";
+    appState.data.rememberSession = remembered;
+    appState.data.rememberedEmail = rememberedEmail;
+  } catch (_) { /* no-op */ }
+
+  window.appState = appState;
+
+  // ────────── Tweaks (feature flag + demo content del flujo de invitación) ──────────
+  // El bloque entre los marcadores EDITMODE es JSON válido y persiste en disco
+  // cuando el usuario cambia un control del panel "Tweaks".
+  const TWEAKS = /*EDITMODE-BEGIN*/{
+    "showInvitationFlow": false,
+    "invitedName": "Dr. Pedro Pérez",
+    "centerName": "Clínica Secuence",
+    "invitationCountry": "Venezuela"
+  }/*EDITMODE-END*/;
+  window.TWEAKS = TWEAKS;
+
+  // ────────── Helpers ──────────
+  const $ = (sel, root) => (root || document).querySelector(sel);
+  const escapeHtml = (s) =>
+    String(s == null ? "" : s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+
+  function navigate(hash) {
+    if (location.hash === hash) router();
+    else location.hash = hash;
+  }
+  window.navigate = navigate;
+
+  // Email validation per spec: must contain "@" and an extension,
+  // e.g. correo@email.com.
+  function isValidEmail(value) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || "").trim());
+  }
+
+  // ────────── Atoms (camelCase factories returning HTML strings) ──────────
+  function button({ variant = "filled", icon, label, type = "button", block = false, busy = false, id = "", disabled = false }) {
+    const idAttr = id ? ` id="${escapeHtml(id)}"` : "";
+    const blockClass = block ? " ds-btn-block" : "";
+    const busyAttr = busy ? ' aria-busy="true" disabled' : "";
+    const disabledAttr = disabled && !busy ? ' disabled' : "";
+    const left = busy
+      ? '<span class="ds-spinner" aria-hidden="true"></span>'
+      : (icon ? `<span class="material-symbols-outlined" aria-hidden="true">${escapeHtml(icon)}</span>` : "");
+    return `<button${idAttr} type="${escapeHtml(type)}" class="ds-btn${blockClass}" data-variant="${escapeHtml(variant)}"${busyAttr}${disabledAttr}>
+      ${left}
+      <span>${escapeHtml(label)}</span>
+    </button>`;
+  }
+
+  function textField({ id, label, type = "text", placeholder = "", value = "", suffixIcon = "", autocomplete = "" }) {
+    const hasSuffix = !!suffixIcon;
+    return `<div class="ds-field" data-has-suffix="${hasSuffix}">
+      <input
+        class="ds-field-input"
+        id="${escapeHtml(id)}"
+        name="${escapeHtml(id)}"
+        type="${escapeHtml(type)}"
+        placeholder="${escapeHtml(placeholder)}"
+        value="${escapeHtml(value)}"
+        autocomplete="${escapeHtml(autocomplete)}"
+        aria-describedby="${escapeHtml(id)}-error"
+      />
+      <label class="ds-field-label" for="${escapeHtml(id)}">${escapeHtml(label)}</label>
+      ${hasSuffix
+        ? `<button type="button" class="ds-field-suffix" data-suffix-for="${escapeHtml(id)}" aria-label="Mostrar/ocultar contraseña">
+            <span class="material-symbols-outlined">${escapeHtml(suffixIcon)}</span>
+          </button>`
+        : ""}
+      <div class="ds-field-error" id="${escapeHtml(id)}-error" role="alert" aria-live="polite"></div>
+    </div>`;
+  }
+
+  function checkbox({ id, label, checked = false }) {
+    return `<label class="ds-checkbox" for="${escapeHtml(id)}">
+      <input type="checkbox" id="${escapeHtml(id)}" name="${escapeHtml(id)}" ${checked ? "checked" : ""} />
+      <span class="ds-checkbox-box" aria-hidden="true">
+        <span class="material-symbols-outlined">check</span>
+      </span>
+      <span>${escapeHtml(label)}</span>
+    </label>`;
+  }
+
+  // Picture uploader (DS Picture Uploader · Empty/Filled states).
+  function pictureUploader({ id, accept = "image/jpeg,image/png,application/pdf", buttonLabel = "Subir imagen" }) {
+    return `<div class="ds-picture-uploader" id="${escapeHtml(id)}-wrap" data-state="empty" tabindex="-1">
+      <div class="ds-picture-uploader-icon" aria-hidden="true">
+        <span class="material-symbols-outlined">image</span>
+      </div>
+      <div class="ds-picture-uploader-pdf" aria-hidden="true">
+        <span class="material-symbols-outlined">picture_as_pdf</span>
+        <span class="ds-picture-uploader-pdf-name" data-pdf-name></span>
+      </div>
+      <button type="button" class="ds-pu-action" data-pu-trigger>
+        <span class="material-symbols-outlined">file_upload</span>
+        <span>${escapeHtml(buttonLabel)}</span>
+      </button>
+      <input class="ds-picture-uploader-input" id="${escapeHtml(id)}" name="${escapeHtml(id)}" type="file" accept="${escapeHtml(accept)}" />
+      <div class="ds-field-error" id="${escapeHtml(id)}-error" role="alert" aria-live="polite" style="position:absolute;bottom:-22px;left:0;right:0;margin:0;padding:0 var(--space-2)"></div>
+    </div>`;
+  }
+
+  // Select · Input · Select "Open con búsqueda" (DS · preview/input-select.html).
+  // Static value box + floating menu with a pinned search field and a
+  // scrollable option list. The real value lives in a hidden input.
+  function select({ id, label, options, value = "", placeholder = "Seleccione una opción" }) {
+    const hasValue = options.includes(value);
+    return `<div class="ds-field ds-select-field" data-open="false" data-select="${escapeHtml(id)}">
+      <div class="ds-select-box" id="${escapeHtml(id)}-box" role="combobox" tabindex="0"
+           aria-haspopup="listbox" aria-expanded="false" aria-controls="${escapeHtml(id)}-menu"
+           aria-describedby="${escapeHtml(id)}-error">
+        <span class="ds-select-value"${hasValue ? "" : ' data-placeholder="true"'}>${escapeHtml(hasValue ? value : placeholder)}</span>
+        <span class="ds-select-caret material-symbols-outlined">arrow_drop_down</span>
+      </div>
+      <label class="ds-field-label" for="${escapeHtml(id)}-box">${escapeHtml(label)}</label>
+      <input type="hidden" id="${escapeHtml(id)}" name="${escapeHtml(id)}" value="${escapeHtml(hasValue ? value : "")}"
+        data-options='${escapeHtml(JSON.stringify(options))}' data-placeholder="${escapeHtml(placeholder)}" />
+      <div class="ds-field-error" id="${escapeHtml(id)}-error" role="alert" aria-live="polite"></div>
+      <div class="ds-select-menu" id="${escapeHtml(id)}-menu" role="listbox" aria-label="${escapeHtml(label)}">
+        <div class="ds-select-search">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" autocomplete="off" aria-label="Buscar ${escapeHtml(label)}" />
+        </div>
+        <div class="ds-select-scroll" role="presentation"></div>
+      </div>
+    </div>`;
+  }
+
+  // Wire-up helpers ---------------------------------------------
+
+  function wirePictureUploader(id, { maxSizeMB = 10, onChange } = {}) {
+    const wrap = document.getElementById(id + "-wrap");
+    const input = document.getElementById(id);
+    const err = document.getElementById(id + "-error");
+    const pdfName = wrap.querySelector("[data-pdf-name]");
+    const btnLabel = wrap.querySelector(".ds-pu-action span:last-child");
+    let objectUrl = null;
+    function setError(msg) { if (err) err.textContent = msg || ""; }
+    function setFile(file) {
+      if (!file) return;
+      if (file.size > maxSizeMB * 1024 * 1024) {
+        setError(`El archivo supera el tamaño máximo de ${maxSizeMB} MB.`);
+        input.value = "";
+        return;
+      }
+      setError("");
+      if (objectUrl) { URL.revokeObjectURL(objectUrl); objectUrl = null; }
+      if (file.type === "application/pdf") {
+        wrap.setAttribute("data-state", "filled-pdf");
+        wrap.style.backgroundImage = "";
+        pdfName.textContent = file.name;
+      } else {
+        objectUrl = URL.createObjectURL(file);
+        wrap.setAttribute("data-state", "filled-image");
+        wrap.style.backgroundImage = `url("${objectUrl}")`;
+      }
+      btnLabel.textContent = "Editar archivo";
+      wrap.querySelector(".ds-pu-action .material-symbols-outlined").textContent = "edit";
+      if (typeof onChange === "function") onChange(file);
+    }
+    wrap.addEventListener("click", (e) => {
+      // Anywhere on the uploader opens the file picker.
+      input.click();
+      e.preventDefault();
+    });
+    wrap.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      wrap.classList.add("is-dragging");
+    });
+    wrap.addEventListener("dragleave", () => wrap.classList.remove("is-dragging"));
+    wrap.addEventListener("drop", (e) => {
+      e.preventDefault();
+      wrap.classList.remove("is-dragging");
+      const file = e.dataTransfer.files && e.dataTransfer.files[0];
+      if (file) setFile(file);
+    });
+    input.addEventListener("change", () => {
+      const file = input.files && input.files[0];
+      if (file) setFile(file);
+    });
+    return {
+      reset() {
+        if (objectUrl) URL.revokeObjectURL(objectUrl);
+        input.value = "";
+        wrap.setAttribute("data-state", "empty");
+        wrap.style.backgroundImage = "";
+        btnLabel.textContent = "Subir imagen";
+      },
+      hasFile() { return !!(input.files && input.files[0]); },
+      get file() { return input.files && input.files[0]; },
+    };
+  }
+
+  function wireSelect(id) {
+    const wrap = document.querySelector(`[data-select="${id}"]`);
+    if (!wrap) return null;
+    const hidden  = document.getElementById(id);
+    const box     = wrap.querySelector(".ds-select-box");
+    const valueEl = wrap.querySelector(".ds-select-value");
+    const caret   = wrap.querySelector(".ds-select-caret");
+    const menu    = wrap.querySelector(".ds-select-menu");
+    const scroll  = wrap.querySelector(".ds-select-scroll");
+    const search  = wrap.querySelector(".ds-select-search input");
+    const err     = document.getElementById(id + "-error");
+    const options = JSON.parse(hidden.getAttribute("data-options") || "[]");
+    const placeholder = hidden.getAttribute("data-placeholder") || "";
+    let current = options.includes(hidden.value) ? hidden.value : "";
+    let activeIdx = -1;
+
+    const norm = (s) => (s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+    function clearError() {
+      hidden.removeAttribute("aria-invalid");
+      if (err) err.textContent = "";
+    }
+    function setValue(v) {
+      current = v;
+      hidden.value = v;
+      valueEl.textContent = v || placeholder;
+      if (v) valueEl.removeAttribute("data-placeholder");
+      else valueEl.setAttribute("data-placeholder", "true");
+      clearError();
+    }
+    function renderMenu(filter) {
+      const q = (filter || "").trim();
+      const nq = norm(q);
+      const matches = nq ? options.filter((o) => norm(o).includes(nq)) : options.slice();
+      activeIdx = -1;
+      if (matches.length === 0) {
+        scroll.innerHTML = `<div class="ds-select-empty">Sin resultados${q ? ` para “${escapeHtml(q)}”` : ""}.</div>`;
+        return;
+      }
+      scroll.innerHTML = matches.map((o) => {
+        const isSel = o === current;
+        return `<button type="button" class="ds-select-option" role="option" data-value="${escapeHtml(o)}"${isSel ? ' aria-selected="true"' : ""}>${escapeHtml(o)}${isSel ? '<span class="check material-symbols-outlined">check</span>' : ""}</button>`;
+      }).join("");
+    }
+    function paintActive(items) {
+      items.forEach((it, i) => it.classList.toggle("is-active", i === activeIdx));
+      if (items[activeIdx]) items[activeIdx].scrollIntoView({ block: "nearest" });
+    }
+    function open() {
+      if (wrap.getAttribute("data-open") === "true") return;
+      wrap.setAttribute("data-open", "true");
+      box.setAttribute("aria-expanded", "true");
+      caret.textContent = "arrow_drop_up";
+      search.value = "";
+      renderMenu("");
+      const sel = scroll.querySelector('[aria-selected="true"]');
+      if (sel) sel.scrollIntoView({ block: "nearest" });
+      setTimeout(() => search.focus(), 0);
+    }
+    function close() {
+      wrap.setAttribute("data-open", "false");
+      box.setAttribute("aria-expanded", "false");
+      caret.textContent = "arrow_drop_down";
+    }
+    function toggle() { wrap.getAttribute("data-open") === "true" ? close() : open(); }
+
+    box.addEventListener("click", toggle);
+    box.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " " || e.key === "ArrowDown") { e.preventDefault(); open(); }
+    });
+    search.addEventListener("input", () => renderMenu(search.value));
+    search.addEventListener("keydown", (e) => {
+      const items = Array.from(scroll.querySelectorAll(".ds-select-option"));
+      if (e.key === "ArrowDown") { e.preventDefault(); activeIdx = Math.min(activeIdx + 1, items.length - 1); paintActive(items); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); activeIdx = Math.max(activeIdx - 1, items.length ? 0 : -1); paintActive(items); }
+      else if (e.key === "Enter") {
+        e.preventDefault();
+        const target = items[activeIdx] || items[0];
+        if (target) { setValue(target.getAttribute("data-value")); close(); box.focus(); }
+      } else if (e.key === "Escape") { e.stopPropagation(); close(); box.focus(); }
+    });
+    // mousedown so the option is chosen before the search loses focus
+    scroll.addEventListener("mousedown", (e) => {
+      const opt = e.target.closest(".ds-select-option");
+      if (!opt) return;
+      e.preventDefault();
+      setValue(opt.getAttribute("data-value"));
+      close();
+      box.focus();
+    });
+    // outside click closes
+    document.addEventListener("mousedown", (e) => {
+      if (wrap.getAttribute("data-open") !== "true") return;
+      if (!wrap.contains(e.target)) close();
+    });
+    // redirect focus() (used by form validation) from the hidden input to the box
+    hidden.focus = () => box.focus();
+
+    return {
+      get value() { return current; },
+      reset() { setValue(""); close(); },
+      setError(msg) { hidden.setAttribute("aria-invalid", "true"); if (err) err.textContent = msg || ""; },
+    };
+  }
+
+  // Inline Google "G" SVG — brand asset, not a tokenable element.
+  const googleGSvg = `
+    <svg class="ds-auth-google-g" viewBox="0 0 48 48" aria-hidden="true">
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/>
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 16 19 13 24 13c3 0 5.8 1.1 7.9 3l5.7-5.7C34 6 29.3 4 24 4 16.3 4 9.7 8.4 6.3 14.7z"/>
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.4-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.6 39.5 16.2 44 24 44z"/>
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.1 5.7l6.2 5.2C40.9 35.5 44 30.2 44 24c0-1.3-.1-2.4-.4-3.5z"/>
+    </svg>`;
+
+  // ────────── Layout: Sidebar + Topbar ──────────
+  function RenderSidebar(active) {
+    const items = [
+      { section: "Gestión" },
+      { id: "indicadores",   icon: "monitor_heart",  label: "Indicadores",   badge: "12" },
+      { id: "pacientes",     icon: "groups",         label: "Pacientes",     badge: "128" },
+      { id: "seguimientos",  icon: "event_available",label: "Seguimientos",  badge: "04" },
+      { id: "equipo",        icon: "badge",          label: "Equipo" },
+      { section: "Configuraciones" },
+      { id: "ajustes",       icon: "settings",       label: "Ajustes" },
+    ];
+    const initials = (appState.user.name || "U").trim().split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase();
+    const rolePretty = appState.user.role === "admin" ? "Administrador" : escapeHtml(appState.user.role);
+    return `
+      <div class="ds-sidebar-brand">
+        <img src="assets/logo-horizontal.svg" alt="Secuence" />
+      </div>
+      ${items.map(it => {
+        if (it.section) return `<div class="ds-sidebar-section">${escapeHtml(it.section)}</div>`;
+        const current = it.id === active ? ' aria-current="page"' : "";
+        return `<button class="ds-nav-item"${current} data-nav="${it.id}">
+          <span class="material-symbols-outlined">${it.icon}</span>
+          <span class="ds-nav-item-label">${escapeHtml(it.label)}</span>
+          ${it.badge ? `<span class="ds-nav-badge">${escapeHtml(it.badge)}</span>` : ""}
+        </button>`;
+      }).join("")}
+      <div style="flex:1"></div>
+      <div class="ds-sidebar-user">
+        <div class="ds-avatar">${escapeHtml(initials)}</div>
+        <div class="ds-sidebar-user-meta">
+          <div class="ds-sidebar-user-name">${escapeHtml(appState.user.name)}</div>
+          <div class="ds-sidebar-user-role">${rolePretty}</div>
+        </div>
+        <button class="ds-field-suffix" id="btn-logout" aria-label="Cerrar sesión" style="position:relative;right:auto;top:auto;transform:none">
+          <span class="material-symbols-outlined">logout</span>
+        </button>
+      </div>
+    `;
+  }
+
+  function RenderTopbar(title) {
+    return `
+      <h1 class="ds-topbar-title">${escapeHtml(title)}</h1>
+      <div class="ds-topbar-grow"></div>
+    `;
+  }
+
+  function mountShell({ activeNav, title }) {
+    document.getElementById("app").setAttribute("data-shell", "visible");
+    document.getElementById("sidebar").innerHTML = RenderSidebar(activeNav);
+    document.getElementById("topbar").innerHTML = RenderTopbar(title);
+    // Sidebar nav clicks — placeholder routes; real screens come later.
+    document.querySelectorAll("#sidebar [data-nav]").forEach(el => {
+      el.addEventListener("click", () => navigate("#/" + el.dataset.nav));
+    });
+    const logout = document.getElementById("btn-logout");
+    if (logout) logout.addEventListener("click", () => {
+      appState.user.loggedIn = false;
+      appState.user.email = null;
+      navigate("#/auth/login");
+    });
+  }
+
+  function unmountShell() {
+    document.getElementById("app").setAttribute("data-shell", "hidden");
+    document.getElementById("sidebar").innerHTML = "";
+    document.getElementById("topbar").innerHTML = "";
+  }
+
+  // ────────── Views ──────────
+  function RenderLogin(view) {
+    // If already logged in, send to home (auth views are public-only).
+    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    unmountShell();
+    const rememberedEmail = appState.data.rememberedEmail || "";
+    const remember = !!appState.data.rememberSession;
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card">
+          <div class="ds-auth-header">
+            <img class="ds-auth-logo" src="assets/favicon-gradient.svg" alt="Secuence" />
+            <h1 class="ds-auth-title">Iniciar sesión</h1>
+          </div>
+
+          <form class="ds-auth-form" id="login-form" novalidate>
+            ${textField({ id: "email", label: "Correo electrónico (obligatorio)", type: "email", placeholder: "Escriba su correo", value: rememberedEmail, autocomplete: "email" })}
+            ${textField({ id: "password", label: "Contraseña (obligatorio)", type: "password", placeholder: "Escriba su contraseña", suffixIcon: "visibility", autocomplete: "current-password" })}
+
+            <div class="ds-auth-row">
+              ${checkbox({ id: "remember", label: "Recordar sesión", checked: remember })}
+              <button type="button" class="ds-btn" data-variant="text-brand" id="link-forgot">¿Olvidó contraseña?</button>
+            </div>
+
+            <div class="ds-auth-actions">
+              ${button({ variant: "filled",   icon: "login",  label: "Inicia sesión",          type: "submit", block: true, id: "btn-submit" })}
+              ${button({ variant: "outlined", label: "Iniciar sesión con Google", type: "button", block: true, id: "btn-google" })}
+            </div>
+          </form>
+
+          <div class="ds-auth-footer">
+            <button type="button" class="ds-btn" data-variant="text-brand" id="link-register">¿No tienes cuenta? regístrate</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    // Replace the Google button's left icon (we ship a real Google G).
+    const googleBtn = document.getElementById("btn-google");
+    if (googleBtn) googleBtn.insertAdjacentHTML("afterbegin", googleGSvg);
+
+    // Password show/hide toggle
+    const passField = document.getElementById("password");
+    const passToggle = document.querySelector('[data-suffix-for="password"]');
+    if (passToggle) {
+      passToggle.addEventListener("click", () => {
+        const showing = passField.getAttribute("type") === "text";
+        passField.setAttribute("type", showing ? "password" : "text");
+        passToggle.querySelector(".material-symbols-outlined").textContent = showing ? "visibility" : "visibility_off";
+      });
+    }
+
+    // Clear field error on input
+    ["email", "password"].forEach(id => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      input.addEventListener("input", () => {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      });
+    });
+
+    // Inert: forgot-password flow not yet defined.
+    document.getElementById("link-forgot").addEventListener("click", () => {});
+    // Register link → wizard step 1.
+    document.getElementById("link-register").addEventListener("click", () => navigate("#/configuracion-cuenta"));
+
+    // Submit handler — primary button
+    document.getElementById("login-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitLogin();
+    });
+
+    // Google button — same simulated flow
+    googleBtn.addEventListener("click", () => submitLogin({ provider: "google" }));
+  }
+
+  function submitLogin(opts) {
+    opts = opts || {};
+    const emailInput = document.getElementById("email");
+    const passInput  = document.getElementById("password");
+    const rememberInput = document.getElementById("remember");
+    const submitBtn = document.getElementById("btn-submit");
+    const googleBtn = document.getElementById("btn-google");
+
+    const email = (emailInput.value || "").trim();
+    const password = passInput.value || "";
+
+    // Validation (Google flow skips email/password validation)
+    let firstInvalid = null;
+    if (opts.provider !== "google") {
+      const errors = {
+        email: !email
+          ? "Ingrese su correo electrónico."
+          : (!isValidEmail(email) ? "Ingrese un correo válido (ej. correo@email.com)." : ""),
+        password: !password ? "Ingrese su contraseña." : "",
+      };
+      Object.entries(errors).forEach(([id, msg]) => {
+        const input = document.getElementById(id);
+        const err = document.getElementById(id + "-error");
+        if (msg) {
+          input.setAttribute("aria-invalid", "true");
+          if (err) err.textContent = msg;
+          if (!firstInvalid) firstInvalid = input;
+        } else {
+          input.removeAttribute("aria-invalid");
+          if (err) err.textContent = "";
+        }
+      });
+      if (firstInvalid) { firstInvalid.focus(); return; }
+    }
+
+    // Persist "Recordar sesión" preference
+    try {
+      const remember = !!(rememberInput && rememberInput.checked);
+      appState.data.rememberSession = remember;
+      localStorage.setItem("sc.rememberSession", remember ? "true" : "false");
+      if (remember && email) localStorage.setItem("sc.rememberedEmail", email);
+      else localStorage.removeItem("sc.rememberedEmail");
+    } catch (_) { /* no-op */ }
+
+    // Simulated loading state, then navigate.
+    const targetBtn = opts.provider === "google" ? googleBtn : submitBtn;
+    const originalLabel = targetBtn.querySelector("span:last-child").textContent;
+    targetBtn.setAttribute("aria-busy", "true");
+    targetBtn.setAttribute("disabled", "");
+    // Swap the leading icon/G for a spinner during loading.
+    const leadEls = targetBtn.querySelectorAll(":scope > *");
+    leadEls.forEach((el, i) => { if (i === 0) el.style.display = "none"; });
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    if (opts.provider === "google") spinner.style.borderTopColor = "var(--text-primary)";
+    targetBtn.insertBefore(spinner, targetBtn.firstChild);
+    targetBtn.querySelector("span:last-child").textContent = "Ingresando…";
+
+    setTimeout(() => {
+      appState.user.loggedIn = true;
+      appState.user.email = email || (opts.provider === "google" ? "usuario@gmail.com" : null);
+      appState.user.name  = email ? email.split("@")[0] : (appState.user.name || "Admin");
+      // Login correcto → entra al dashboard real (index · Indicadores).
+      window.location.href = "index.html#/indicadores";
+    }, 900);
+  }
+
+  // Placeholder home — definitive role-based routing pending.
+  function RenderInicio(view) {
+    if (!appState.user.loggedIn) { navigate("#/auth/login"); return; }
+    mountShell({ activeNav: null, title: "Bienvenido" });
+    view.innerHTML = `
+      <section class="ds-card" style="max-width:720px">
+        <div style="font: var(--font-weight-semibold) var(--font-size-l)/var(--line-height-l) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); margin-bottom: var(--space-2);">
+          Sesión iniciada
+        </div>
+        <p style="margin:0; font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);">
+          La página de destino post-login se definirá según el rol del usuario (pendiente).
+          Use el menú lateral para navegar entre las secciones.
+        </p>
+      </section>
+    `;
+  }
+
+  // Placeholder for sidebar nav targets (real screens come in next requests).
+  function RenderPlaceholder(slug, title) {
+    return function (view) {
+      if (!appState.user.loggedIn) { navigate("#/auth/login"); return; }
+      mountShell({ activeNav: slug, title });
+      view.innerHTML = `
+        <section class="ds-card">
+          <div style="font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-s) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);">
+            Vista <strong style="color:var(--text-primary)">${escapeHtml(title)}</strong> pendiente de implementación.
+          </div>
+        </section>
+      `;
+    };
+  }
+
+  function RenderNotFound(view) {
+    // 404 — full-screen when no session, inside shell when authed.
+    if (appState.user.loggedIn) {
+      mountShell({ activeNav: null, title: "Página no encontrada" });
+    } else {
+      unmountShell();
+    }
+    view.innerHTML = `
+      <div class="ds-empty">
+        <div class="ds-empty-inner">
+          <div class="ds-empty-icon"><span class="material-symbols-outlined">error</span></div>
+          <h2 class="ds-empty-title">Página no encontrada (404)</h2>
+          <p class="ds-empty-body">La ruta <code>${escapeHtml(location.hash || "/")}</code> no existe.</p>
+          <div style="margin-top: var(--space-3)">
+            ${button({ variant: "filled", icon: "arrow_back", label: appState.user.loggedIn ? "Ir al inicio" : "Ir a iniciar sesión", id: "btn-404-home" })}
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById("btn-404-home").addEventListener("click", () => {
+      navigate(appState.user.loggedIn ? "#/inicio" : "#/auth/login");
+    });
+  }
+
+  function RenderDefault(view) {
+    // No hash → route based on session state.
+    if (appState.user.loggedIn) navigate("#/inicio");
+    else navigate("#/auth/login");
+  }
+
+  // ────────── Configuración de cuenta — wizard (step 1 of 4) ──────────
+  // Sub-route strategy: this is the entry route; future steps live at
+  // #/configuracion-cuenta/paso-2, /paso-3, /paso-4. State shared via
+  // appState.data.registro.
+  //
+  // Password rule per spec: min 8 chars including letter, digit, and
+  // a special (non-alphanumeric) character.
+  const passwordRule = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+
+  function RenderConfiguracionCuenta(view) {
+    // Public flow — but if user is already authenticated, send to home.
+    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    unmountShell();
+
+    // Restore any data already entered for this step (back-navigation).
+    const reg = (appState.data.registro = appState.data.registro || {});
+    const v = reg.paso1 || { nombres: "", apellidos: "", email: "", password: "", confirm: "", terms: true };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <h1 class="ds-auth-title">Configuración de cuenta</h1>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="1"
+                 aria-label="Paso 1 de 4">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 25%"></div>
+              </div>
+              <div class="ds-progress-label">1/4</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="wizard-form" novalidate>
+            ${textField({ id: "nombres",   label: "Nombres (obligatorio)",    type: "text",     placeholder: "Escriba sus nombres", value: v.nombres, autocomplete: "given-name" })}
+            ${textField({ id: "apellidos", label: "Apellidos (obligatorio)",  type: "text",     placeholder: "Escriba sus apellidos", value: v.apellidos, autocomplete: "family-name" })}
+            ${textField({ id: "email",    label: "Correo electrónico (obligatorio)",   type: "email",    placeholder: "Escriba su correo",            value: v.email,  autocomplete: "email" })}
+            ${textField({ id: "password", label: "Contraseña (obligatorio)",            type: "password", placeholder: "Escriba su contraseña",        value: v.password, suffixIcon: "visibility", autocomplete: "new-password" })}
+            ${textField({ id: "confirm",  label: "Confirme su contraseña (obligatorio)",type: "password", placeholder: "Escriba nuevamente su contraseña", value: v.confirm,  suffixIcon: "visibility", autocomplete: "new-password" })}
+
+            <label class="ds-terms-row" for="terms">
+              <input type="checkbox" id="terms" name="terms" ${v.terms ? "checked" : ""} style="position:absolute;opacity:0;pointer-events:none" />
+              <span class="ds-checkbox-box" aria-hidden="true">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              <span class="ds-terms-text">
+                Acepto términos y condiciones de uso del sistema.
+                <a href="#/terminos-y-condiciones" target="_blank" rel="noopener" class="ds-link-info" id="link-terms" data-open-newtab>Ver términos y condiciones.</a>
+              </span>
+            </label>
+
+            ${button({ variant: "filled", label: "Continuar", type: "submit", block: true, id: "btn-continuar", disabled: !v.terms })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    // ── Wire interactions ──
+
+    // Back arrow → login
+    document.getElementById("btn-wizard-back").addEventListener("click", () => navigate("#/auth/login"));
+
+    // Terms link opens in a new tab. Spec says target="_blank". The
+    // anchor itself uses _blank for accessibility (middle-click /
+    // "open in new tab" work natively), but on a normal click we
+    // intercept and feed the popup a self-contained HTML doc —
+    // otherwise sandboxed previews (Claude) lose their auth cookie
+    // when the browser navigates the new tab and show a token error.
+    document.getElementById("link-terms").addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openTerminosInNewTab();
+    });
+
+    // Independent show/hide toggles on both password fields
+    document.querySelectorAll("[data-suffix-for]").forEach(toggle => {
+      const targetId = toggle.dataset.suffixFor;
+      const input = document.getElementById(targetId);
+      if (!input) return;
+      toggle.addEventListener("click", () => {
+        const showing = input.getAttribute("type") === "text";
+        input.setAttribute("type", showing ? "password" : "text");
+        toggle.querySelector(".material-symbols-outlined").textContent = showing ? "visibility" : "visibility_off";
+      });
+    });
+
+    // Clear per-field error on input
+    ["nombres", "apellidos", "email", "password", "confirm"].forEach(id => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      input.addEventListener("input", () => {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      });
+    });
+
+    // Terms checkbox gates the Continuar button
+    const termsInput = document.getElementById("terms");
+    const continuarBtn = document.getElementById("btn-continuar");
+    function syncContinuar() {
+      if (termsInput.checked) continuarBtn.removeAttribute("disabled");
+      else continuarBtn.setAttribute("disabled", "");
+    }
+    termsInput.addEventListener("change", syncContinuar);
+    syncContinuar();
+
+    // Submit
+    document.getElementById("wizard-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitWizardPaso1();
+    });
+  }
+
+  function submitWizardPaso1() {
+    const nombres   = (document.getElementById("nombres").value   || "").trim();
+    const apellidos = (document.getElementById("apellidos").value || "").trim();
+    const email    = (document.getElementById("email").value    || "").trim();
+    const password =  document.getElementById("password").value || "";
+    const confirm  =  document.getElementById("confirm").value  || "";
+    const terms    =  document.getElementById("terms").checked;
+
+    if (!terms) return; // button is disabled anyway
+
+    const errors = {
+      nombres: !nombres ? "Ingrese sus nombres." : "",
+      apellidos: !apellidos ? "Ingrese sus apellidos." : "",
+      email: !email
+        ? "Ingrese su correo electrónico."
+        : (!isValidEmail(email) ? "Ingrese un correo válido (ej. correo@email.com)." : ""),
+      password: !password
+        ? "Ingrese su contraseña."
+        : (!passwordRule.test(password)
+            ? "Mínimo 8 caracteres: debe incluir letras, números y un carácter especial."
+            : ""),
+      confirm: !confirm
+        ? "Confirme su contraseña."
+        : (confirm !== password ? "Las contraseñas no coinciden." : ""),
+    };
+
+    let firstInvalid = null;
+    Object.entries(errors).forEach(([id, msg]) => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      if (msg) {
+        input.setAttribute("aria-invalid", "true");
+        if (err) err.textContent = msg;
+        if (!firstInvalid) firstInvalid = input;
+      } else {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      }
+    });
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    // Persist step 1 to appState for future steps to consume
+    appState.data.registro = appState.data.registro || {};
+    appState.data.registro.paso1 = { nombres, apellidos, email, password, confirm, terms };
+
+    // Simulated loading, then navigate to step 2 (route will be added later)
+    const btn = document.getElementById("btn-continuar");
+    const originalLabel = btn.querySelector("span:last-child").textContent;
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    btn.querySelector("span:last-child").textContent = "Procesando…";
+
+    setTimeout(() => {
+      // Next step route — to be implemented when you request paso-2.
+      navigate("#/configuracion-cuenta/paso-2");
+      btn.removeAttribute("aria-busy");
+      btn.removeAttribute("disabled");
+      btn.querySelector("span:last-child").textContent = originalLabel;
+    }, 700);
+  }
+
+  // ────────── Términos y condiciones — standalone page ──────────
+  // Public, no shell, regardless of auth status. Linked from the
+  // wizard with target="_blank" so it opens in a new tab.
+  const terminosSecciones = [
+    {
+      n: 1, title: "Naturaleza del servicio",
+      bullets: [
+        "Secuence es una plataforma tecnológica de apoyo para la gestión, organización y análisis de información clínica.",
+        "Secuence no presta servicios médicos, no realiza diagnósticos ni prescribe tratamientos, y no sustituye el juicio clínico de un profesional de la salud.",
+        "El usuario reconoce que cualquier funcionalidad de la plataforma, incluyendo visualizaciones, resúmenes, priorización de información o generación de alertas, tiene carácter exclusivamente informativo y no constituye una recomendación clínica.",
+      ],
+    },
+    {
+      n: 2, title: "Tipos de usuarios y roles",
+      lead: "Secuence puede ser utilizada por:",
+      bullets: [
+        "Profesionales de la salud.",
+        "Instituciones médicas.",
+        "Pacientes.",
+      ],
+      tail: "Cada usuario acepta que sus responsabilidades son independientes y diferenciadas según su rol.",
+    },
+    {
+      n: 3, title: "Relación médico–paciente",
+      bullets: [
+        "Secuence no crea, regula ni sustituye la relación médico–paciente, la cual existe exclusivamente entre el profesional de la salud y el paciente.",
+        "La plataforma no participa en la prestación de servicios médicos.",
+      ],
+    },
+    {
+      n: 4, title: "Responsabilidad del profesional de la salud",
+      groups: [
+        { lead: "El profesional de la salud reconoce y acepta que:", bullets: [
+          "Es el único responsable de todas las decisiones clínicas.",
+          "Debe evaluar de manera independiente toda la información disponible.",
+          "No debe basar sus decisiones exclusivamente en la plataforma.",
+        ] },
+        { lead: "Asimismo, reconoce que:", bullets: [
+          "La organización, priorización o visualización de datos dentro de Secuence no debe interpretarse como una indicación clínica.",
+          "El uso de la plataforma no sustituye el seguimiento activo, revisión periódica ni monitoreo clínico directo de sus pacientes.",
+        ] },
+      ],
+    },
+    {
+      n: 5, title: "Responsabilidad por diseño y uso de la información",
+      groups: [
+        { lead: "El usuario reconoce que:", bullets: [
+          "Secuence puede estructurar, resumir o priorizar información.",
+          "Dichas funcionalidades pueden influir en la forma en que se presenta la información.",
+        ] },
+        { lead: "Sin embargo:", bullets: [
+          "Estas funcionalidades no constituyen evaluación clínica ni recomendación médica.",
+          "El usuario es responsable de interpretar la información de forma crítica y profesional.",
+        ] },
+      ],
+    },
+    // ── divisor ──
+    {
+      n: 6, title: "Alertas y responsabilidad por omisión", divider: true,
+      groups: [
+        { lead: "Las alertas generadas por Secuence:", bullets: [
+          "Son automatizadas y de carácter informativo.",
+          "No constituyen diagnóstico ni recomendación clínica.",
+          "No garantizan la detección de condiciones médicas.",
+        ] },
+        { lead: "El usuario reconoce que:", bullets: [
+          "La ausencia de alertas no implica ausencia de riesgo clínico.",
+          "Secuence no garantiza la identificación oportuna de eventos clínicos relevantes.",
+        ] },
+      ],
+    },
+    {
+      n: 7, title: "Dependencia tecnológica",
+      lead: "El usuario acepta que:",
+      bullets: [
+        "Secuence no debe ser utilizada como único medio de seguimiento clínico.",
+        "No sustituye la supervisión activa del paciente.",
+        "No debe generar dependencia para la toma de decisiones médicas.",
+        "Cualquier uso contrario será bajo responsabilidad exclusiva del usuario.",
+      ],
+    },
+    {
+      n: 8, title: "Uso de inteligencia artificial y automatización",
+      groups: [
+        { lead: "La plataforma puede utilizar algoritmos automatizados para:", bullets: [
+          "Análisis de datos.",
+          "Generación de alertas.",
+          "Identificación de patrones.",
+        ] },
+        { lead: "El usuario reconoce que:", bullets: [
+          "Estas herramientas pueden contener errores o limitaciones.",
+          "Sus resultados deben ser validados antes de cualquier uso clínico.",
+        ] },
+      ],
+    },
+    {
+      n: 9, title: "Uso por parte del paciente y consentimiento informado reforzado",
+      groups: [
+        { lead: "Al registrarse o utilizar la plataforma, el paciente:" },
+        { lead: "Declara haber sido informado y otorga su consentimiento libre, previo, expreso e informado para:", bullets: [
+          "El tratamiento de sus datos personales sensibles de salud.",
+          "El uso de herramientas automatizadas para el análisis de su información.",
+          "La generación de alertas y seguimiento digital.",
+        ] },
+        { lead: "Asimismo, reconoce que:", bullets: [
+          "Secuence no monitorea su estado de salud en tiempo real.",
+          "No es un servicio médico ni un canal de atención.",
+          "No sustituye la consulta con un profesional de salud.",
+        ] },
+      ],
+    },
+    {
+      n: 10, title: "No atención de emergencias",
+      bullets: [
+        "Secuence no es un sistema de atención de emergencias.",
+        "En caso de urgencia, el usuario debe acudir inmediatamente a un servicio médico o contactar servicios de emergencia.",
+      ],
+    },
+    // ── divisor ──
+    {
+      n: 11, title: "Veracidad de la información", divider: true,
+      lead: "El usuario es responsable de:",
+      bullets: [
+        "La exactitud.",
+        "Actualización.",
+        "Veracidad de la información ingresada.",
+        "Secuence no valida ni garantiza dicha información.",
+      ],
+    },
+    {
+      n: 12, title: "Disponibilidad y limitaciones tecnológicas",
+      groups: [
+        { lead: "Secuence no garantiza:", bullets: [
+          "Disponibilidad continua.",
+          "Funcionamiento libre de errores.",
+          "Entrega inmediata de notificaciones.",
+        ] },
+        { lead: "El usuario reconoce que:", bullets: [
+          "Pueden existir fallas, interrupciones o retrasos.",
+          "La plataforma no debe utilizarse como sistema de monitoreo en tiempo real.",
+        ] },
+      ],
+    },
+    {
+      n: 13, title: "Uso adecuado",
+      lead: "Está prohibido:",
+      bullets: [
+        "Ingresar información falsa.",
+        "Acceder a datos sin autorización.",
+        "Utilizar la plataforma para fines distintos a los previstos.",
+      ],
+      tail: "Secuence podrá suspender o cancelar cuentas sin previo aviso ante incumplimiento.",
+    },
+    // ── divisor ──
+    {
+      n: 14, title: "Protección de datos", divider: true,
+      lead: "Secuence tratará los datos personales conforme a la normativa aplicable.",
+      groups: [
+        { lead: "El usuario reconoce que:", bullets: [
+          "Existen riesgos inherentes al uso de tecnología.",
+          "Ningún sistema es completamente seguro.",
+        ] },
+      ],
+    },
+    // ── divisor ──
+    {
+      n: 15, title: "Limitación de responsabilidad", divider: true,
+      lead: "En la máxima medida permitida por la ley, Secuence no será responsable por:",
+      bullets: [
+        "Decisiones clínicas.",
+        "Omisiones en la detección de condiciones médicas.",
+        "Interpretación de información.",
+        "Fallas del sistema.",
+        "Interrupciones del servicio.",
+        "Daños indirectos o consecuenciales.",
+      ],
+    },
+    {
+      n: 16, title: "Indemnidad",
+      lead: "El usuario se obliga a indemnizar y mantener indemne a Secuence frente a cualquier reclamación derivada de:",
+      bullets: [
+        "Uso indebido de la plataforma.",
+        "Incumplimiento de estos términos.",
+        "Decisiones clínicas tomadas por profesionales.",
+      ],
+    },
+    {
+      n: 17, title: "Modificaciones",
+      body: "Secuence podrá modificar estos términos en cualquier momento. El uso continuado implica aceptación de dichos cambios.",
+    },
+    {
+      n: 18, title: "Jurisdicción y ley aplicable",
+      bullets: [
+        "Estos términos se regirán por la legislación aplicable en el país donde opere Secuence.",
+        "Cualquier controversia será resuelta ante los tribunales competentes de dicha jurisdicción.",
+      ],
+    },
+    {
+      n: 19, title: "Aceptación",
+      body: "El uso de la plataforma implica la aceptación expresa de estos términos.",
+    },
+    {
+      n: 20, title: "Contacto",
+      body: "Para consultas, solicitudes o comunicaciones relacionadas con estos Términos y Condiciones, el uso de la plataforma o el tratamiento de datos personales, los usuarios pueden comunicarse con Secuence a través del siguiente canal:",
+      contact: { label: "Correo electrónico:", value: "hisecuence@gmail.com" },
+    },
+  ];
+
+  function renderTerminosSection(s) {
+    const dividerAttr = s.divider ? ' data-divider="top"' : "";
+    const bulletsHtml = (arr) =>
+      `<ul>${arr.map(b => `<li>${escapeHtml(b)}</li>`).join("")}</ul>`;
+    let body = "";
+    if (s.lead) body += `<p><strong style="color:var(--text-primary); font-weight: var(--font-weight-semibold);">${escapeHtml(s.lead)}</strong></p>`;
+    if (s.bullets) body += bulletsHtml(s.bullets);
+    if (s.tail) body += `<p>${escapeHtml(s.tail)}</p>`;
+    if (s.body) body += `<p>${escapeHtml(s.body)}</p>`;
+    if (s.groups) {
+      body += s.groups.map(g => {
+        let g_html = "";
+        if (g.lead) g_html += `<p><strong style="color:var(--text-primary); font-weight: var(--font-weight-semibold);">${escapeHtml(g.lead)}</strong></p>`;
+        if (g.bullets) g_html += bulletsHtml(g.bullets);
+        return g_html;
+      }).join("");
+    }
+    if (s.contact) {
+      body += `<p>${escapeHtml(s.contact.label)} <a class="ds-terms-mail" href="mailto:${escapeHtml(s.contact.value)}">${escapeHtml(s.contact.value)}</a></p>`;
+    }
+    return `<section class="ds-terms-section"${dividerAttr}>
+      <h2>${s.n}. ${escapeHtml(s.title)}</h2>
+      ${body}
+    </section>`;
+  }
+
+  function renderTerminosBody({ faviconSrc = "assets/secuence_favicon.svg", logoSrc = "assets/logo-horizontal.svg" } = {}) {
+    return `
+      <div class="ds-terms-page">
+        <header class="ds-terms-banner">
+          <img class="ds-terms-banner-decoration" src="${faviconSrc}" alt="" aria-hidden="true" />
+          <div class="ds-terms-banner-inner">
+            <img class="ds-terms-banner-logo" src="${logoSrc}" alt="Secuence" />
+            <p class="ds-terms-banner-title">Términos y condiciones</p>
+          </div>
+        </header>
+        <main class="ds-terms-content">
+          ${terminosSecciones.map(renderTerminosSection).join("")}
+        </main>
+      </div>
+    `;
+  }
+
+  function RenderTerminosYCondiciones(view) {
+    // Always standalone — no shell, regardless of auth.
+    unmountShell();
+    document.title = "Términos y condiciones · Secuence";
+    view.innerHTML = renderTerminosBody();
+  }
+
+  // Self-contained HTML for opening T&C in a new tab. Built on first
+  // request and cached. We inline the design-system CSS and the SVG
+  // assets so the popup doesn't hit the network (the Claude preview's
+  // auth cookie is partitioned and is NOT shared with new tabs, which
+  // is why a plain `<a target="_blank">` to the route fails with
+  // "preview token required"). Geist is loaded from Google Fonts as a
+  // substitute since the on-disk Geist TTFs are auth-gated too.
+  let terminosStandaloneCache = null;  async function buildTerminosStandalone() {
+    if (terminosStandaloneCache) return terminosStandaloneCache;
+    const [tokensCss, indexHtml, faviconSvg, logoSvg] = await Promise.all([
+      fetch("colors_and_type.css").then(r => r.text()),
+      fetch(location.pathname + location.search).then(r => r.text()),
+      fetch("assets/secuence_favicon.svg").then(r => r.text()),
+      fetch("assets/logo-horizontal.svg").then(r => r.text()),
+    ]);
+    // Pick our own page <style data-page-styles> block. (Some hosts
+    // inject extra <style> blocks before ours — generic selectors
+    // would grab the wrong one.)
+    const styleMatch = indexHtml.match(/<style\s+data-page-styles[^>]*>([\s\S]*?)<\/style>/);
+    const pageCss = styleMatch ? styleMatch[1] : "";
+    // Drop @font-face blocks (those URLs require the same auth cookie).
+    const tokensCssNoFonts = tokensCss.replace(/@font-face\s*\{[\s\S]*?\}/g, "");
+    const svgToDataUri = (svgText) =>
+      "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svgText)));
+    const faviconDataUri = svgToDataUri(faviconSvg);
+    const logoDataUri = svgToDataUri(logoSvg);
+    const bodyHtml = renderTerminosBody({ faviconSrc: faviconDataUri, logoSrc: logoDataUri });
+    terminosStandaloneCache = `<!doctype html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Términos y condiciones · Secuence</title>
+<link rel="icon" href="${faviconDataUri}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&display=swap">
+<style>
+${tokensCssNoFonts}
+${pageCss}
+body { margin: 0; background: var(--bg-surface-primary); color: var(--text-primary); font-family: var(--font-family-geist); -webkit-font-smoothing: antialiased; }
+</style>
+</head>
+<body class="sc-scope">${bodyHtml}</body>
+</html>`;
+    return terminosStandaloneCache;
+  }
+
+  async function openTerminosInNewTab() {
+    // Open synchronously (still inside the click gesture) so popup
+    // blockers don't kick in; fill in after fetches resolve.
+    const win = window.open("about:blank", "_blank");
+    if (!win) {
+      // Popup blocked — fall back to in-tab navigation so the user
+      // can still reach the page.
+      navigate("#/terminos-y-condiciones");
+      return;
+    }
+    try {
+      const html = await buildTerminosStandalone();
+      win.document.open();
+      win.document.write(html);
+      win.document.close();
+    } catch (err) {
+      try { win.document.body.textContent = "Error: " + err.message; } catch (_) {}
+    }
+  }
+
+  // ────────── Configuración de cuenta — paso 2 (rol) ──────────
+  // Card · Filled component (design system spec at preview/card-filled.html).
+  // Subtitle and footer slots are dynamic and not shown for this step.
+  const wizardRoles = [
+    {
+      id: "medico-individual",
+      title: "Soy médico y gestionaré mis propios pacientes",
+      body: "Gestionaré pacientes de manera independiente o en centro clínico en el que estoy vinculado.",
+      img: "assets/role-physician.png",
+      alt: "Médica con bata blanca y estetoscopio",
+    },
+    {
+      id: "medico-supervisor",
+      title: "Soy médico y supervisaré la gestión de otros médicos",
+      body: "Gestionaré mis propios pacientes así como la gestión de nuevos usuarios médicos incluyendo sus roles y permisos dentro de la plataforma.",
+      img: "assets/role-team.png",
+      alt: "Equipo de médicos",
+    },
+    {
+      id: "administrativo",
+      title: "Ejerzo un rol administrativo distinto al médico",
+      body: "Gestionaré los perfiles médicos, supervisión de métricas, así como la gestión de roles y nuevos usuarios médicos dentro de la plataforma.",
+      img: "assets/role-hospital.png",
+      alt: "Edificio Community Health Hospital",
+    },
+  ];
+
+  function roleCardHtml(r) {
+    return `<button type="button" class="ds-card-filled" data-role="${escapeHtml(r.id)}">
+      <div class="ds-card-filled-media">
+        <img src="${escapeHtml(r.img)}" alt="${escapeHtml(r.alt)}" />
+      </div>
+      <div class="ds-card-filled-content">
+        <div class="ds-card-filled-title">${escapeHtml(r.title)}</div>
+        <div class="ds-card-filled-body">${escapeHtml(r.body)}</div>
+      </div>
+    </button>`;
+  }
+
+  function RenderConfiguracionCuentaPaso2(view) {
+    // If user is already authenticated, send to home.
+    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    // Enforce wizard order — paso 1 must be completed first.
+    if (!appState.data.registro || !appState.data.registro.paso1) {
+      navigate("#/configuracion-cuenta");
+      return;
+    }
+    unmountShell();
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-wide">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver al paso anterior">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <div>
+              <h1 class="ds-auth-title">Cuéntenos de usted</h1>
+              <p class="ds-wizard-subtitle">¿Con qué propósito usará Secuence?</p>
+            </div>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="2"
+                 aria-label="Paso 2 de 4">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 50%"></div>
+              </div>
+              <div class="ds-progress-label">2/4</div>
+            </div>
+          </div>
+
+          <div class="ds-role-grid">
+            ${wizardRoles.map(roleCardHtml).join("")}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-wizard-back").addEventListener("click",
+      () => navigate("#/configuracion-cuenta"));
+
+    // Click on any role card advances the wizard immediately.
+    // Per-role destination routes are pending the user's definition;
+    // medico-individual already has its paso 3 implemented.
+    document.querySelectorAll("[data-role]").forEach(el => {
+      el.addEventListener("click", () => {
+        const role = el.dataset.role;
+        appState.data.registro.paso2 = { role };
+        const next = ({
+          "medico-individual":  "#/configuracion-cuenta/medico-individual/informacion-basica",
+          // El supervisor entra al mismo flujo que el médico individual.
+          "medico-supervisor":  "#/configuracion-cuenta/medico-individual/informacion-basica",
+          "administrativo":     "#/configuracion-cuenta/administrativo/informacion-basica",
+        })[role];
+        navigate(next);
+      });
+    });
+  }
+
+  // ────────── Configuración de cuenta — paso 3 (médico individual) ──────────
+  // Route: #/configuracion-cuenta/medico-individual/informacion-basica
+  const especialidadesMedicas = [
+    "Acupuntura", "Alergología", "Cardiología", "Cardiología Pediátrica",
+    "Cirugía Cardiovascular", "Cirugía General", "Cirugía Maxilofacial",
+    "Cirugía Pediátrica", "Cirugía Plástica", "Cirugía Vascular",
+    "Coloproctología", "Cuidados Paliativos", "Dermatología", "Endocrinología",
+    "Endocrinología Pediátrica", "Endodoncia", "Fertilidad y Reproducción",
+    "Fisiatría", "Fisioterapia", "Fonoaudiología", "Gastroenterología",
+    "Geriatría", "Ginecología", "Ginecología y Obstetricia", "Hematología",
+    "Homeopatía", "Infectología", "Inmunología", "Laboratorio Clínico",
+    "Medicina Aeroespacial", "Medicina del Dolor", "Medicina del Sueño",
+    "Medicina Deportiva", "Medicina de Emergencias", "Medicina Estética",
+    "Medicina Familiar", "Medicina Física y Rehabilitación", "Medicina General",
+    "Medicina Intensiva", "Medicina Integrativa", "Medicina Interna",
+    "Medicina Laboral", "Medicina Materno Fetal", "Medicina Nuclear",
+    "Medicina Preventiva", "Nefrología", "Neonatología", "Neumología",
+    "Neurocirugía", "Neurología", "Neuropediatría", "Neuropsicología",
+    "Nutrición Clínica", "Obstetricia", "Odontología General", "Oftalmología",
+    "Oncología", "Ortopedia y Traumatología", "Ortodoncia", "Otorrinolaringología",
+    "Patología", "Pediatría", "Periodoncia", "Psiquiatría", "Psicología Clínica",
+    "Radiología e Imagenología", "Reumatología", "Terapia Ocupacional",
+    "Terapia Respiratoria", "Toxicología Clínica", "Urología",
+  ];
+  // LATAM + USA + Canadá + España, ordenados alfabéticamente.
+  const paisesEjercicio = [
+    "Argentina", "Bolivia", "Brasil", "Canadá", "Chile", "Colombia",
+    "Costa Rica", "Cuba", "Ecuador", "El Salvador", "España",
+    "Estados Unidos", "Guatemala", "Haití", "Honduras", "México",
+    "Nicaragua", "Panamá", "Paraguay", "Perú", "Puerto Rico",
+    "República Dominicana", "Uruguay", "Venezuela",
+  ];
+
+  function RenderMedicoInformacionBasica(view) {
+    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    // Wizard order: paso 1 + paso 2 + correct role required.
+    const reg = appState.data.registro;
+    if (!reg || !reg.paso1) { navigate("#/configuracion-cuenta"); return; }
+    if (!reg.paso2 || (reg.paso2.role !== "medico-individual" && reg.paso2.role !== "medico-supervisor")) {
+      navigate("#/configuracion-cuenta/paso-2"); return;
+    }
+    unmountShell();
+
+    const saved = reg.paso3 || {};
+    const v = {
+      licencia: saved.licencia || "",
+      especializacion: saved.especializacion || "Medicina General",
+      pais: saved.pais || "Venezuela",
+    };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-medium">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver al paso anterior">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <div>
+              <h1 class="ds-auth-title">Información básica</h1>
+              <p class="ds-wizard-subtitle">Cuéntenos sobre usted</p>
+            </div>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="3"
+                 aria-label="Paso 3 de 4">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 75%"></div>
+              </div>
+              <div class="ds-progress-label">3/4</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="paso3-form" novalidate>
+            ${pictureUploader({ id: "licencia-foto", buttonLabel: "Foto de licencia o título" })}
+
+            ${textField({ id: "licencia",   label: "Licencia médica (obligatorio)", placeholder: "Escriba su número de licencia", value: v.licencia })}
+            ${select({   id: "especializacion", label: "Especialización (obligatorio)",          options: especialidadesMedicas, value: v.especializacion })}
+            ${select({   id: "pais",        label: "Principal país de ejercicio (obligatorio)",  options: paisesEjercicio,        value: v.pais })}
+
+            ${button({ variant: "filled", label: "Continuar", type: "submit", block: true, id: "btn-continuar" })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-wizard-back").addEventListener("click",
+      () => navigate("#/configuracion-cuenta/paso-2"));
+
+    const uploaderApi = wirePictureUploader("licencia-foto");
+    const especApi   = wireSelect("especializacion");
+    const paisApi    = wireSelect("pais");
+
+    // Clear text-field error on input
+    const licenciaInput = document.getElementById("licencia");
+    const licenciaErr   = document.getElementById("licencia-error");
+    licenciaInput.addEventListener("input", () => {
+      licenciaInput.removeAttribute("aria-invalid");
+      if (licenciaErr) licenciaErr.textContent = "";
+    });
+
+    document.getElementById("paso3-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitMedicoInformacionBasica({ uploaderApi, especApi, paisApi });
+    });
+  }
+
+  function submitMedicoInformacionBasica({ uploaderApi, especApi, paisApi }) {
+    const licenciaInput  = document.getElementById("licencia");
+    const licenciaErrEl  = document.getElementById("licencia-error");
+    const especInput     = document.getElementById("especializacion");
+    const especErrEl     = document.getElementById("especializacion-error");
+    const paisInput      = document.getElementById("pais");
+    const paisErrEl      = document.getElementById("pais-error");
+    const fotoErrEl      = document.getElementById("licencia-foto-error");
+
+    const licencia = (licenciaInput.value || "").trim();
+    const espec = especApi.value;
+    const pais  = paisApi.value;
+    const hasFile = uploaderApi.hasFile();
+
+    let firstInvalid = null;
+    const flag = (el, errEl, msg) => {
+      if (msg) {
+        if (el) el.setAttribute("aria-invalid", "true");
+        if (errEl) errEl.textContent = msg;
+        if (!firstInvalid) firstInvalid = el;
+      } else {
+        if (el) el.removeAttribute("aria-invalid");
+        if (errEl) errEl.textContent = "";
+      }
+    };
+    flag(null,          fotoErrEl,     hasFile ? "" : "Adjunte la foto de su licencia o título.");
+    flag(licenciaInput, licenciaErrEl, licencia ? "" : "Ingrese su número de licencia.");
+    flag(especInput,    especErrEl,    espec ? "" : "Seleccione su especialización.");
+    flag(paisInput,     paisErrEl,     pais  ? "" : "Seleccione su país de ejercicio.");
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    appState.data.registro.paso3 = {
+      licencia, especializacion: espec, pais,
+      fotoName: uploaderApi.file && uploaderApi.file.name,
+    };
+
+    const btn = document.getElementById("btn-continuar");
+    const originalLabel = btn.querySelector("span:last-child").textContent;
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    btn.querySelector("span:last-child").textContent = "Procesando…";
+
+    setTimeout(() => {
+      navigate("#/configuracion-cuenta/medico-individual/informacion-profesional");
+      btn.removeAttribute("aria-busy");
+      btn.removeAttribute("disabled");
+      btn.querySelector("span:last-child").textContent = originalLabel;
+    }, 700);
+  }
+
+  // ────────── Configuración de cuenta — paso 4 (médico individual) ──────────
+  // Route: #/configuracion-cuenta/medico-individual/informacion-profesional
+  const pacientesPromedioOpts = [
+    "Menos de 5", "Entre 5 y 10", "Entre 10 y 15", "Entre 15 y 25",
+    "Entre 25 y 35", "Entre 35 y 45", "Más de 45",
+  ];
+  // Solo aplica al rol "medico-supervisor".
+  const medicosGestionaOpts = [
+    "Menos de 5", "Entre 5 y 10", "Entre 10 y 15", "Entre 15 y 20", "Más de 20",
+  ];
+  const comoEncontroOpts = [
+    "Congreso médico", "Por correo electrónico", "Publicidad impresa",
+    "Redes sociales", "Referido por colega", "Visitador médico", "Otro",
+  ];
+  // Indicativos telefónicos — misma cobertura que paisesEjercicio
+  // (LATAM + USA + Canadá + España), ordenados alfabéticamente por país.
+  const indicativosTelefonicos = [
+    "+54 - Argentina", "+591 - Bolivia", "+55 - Brasil", "+1 - Canadá",
+    "+56 - Chile", "+57 - Colombia", "+506 - Costa Rica", "+53 - Cuba",
+    "+593 - Ecuador", "+503 - El Salvador", "+34 - España",
+    "+1 - Estados Unidos", "+502 - Guatemala", "+509 - Haití",
+    "+504 - Honduras", "+52 - México", "+505 - Nicaragua", "+507 - Panamá",
+    "+595 - Paraguay", "+51 - Perú", "+1 - Puerto Rico",
+    "+1 - República Dominicana", "+598 - Uruguay", "+58 - Venezuela",
+  ];
+
+  function RenderMedicoInformacionProfesional(view) {
+    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    // Wizard order: paso 1 + paso 2 (rol correcto) + paso 3 requeridos.
+    const reg = appState.data.registro;
+    if (!reg || !reg.paso1) { navigate("#/configuracion-cuenta"); return; }
+    if (!reg.paso2 || (reg.paso2.role !== "medico-individual" && reg.paso2.role !== "medico-supervisor")) {
+      navigate("#/configuracion-cuenta/paso-2"); return;
+    }
+    if (!reg.paso3) {
+      navigate("#/configuracion-cuenta/medico-individual/informacion-basica"); return;
+    }
+    unmountShell();
+
+    const isSupervisor = reg.paso2.role === "medico-supervisor";
+    const saved = reg.paso4 || {};
+    const v = {
+      pacientes: saved.pacientes || "",
+      medicosGestiona: saved.medicosGestiona || "",
+      codigo:    saved.codigo    || "+58 - Venezuela",
+      telefono:  saved.telefono  || "",
+      sitioWeb:  saved.sitioWeb  || "",
+      comoEncontro: saved.comoEncontro || "",
+    };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-medium">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver al paso anterior">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <div>
+              <h1 class="ds-auth-title">Información profesional</h1>
+              <p class="ds-wizard-subtitle">Cuéntenos sobre su ejercicio profesional</p>
+            </div>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="4" aria-valuenow="4"
+                 aria-label="Paso 4 de 4">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 100%"></div>
+              </div>
+              <div class="ds-progress-label">4/4</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="paso4-form" novalidate>
+            ${select({ id: "pacientes", label: "¿Cuántos pacientes promedio atiende diariamente? (obligatorio)", options: pacientesPromedioOpts, value: v.pacientes, placeholder: "Seleccione opción" })}
+
+            ${isSupervisor ? select({ id: "medicos-gestiona", label: "¿Cuántos médicos gestiona a su cargo? (obligatorio)", options: medicosGestionaOpts, value: v.medicosGestiona, placeholder: "Seleccione opción" }) : ""}
+
+            <div class="ds-field-row">
+              ${select({ id: "codigo", label: "Código (obligatorio)", options: indicativosTelefonicos, value: v.codigo })}
+              ${textField({ id: "telefono", label: "Teléfono (obligatorio)", type: "tel", placeholder: "Escriba teléfono", value: v.telefono, autocomplete: "tel" })}
+            </div>
+
+            ${textField({ id: "sitio-web", label: "Sitio web (opcional)", type: "text", placeholder: "Escriba sitio web", value: v.sitioWeb, autocomplete: "url" })}
+
+            ${select({ id: "como-encontro", label: "¿Cómo encontró la plataforma de Secuence? (obligatorio)", options: comoEncontroOpts, value: v.comoEncontro, placeholder: "Seleccione opción" })}
+
+            ${button({ variant: "filled", label: "Finalizar", type: "submit", block: true, id: "btn-finalizar" })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-wizard-back").addEventListener("click",
+      () => navigate("#/configuracion-cuenta/medico-individual/informacion-basica"));
+
+    const pacientesApi    = wireSelect("pacientes");
+    const medicosApi      = isSupervisor ? wireSelect("medicos-gestiona") : null;
+    const codigoApi       = wireSelect("codigo");
+    const comoEncontroApi = wireSelect("como-encontro");
+
+    // Limpia el error de los campos de texto al escribir.
+    ["telefono", "sitio-web"].forEach(id => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      input.addEventListener("input", () => {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      });
+    });
+
+    document.getElementById("paso4-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitMedicoInformacionProfesional({ isSupervisor, pacientesApi, medicosApi, codigoApi, comoEncontroApi });
+    });
+  }
+
+  // Acepta URLs con o sin protocolo (ej. ejemplo.com, https://ejemplo.com).
+  function isValidUrl(value) {
+    return /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}(\/\S*)?$/i.test(String(value || "").trim());
+  }
+
+  function submitMedicoInformacionProfesional({ isSupervisor, pacientesApi, medicosApi, codigoApi, comoEncontroApi }) {
+    const pacientesInput  = document.getElementById("pacientes");
+    const pacientesErrEl  = document.getElementById("pacientes-error");
+    const medicosInput    = document.getElementById("medicos-gestiona");
+    const medicosErrEl    = document.getElementById("medicos-gestiona-error");
+    const codigoInput     = document.getElementById("codigo");
+    const codigoErrEl     = document.getElementById("codigo-error");
+    const telefonoInput   = document.getElementById("telefono");
+    const telefonoErrEl   = document.getElementById("telefono-error");
+    const sitioWebInput   = document.getElementById("sitio-web");
+    const sitioWebErrEl   = document.getElementById("sitio-web-error");
+    const comoEncInput    = document.getElementById("como-encontro");
+    const comoEncErrEl    = document.getElementById("como-encontro-error");
+
+    const pacientes = pacientesApi.value;
+    const medicosGestiona = medicosApi ? medicosApi.value : "";
+    const codigo    = codigoApi.value;
+    const telefono  = (telefonoInput.value || "").trim();
+    const sitioWeb  = (sitioWebInput.value || "").trim();
+    const comoEncontro = comoEncontroApi.value;
+
+    let firstInvalid = null;
+    const flag = (el, errEl, msg) => {
+      if (msg) {
+        if (el) el.setAttribute("aria-invalid", "true");
+        if (errEl) errEl.textContent = msg;
+        if (!firstInvalid) firstInvalid = el;
+      } else {
+        if (el) el.removeAttribute("aria-invalid");
+        if (errEl) errEl.textContent = "";
+      }
+    };
+
+    flag(pacientesInput, pacientesErrEl, pacientes ? "" : "Seleccione una opción.");
+    if (isSupervisor) flag(medicosInput, medicosErrEl, medicosGestiona ? "" : "Seleccione una opción.");
+    flag(codigoInput,    codigoErrEl,    codigo ? "" : "Seleccione el código.");
+    flag(telefonoInput,  telefonoErrEl,  telefono ? "" : "Ingrese su teléfono.");
+    // Sitio web es opcional: solo se valida el formato si se escribe algo.
+    flag(sitioWebInput,  sitioWebErrEl,  (!sitioWeb || isValidUrl(sitioWeb)) ? "" : "Ingrese un sitio web válido (ej. www.ejemplo.com).");
+    flag(comoEncInput,   comoEncErrEl,   comoEncontro ? "" : "Seleccione una opción.");
+    if (firstInvalid) { firstInvalid.focus(); return; }
+
+    appState.data.registro.paso4 = { pacientes, medicosGestiona, codigo, telefono, sitioWeb, comoEncontro };
+
+    const btn = document.getElementById("btn-finalizar");
+    const originalLabel = btn.querySelector("span:last-child").textContent;
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    btn.querySelector("span:last-child").textContent = "Finalizando…";
+
+    setTimeout(() => {
+      // Onboarding completo → inicia sesión automáticamente y entra al dashboard.
+      const p1 = appState.data.registro.paso1 || {};
+      appState.user.loggedIn = true;
+      appState.user.email = p1.email || null;
+      appState.user.name  = [p1.nombres, p1.apellidos].filter(Boolean).join(" ").trim() || appState.user.name;
+      appState.user.role  = "Médico";
+      // Onboarding completo → entra al dashboard real (index · Indicadores).
+      window.location.href = "index.html#/indicadores";
+    }, 700);
+  }
+
+  // ────────── Invitación · Configuración de cuenta (paso 1 de 3) ──────────
+  // Onboarding del usuario invitado/creado desde "Nuevo usuario". El enlace
+  // "Copiar enlace" del modal "¡Usuario creado con éxito!" apunta aquí.
+  // Acceso directo: auth-flow.html#/invitacion/configuracion-cuenta
+  //
+  // Variables propias de este flujo (vs. el auto-registro):
+  //   · Tarjeta del centro que cursa la invitación (demo: Clínica Secuence).
+  //   · Campo único "Nombre y apellido" precargado desde la invitación
+  //     (demo: "Dr. Pedro Pérez") y editable mediante el lápiz.
+  //   · "País de residencia" (Select · variante búsqueda).
+  //   · Progreso 1/3. "Continuar" valida; el paso 2 queda pendiente.
+  //
+  // Contraseña: 8–16 caracteres con letra, número y carácter especial.
+  const invitacionPasswordRule = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,16}$/;
+
+  function RenderInvitacionConfiguracionCuenta(view) {
+    unmountShell();
+
+    const reg = (appState.data.invitacion = appState.data.invitacion || {});
+    const v = reg.paso1 || { nombre: TWEAKS.invitedName, password: "", confirm: "", pais: TWEAKS.invitationCountry, terms: true };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-medium">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <h1 class="ds-auth-title">Configuración de cuenta</h1>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="3" aria-valuenow="1"
+                 aria-label="Paso 1 de 3">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 33.333%"></div>
+              </div>
+              <div class="ds-progress-label">1/3</div>
+            </div>
+          </div>
+
+          <div class="ds-centro-card">
+            <div class="ds-centro-logo" aria-hidden="true"><span class="material-symbols-outlined">image</span></div>
+            <div class="ds-centro-info">
+              <div class="ds-centro-name">${escapeHtml(TWEAKS.centerName)}</div>
+              <div class="ds-centro-line">Dirección: Cra. 7 #71-21</div>
+              <div class="ds-centro-line">Bogotá | +57 601 742 0000 | www.clinicasecuence.co</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="invitacion-form" novalidate>
+            <div class="ds-field" data-has-suffix="true">
+              <input
+                class="ds-field-input"
+                id="inv-nombre"
+                name="inv-nombre"
+                type="text"
+                placeholder="Escriba su nombre y apellido"
+                value="${escapeHtml(v.nombre)}"
+                autocomplete="name"
+                aria-describedby="inv-nombre-error"
+                readonly
+              />
+              <label class="ds-field-label" for="inv-nombre">Nombre y apellido*</label>
+              <button type="button" class="ds-field-suffix" id="inv-nombre-edit" data-edit aria-label="Editar nombre y apellido">
+                <span class="material-symbols-outlined">edit</span>
+              </button>
+              <div class="ds-field-error" id="inv-nombre-error" role="alert" aria-live="polite"></div>
+            </div>
+
+            ${textField({ id: "inv-password", label: "Contraseña*",            type: "password", placeholder: "Escriba su contraseña",            value: v.password, suffixIcon: "visibility", autocomplete: "new-password" })}
+            ${textField({ id: "inv-confirm",  label: "Confirme su contraseña*", type: "password", placeholder: "Escriba nuevamente su contraseña", value: v.confirm,  suffixIcon: "visibility", autocomplete: "new-password" })}
+            ${select({   id: "inv-pais",     label: "País de residencia*",     options: paisesEjercicio, value: v.pais, placeholder: "Seleccione su país" })}
+
+            <label class="ds-terms-row" for="inv-terms">
+              <input type="checkbox" id="inv-terms" name="inv-terms" ${v.terms ? "checked" : ""} style="position:absolute;opacity:0;pointer-events:none" />
+              <span class="ds-checkbox-box" aria-hidden="true">
+                <span class="material-symbols-outlined">check</span>
+              </span>
+              <span class="ds-terms-text">
+                Acepto términos y condiciones de uso del sistema.
+                <a href="#/terminos-y-condiciones" target="_blank" rel="noopener" class="ds-link-info" id="inv-link-terms" data-open-newtab>Ver términos y condiciones.</a>
+              </span>
+            </label>
+
+            ${button({ variant: "filled", label: "Continuar", type: "submit", block: true, id: "inv-continuar", disabled: !v.terms })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    // Back arrow → login
+    document.getElementById("btn-wizard-back").addEventListener("click", () => navigate("#/auth/login"));
+
+    // Terms link opens in a new tab (self-contained, sandbox-safe).
+    document.getElementById("inv-link-terms").addEventListener("click", (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      openTerminosInNewTab();
+    });
+
+    // Nombre y apellido — precargado y de solo-lectura; el lápiz activa la edición.
+    const nombreInput = document.getElementById("inv-nombre");
+    document.getElementById("inv-nombre-edit").addEventListener("click", () => {
+      nombreInput.removeAttribute("readonly");
+      nombreInput.focus();
+      const val = nombreInput.value;
+      nombreInput.value = "";
+      nombreInput.value = val; // caret al final
+    });
+
+    // Mostrar/ocultar en ambos campos de contraseña.
+    document.querySelectorAll("#invitacion-form [data-suffix-for]").forEach((toggle) => {
+      const input = document.getElementById(toggle.dataset.suffixFor);
+      if (!input) return;
+      toggle.addEventListener("click", () => {
+        const showing = input.getAttribute("type") === "text";
+        input.setAttribute("type", showing ? "password" : "text");
+        toggle.querySelector(".material-symbols-outlined").textContent = showing ? "visibility" : "visibility_off";
+      });
+    });
+
+    // Select de país (variante búsqueda).
+    wireSelect("inv-pais");
+    const paisHidden = document.getElementById("inv-pais");
+    const paisBox = document.querySelector('[data-select="inv-pais"] .ds-select-box');
+    if (paisBox) paisBox.addEventListener("mousedown", () => {
+      paisHidden.removeAttribute("aria-invalid");
+      const e = document.getElementById("inv-pais-error");
+      if (e) e.textContent = "";
+    });
+
+    // Limpiar error por campo al escribir.
+    ["inv-nombre", "inv-password", "inv-confirm"].forEach((id) => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      input.addEventListener("input", () => {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      });
+    });
+
+    // El check de términos habilita "Continuar".
+    const termsInput = document.getElementById("inv-terms");
+    const continuarBtn = document.getElementById("inv-continuar");
+    function syncContinuar() {
+      if (termsInput.checked) continuarBtn.removeAttribute("disabled");
+      else continuarBtn.setAttribute("disabled", "");
+    }
+    termsInput.addEventListener("change", syncContinuar);
+    syncContinuar();
+
+    document.getElementById("invitacion-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitInvitacionPaso1();
+    });
+  }
+
+  function submitInvitacionPaso1() {
+    const nombre   = (document.getElementById("inv-nombre").value   || "").trim();
+    const password =  document.getElementById("inv-password").value || "";
+    const confirm  =  document.getElementById("inv-confirm").value  || "";
+    const pais     = (document.getElementById("inv-pais").value     || "").trim();
+    const terms    =  document.getElementById("inv-terms").checked;
+    if (!terms) return; // el botón ya está deshabilitado
+
+    const errors = {
+      "inv-nombre": !nombre ? "Ingrese su nombre y apellido." : "",
+      "inv-password": !password
+        ? "Ingrese su contraseña."
+        : (!invitacionPasswordRule.test(password)
+            ? "8 a 16 caracteres: incluya letras, números y un carácter especial."
+            : ""),
+      "inv-confirm": !confirm
+        ? "Confirme su contraseña."
+        : (confirm !== password ? "Las contraseñas no coinciden." : ""),
+    };
+
+    let firstInvalid = null;
+    Object.entries(errors).forEach(([id, msg]) => {
+      const input = document.getElementById(id);
+      const err = document.getElementById(id + "-error");
+      if (msg) {
+        input.setAttribute("aria-invalid", "true");
+        if (err) err.textContent = msg;
+        if (!firstInvalid) firstInvalid = input;
+      } else {
+        input.removeAttribute("aria-invalid");
+        if (err) err.textContent = "";
+      }
+    });
+
+    // País requerido.
+    if (!pais) {
+      const paisHidden = document.getElementById("inv-pais");
+      const paisErr = document.getElementById("inv-pais-error");
+      paisHidden.setAttribute("aria-invalid", "true");
+      if (paisErr) paisErr.textContent = "Seleccione su país de residencia.";
+      if (!firstInvalid) firstInvalid = document.getElementById("inv-pais-box");
+    }
+
+    if (firstInvalid) { try { firstInvalid.focus(); } catch (e) {} return; }
+
+    // Persistir paso 1 y avanzar al paso 2 (Información básica).
+    appState.data.invitacion = appState.data.invitacion || {};
+    appState.data.invitacion.paso1 = { nombre, password, confirm, pais, terms };
+
+    const btn = document.getElementById("inv-continuar");
+    const lbl = btn.querySelector("span:last-child");
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    lbl.textContent = "Procesando…";
+    setTimeout(() => { navigate("#/invitacion/informacion-basica"); }, 700);
+  }
+
+  // ────────── Invitación · Información básica (paso 2 de 3) ──────────
+  // Continúa el onboarding del usuario invitado. Reutiliza el Picture
+  // uploader y el Select (variante búsqueda) del DS, igual que el paso
+  // equivalente del auto-registro.
+  // Acceso directo: auth-flow.html#/invitacion/informacion-basica
+  //
+  // "Continuar" valida y persiste; el paso 3 queda pendiente (no navega).
+  function RenderInvitacionInformacionBasica(view) {
+    unmountShell();
+
+    const reg = (appState.data.invitacion = appState.data.invitacion || {});
+    const saved = reg.paso2 || {};
+    const v = {
+      licencia:        saved.licencia        || "",
+      especializacion: saved.especializacion || "Medicina General",
+      pais:            saved.pais            || "Venezuela",
+    };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-medium">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver al paso anterior">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <div>
+              <h1 class="ds-auth-title">Información básica</h1>
+              <p class="ds-wizard-subtitle">Cuéntenos sobre usted</p>
+            </div>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="3" aria-valuenow="2"
+                 aria-label="Paso 2 de 3">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 66.666%"></div>
+              </div>
+              <div class="ds-progress-label">2/3</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="inv2-form" novalidate>
+            ${pictureUploader({ id: "inv-licencia-foto", buttonLabel: "Foto de licencia o título*" })}
+
+            ${textField({ id: "inv-licencia",        label: "Número de licencia médica (obligatorio)", placeholder: "Escriba su número de licencia", value: v.licencia })}
+            ${select({   id: "inv-especializacion",  label: "Especialización (obligatorio)",           options: especialidadesMedicas, value: v.especializacion })}
+            ${select({   id: "inv-pais-ejercicio",   label: "Principal país de ejercicio (obligatorio)", options: paisesEjercicio,     value: v.pais })}
+
+            ${button({ variant: "filled", label: "Continuar", type: "submit", block: true, id: "inv2-continuar" })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-wizard-back").addEventListener("click",
+      () => navigate("#/invitacion/configuracion-cuenta"));
+
+    const uploaderApi = wirePictureUploader("inv-licencia-foto");
+    const especApi    = wireSelect("inv-especializacion");
+    const paisApi     = wireSelect("inv-pais-ejercicio");
+
+    const licenciaInput = document.getElementById("inv-licencia");
+    const licenciaErr   = document.getElementById("inv-licencia-error");
+    licenciaInput.addEventListener("input", () => {
+      licenciaInput.removeAttribute("aria-invalid");
+      if (licenciaErr) licenciaErr.textContent = "";
+    });
+
+    document.getElementById("inv2-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitInvitacionPaso2({ uploaderApi, especApi, paisApi });
+    });
+  }
+
+  function submitInvitacionPaso2({ uploaderApi, especApi, paisApi }) {
+    const licenciaInput = document.getElementById("inv-licencia");
+    const licenciaErrEl = document.getElementById("inv-licencia-error");
+    const especInput    = document.getElementById("inv-especializacion");
+    const especErrEl    = document.getElementById("inv-especializacion-error");
+    const paisInput     = document.getElementById("inv-pais-ejercicio");
+    const paisErrEl     = document.getElementById("inv-pais-ejercicio-error");
+    const fotoErrEl     = document.getElementById("inv-licencia-foto-error");
+
+    const licencia = (licenciaInput.value || "").trim();
+    const espec = especApi.value;
+    const pais  = paisApi.value;
+    const hasFile = uploaderApi.hasFile();
+
+    let firstInvalid = null;
+    const flag = (el, errEl, msg) => {
+      if (msg) {
+        if (el) el.setAttribute("aria-invalid", "true");
+        if (errEl) errEl.textContent = msg;
+        if (!firstInvalid) firstInvalid = el;
+      } else {
+        if (el) el.removeAttribute("aria-invalid");
+        if (errEl) errEl.textContent = "";
+      }
+    };
+    flag(null,          fotoErrEl,     hasFile ? "" : "Adjunte la foto de su licencia o título.");
+    flag(licenciaInput, licenciaErrEl, licencia ? "" : "Ingrese su número de licencia.");
+    flag(especInput,    especErrEl,    espec ? "" : "Seleccione su especialización.");
+    flag(paisInput,     paisErrEl,     pais  ? "" : "Seleccione su país de ejercicio.");
+    if (firstInvalid) { try { firstInvalid.focus(); } catch (e) {} return; }
+
+    // Persistir paso 2 y avanzar al paso 3 (Información profesional).
+    reg2Persist({ licencia, especializacion: espec, pais, fotoName: uploaderApi.file && uploaderApi.file.name });
+
+    const btn = document.getElementById("inv2-continuar");
+    const lbl = btn.querySelector("span:last-child");
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    lbl.textContent = "Procesando…";
+    setTimeout(() => { navigate("#/invitacion/informacion-profesional"); }, 700);
+  }
+
+  function reg2Persist(data) {
+    appState.data.invitacion = appState.data.invitacion || {};
+    appState.data.invitacion.paso2 = data;
+  }
+
+  // ────────── Invitación · Información profesional (paso 3 de 3) ──────────
+  // Cierra el onboarding del usuario invitado. Reutiliza el Select (variante
+  // búsqueda) y las listas del auto-registro. "Finalizar" valida y entra al
+  // dashboard real (index · Indicadores).
+  // Acceso directo: auth-flow.html#/invitacion/informacion-profesional
+  function RenderInvitacionInformacionProfesional(view) {
+    unmountShell();
+
+    const reg = (appState.data.invitacion = appState.data.invitacion || {});
+    const saved = reg.paso3 || {};
+    const v = {
+      pacientes:    saved.pacientes    || "",
+      sitioWeb:     saved.sitioWeb     || "",
+      comoEncontro: saved.comoEncontro || "",
+    };
+
+    view.innerHTML = `
+      <div class="ds-auth">
+        <div class="ds-auth-card ds-wizard-card ds-wizard-card-medium">
+          <button type="button" class="ds-wizard-back" id="btn-wizard-back" aria-label="Volver al paso anterior">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+
+          <div class="ds-wizard-header">
+            <div>
+              <h1 class="ds-auth-title">Información profesional</h1>
+              <p class="ds-wizard-subtitle">Cuéntenos sobre su ejercicio profesional</p>
+            </div>
+            <div class="ds-wizard-progress" role="progressbar"
+                 aria-valuemin="1" aria-valuemax="3" aria-valuenow="3"
+                 aria-label="Paso 3 de 3">
+              <div class="ds-progress">
+                <div class="ds-progress-fill" style="width: 100%"></div>
+              </div>
+              <div class="ds-progress-label">3/3</div>
+            </div>
+          </div>
+
+          <form class="ds-form-stack" id="inv3-form" novalidate>
+            ${select({   id: "inv-pacientes",  label: "¿Cuántos pacientes promedio atiende diariamente? (obligatorio)", options: pacientesPromedioOpts, value: v.pacientes, placeholder: "Seleccione opción" })}
+            ${textField({ id: "inv-sitio-web", label: "Sitio web personal", type: "text", placeholder: "Escriba sitio web", value: v.sitioWeb, autocomplete: "url" })}
+            ${select({   id: "inv-como-encontro", label: "¿Cómo encontró la plataforma de Secuence? (obligatorio)", options: comoEncontroOpts, value: v.comoEncontro, placeholder: "Seleccione una opción" })}
+
+            ${button({ variant: "filled", label: "Finalizar", type: "submit", block: true, id: "inv3-finalizar" })}
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.getElementById("btn-wizard-back").addEventListener("click",
+      () => navigate("#/invitacion/informacion-basica"));
+
+    const pacientesApi = wireSelect("inv-pacientes");
+    const comoApi      = wireSelect("inv-como-encontro");
+
+    const sitioInput = document.getElementById("inv-sitio-web");
+    const sitioErr   = document.getElementById("inv-sitio-web-error");
+    sitioInput.addEventListener("input", () => {
+      sitioInput.removeAttribute("aria-invalid");
+      if (sitioErr) sitioErr.textContent = "";
+    });
+
+    document.getElementById("inv3-form").addEventListener("submit", (e) => {
+      e.preventDefault();
+      submitInvitacionPaso3({ pacientesApi, comoApi });
+    });
+  }
+
+  function submitInvitacionPaso3({ pacientesApi, comoApi }) {
+    const pacientesInput = document.getElementById("inv-pacientes");
+    const pacientesErrEl = document.getElementById("inv-pacientes-error");
+    const sitioInput     = document.getElementById("inv-sitio-web");
+    const sitioErrEl     = document.getElementById("inv-sitio-web-error");
+    const comoInput      = document.getElementById("inv-como-encontro");
+    const comoErrEl      = document.getElementById("inv-como-encontro-error");
+
+    const pacientes    = pacientesApi.value;
+    const sitioWeb     = (sitioInput.value || "").trim();
+    const comoEncontro = comoApi.value;
+
+    let firstInvalid = null;
+    const flag = (el, errEl, msg) => {
+      if (msg) {
+        if (el) el.setAttribute("aria-invalid", "true");
+        if (errEl) errEl.textContent = msg;
+        if (!firstInvalid) firstInvalid = el;
+      } else {
+        if (el) el.removeAttribute("aria-invalid");
+        if (errEl) errEl.textContent = "";
+      }
+    };
+    flag(pacientesInput, pacientesErrEl, pacientes ? "" : "Seleccione una opción.");
+    // Sitio web personal es opcional: solo se valida el formato si se escribe algo.
+    flag(sitioInput,     sitioErrEl,     (!sitioWeb || isValidUrl(sitioWeb)) ? "" : "Ingrese un sitio web válido (ej. www.ejemplo.com).");
+    flag(comoInput,      comoErrEl,      comoEncontro ? "" : "Seleccione una opción.");
+    if (firstInvalid) { try { firstInvalid.focus(); } catch (e) {} return; }
+
+    // Persistir paso 3 y cerrar el onboarding.
+    appState.data.invitacion = appState.data.invitacion || {};
+    appState.data.invitacion.paso3 = { pacientes, sitioWeb, comoEncontro };
+
+    const btn = document.getElementById("inv3-finalizar");
+    const lbl = btn.querySelector("span:last-child");
+    btn.setAttribute("aria-busy", "true");
+    btn.setAttribute("disabled", "");
+    const spinner = document.createElement("span");
+    spinner.className = "ds-spinner";
+    btn.insertBefore(spinner, btn.firstChild);
+    lbl.textContent = "Finalizando…";
+    setTimeout(() => {
+      // Onboarding del invitado completo → dashboard real (index · Indicadores).
+      const p1 = appState.data.invitacion.paso1 || {};
+      if (p1.nombre) { appState.user = appState.user || {}; appState.user.name = p1.nombre; appState.user.role = "Médico"; }
+      window.location.href = "index.html#/indicadores";
+    }, 700);
+  }
+
+  // ────────── Router ──────────
+  const routes = {
+    "#/auth/login":                                                  RenderLogin,
+    "#/configuracion-cuenta":                                        RenderConfiguracionCuenta,
+    "#/invitacion/configuracion-cuenta":                             RenderInvitacionConfiguracionCuenta,
+    "#/invitacion/informacion-basica":                               RenderInvitacionInformacionBasica,
+    "#/invitacion/informacion-profesional":                          RenderInvitacionInformacionProfesional,
+    "#/configuracion-cuenta/paso-2":                                 RenderConfiguracionCuentaPaso2,
+    "#/configuracion-cuenta/medico-individual/informacion-basica":   RenderMedicoInformacionBasica,
+    "#/configuracion-cuenta/medico-individual/informacion-profesional": RenderMedicoInformacionProfesional,
+    "#/terminos-y-condiciones":                                      RenderTerminosYCondiciones,
+    "#/inicio":                                                      RenderInicio,
+    "#/indicadores":                                                 RenderPlaceholder("indicadores", "Indicadores"),
+    "#/pacientes":                                                   RenderPlaceholder("pacientes", "Pacientes"),
+    "#/seguimientos":                                                RenderPlaceholder("seguimientos", "Seguimientos"),
+    "#/equipo":                                                      RenderPlaceholder("equipo", "Equipo"),
+    "#/ajustes":                                                     RenderPlaceholder("ajustes", "Ajustes"),
+  };
+
+  function router() {
+    const hash = location.hash;
+    const view = document.getElementById("view");
+    view.innerHTML = "";
+    if (!hash || hash === "#" || hash === "#/") return RenderDefault(view);
+    const fn = routes[hash];
+    if (fn) return fn(view);
+    return RenderNotFound(view);
+  }
+
+  // ────────── Tweaks panel ──────────
+  const INVITATION_ENTRY = "#/invitacion/configuracion-cuenta";
+  const INVITATION_ROUTES = [
+    "#/invitacion/configuracion-cuenta",
+    "#/invitacion/informacion-basica",
+    "#/invitacion/informacion-profesional",
+  ];
+
+  function setupTweaks() {
+    if (document.getElementById("tweaks-panel")) return;
+
+    const style = document.createElement("style");
+    style.textContent = `
+      #tweaks-panel {
+        position: fixed; right: var(--space-5); bottom: var(--space-5);
+        width: 320px; max-width: calc(100vw - var(--space-10));
+        background: var(--bg-surface-primary);
+        border: var(--stroke-default) solid var(--border-primary);
+        border-radius: var(--radius-2xl);
+        box-shadow: var(--shadow-3);
+        z-index: 99999; display: flex; flex-direction: column;
+        font-family: var(--font-family-geist); overflow: hidden;
+      }
+      #tweaks-panel[hidden] { display: none; }
+      #tweaks-panel .tw-head {
+        display: flex; align-items: center; gap: var(--space-2);
+        padding: var(--space-4) var(--space-5);
+        border-bottom: var(--stroke-default) solid var(--border-primary);
+      }
+      #tweaks-panel .tw-title {
+        flex: 1; font-weight: var(--font-weight-bold); font-size: var(--font-size-m);
+        line-height: var(--line-height-m); letter-spacing: var(--letter-spacing-tight);
+        color: var(--text-primary);
+      }
+      #tweaks-panel .tw-close {
+        width: 32px; height: 32px; border: 0; background: transparent;
+        border-radius: var(--radius-full); display: grid; place-items: center;
+        cursor: pointer; color: var(--icon-secundary);
+        transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+      }
+      #tweaks-panel .tw-close:hover { background: var(--bg-surface-secundary); }
+      #tweaks-panel .tw-close .material-symbols-outlined { font-size: 20px; }
+      #tweaks-panel .tw-body { display: flex; flex-direction: column; gap: var(--space-5); padding: var(--space-5); }
+      #tweaks-panel .tw-row { display: flex; flex-direction: column; gap: var(--space-2); }
+      #tweaks-panel .tw-row-inline { flex-direction: row; align-items: center; justify-content: space-between; gap: var(--space-4); }
+      #tweaks-panel .tw-row-inline .tw-textcol { display: flex; flex-direction: column; gap: var(--space-0_5); min-width: 0; }
+      #tweaks-panel .tw-label {
+        font-size: var(--font-size-s); font-weight: var(--font-weight-medium);
+        line-height: var(--line-height-s); letter-spacing: var(--letter-spacing-tight);
+        color: var(--text-secundary);
+      }
+      #tweaks-panel .tw-hint {
+        font-size: var(--font-size-xxs); line-height: var(--line-height-xs);
+        letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+      }
+      #tweaks-panel .tw-input, #tweaks-panel .tw-select {
+        width: 100%; height: 44px; box-sizing: border-box;
+        border: var(--stroke-default) solid var(--border-secundary);
+        border-radius: var(--radius-md); padding: 0 var(--space-3);
+        font-family: inherit; font-size: var(--font-size-s); color: var(--text-primary);
+        background: var(--bg-surface-primary); transition: border-color 120ms cubic-bezier(0.4,0,0.2,1), box-shadow 120ms cubic-bezier(0.4,0,0.2,1);
+      }
+      #tweaks-panel .tw-input:focus, #tweaks-panel .tw-select:focus {
+        outline: none; border-color: var(--border-brand); box-shadow: var(--shadow-focus);
+      }
+      #tweaks-panel .tw-divider { height: var(--stroke-default); background: var(--border-primary); margin: var(--space-1) 0; }
+      #tweaks-panel .tw-switch { position: relative; width: 44px; height: 24px; flex: none; }
+      #tweaks-panel .tw-switch input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; margin: 0; cursor: pointer; }
+      #tweaks-panel .tw-track {
+        position: absolute; inset: 0; background: var(--border-tertiary);
+        border-radius: var(--radius-full); transition: background 120ms cubic-bezier(0.4,0,0.2,1);
+      }
+      #tweaks-panel .tw-thumb {
+        position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #FFFFFF;
+        border-radius: var(--radius-full); box-shadow: var(--shadow-1);
+        transition: transform 120ms cubic-bezier(0.4,0,0.2,1); pointer-events: none;
+      }
+      #tweaks-panel .tw-switch input:checked ~ .tw-track { background: var(--bg-fill-accent-primary); }
+      #tweaks-panel .tw-switch input:checked ~ .tw-thumb { transform: translateX(20px); }
+      #tweaks-panel .tw-switch input:focus-visible ~ .tw-track { box-shadow: var(--shadow-focus); }
+    `;
+    document.head.appendChild(style);
+
+    const paises = (typeof paisesEjercicio !== "undefined" && paisesEjercicio) || ["Venezuela"];
+    const paisOptions = paises.map((p) =>
+      `<option value="${escapeHtml(p)}"${p === TWEAKS.invitationCountry ? " selected" : ""}>${escapeHtml(p)}</option>`
+    ).join("");
+
+    const panel = document.createElement("div");
+    panel.id = "tweaks-panel";
+    panel.setAttribute("hidden", "");
+    panel.innerHTML = `
+      <div class="tw-head">
+        <span class="tw-title">Tweaks</span>
+        <button type="button" class="tw-close" id="tw-close" aria-label="Cerrar Tweaks">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+      <div class="tw-body">
+        <div class="tw-row tw-row-inline">
+          <div class="tw-textcol">
+            <span class="tw-label">Mostrar flujo de invitación</span>
+            <span class="tw-hint">Abre el onboarding del médico invitado</span>
+          </div>
+          <label class="tw-switch">
+            <input type="checkbox" id="tw-show-invitation" ${TWEAKS.showInvitationFlow ? "checked" : ""}>
+            <span class="tw-track"></span>
+            <span class="tw-thumb"></span>
+          </label>
+        </div>
+
+        <div class="tw-divider"></div>
+
+        <div class="tw-row">
+          <label class="tw-label" for="tw-invited-name">Nombre del médico invitado</label>
+          <input type="text" class="tw-input" id="tw-invited-name" value="${escapeHtml(TWEAKS.invitedName)}" placeholder="Nombre y apellido">
+        </div>
+
+        <div class="tw-row">
+          <label class="tw-label" for="tw-center-name">Centro de salud</label>
+          <input type="text" class="tw-input" id="tw-center-name" value="${escapeHtml(TWEAKS.centerName)}" placeholder="Nombre del centro">
+        </div>
+
+        <div class="tw-row">
+          <label class="tw-label" for="tw-country">País preseleccionado</label>
+          <select class="tw-select" id="tw-country">${paisOptions}</select>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(panel);
+
+    const onInvitationFlow = () => INVITATION_ROUTES.indexOf(location.hash) !== -1;
+
+    const persist = (edits) => {
+      Object.assign(TWEAKS, edits);
+      try { window.parent.postMessage({ type: "__edit_mode_set_keys", edits: edits }, "*"); } catch (_) {}
+    };
+
+    const toggle = panel.querySelector("#tw-show-invitation");
+    const nameInput = panel.querySelector("#tw-invited-name");
+    const centerInput = panel.querySelector("#tw-center-name");
+    const countrySelect = panel.querySelector("#tw-country");
+
+    function syncPanel() {
+      toggle.checked = onInvitationFlow();
+      nameInput.value = TWEAKS.invitedName;
+      centerInput.value = TWEAKS.centerName;
+      countrySelect.value = TWEAKS.invitationCountry;
+    }
+
+    // Feature flag → navega al flujo de invitación (o de vuelta al login).
+    toggle.addEventListener("change", () => {
+      persist({ showInvitationFlow: toggle.checked });
+      navigate(toggle.checked ? INVITATION_ENTRY : "#/auth/login");
+    });
+
+    // Contenido demo: persistir + reflejar en vivo si el paso 1 está montado.
+    nameInput.addEventListener("input", () => {
+      // Si el usuario ya empezó el flujo, no machacamos su edición; solo refrescamos
+      // el valor por defecto del campo cuando aún no hay datos guardados del paso 1.
+      const started = appState.data.invitacion && appState.data.invitacion.paso1;
+      persist({ invitedName: nameInput.value });
+      const live = document.getElementById("inv-nombre");
+      if (live && !started && location.hash === INVITATION_ENTRY) live.value = nameInput.value;
+    });
+    centerInput.addEventListener("input", () => {
+      persist({ centerName: centerInput.value });
+      const live = document.querySelector(".ds-centro-name");
+      if (live) live.textContent = centerInput.value;
+    });
+    countrySelect.addEventListener("change", () => {
+      persist({ invitationCountry: countrySelect.value });
+      // El país vive dentro del componente Select; re-render del paso 1 si está activo.
+      if (location.hash === INVITATION_ENTRY && !(appState.data.invitacion && appState.data.invitacion.paso1)) router();
+    });
+
+    panel.querySelector("#tw-close").addEventListener("click", () => {
+      panel.setAttribute("hidden", "");
+      try { window.parent.postMessage({ type: "__edit_mode_dismissed" }, "*"); } catch (_) {}
+    });
+
+    // Mantener el toggle en sync si el usuario navega con la flecha ←.
+    window.addEventListener("hashchange", () => {
+      if (!panel.hasAttribute("hidden")) toggle.checked = onInvitationFlow();
+    });
+
+    // Registrar el listener ANTES de anunciar disponibilidad.
+    window.addEventListener("message", (e) => {
+      const t = e.data && e.data.type;
+      if (t === "__activate_edit_mode") { panel.removeAttribute("hidden"); syncPanel(); }
+      else if (t === "__deactivate_edit_mode") { panel.setAttribute("hidden", ""); }
+    });
+    try { window.parent.postMessage({ type: "__edit_mode_available" }, "*"); } catch (_) {}
+  }
+
+  // Si el flag persiste activo y no hay una ruta específica, entra al flujo de invitación.
+  window.addEventListener("load", function () {
+    if (TWEAKS.showInvitationFlow && (!location.hash || location.hash === "#" || location.hash === "#/")) {
+      location.hash = INVITATION_ENTRY;
+    }
+    setupTweaks();
+  });
+
+  window.addEventListener("hashchange", router);
+  window.addEventListener("load", router);
+})();
+</script>
+</body>
+</html>
+
+<style id="__om-edit-overrides">
+#login-form >.ds-auth-row { margin: 8px 0px 16px !important }
+</style>

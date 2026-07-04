@@ -1,0 +1,415 @@
+/* ============================================================
+   Secuence Design System — Tokens
+   Source of truth: Figma variable collections
+     · primitivecolors.tokens.json
+     · semantic.tokens.json
+     · typography.tokens.json
+     · size.tokens.json
+   ============================================================ */
+
+/* ---------- Fonts ---------- */
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-Light.ttf") format("truetype");
+  font-weight: 300; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-Regular.ttf") format("truetype");
+  font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-Medium.ttf") format("truetype");
+  font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-SemiBold.ttf") format("truetype");
+  font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-Bold.ttf") format("truetype");
+  font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Geist"; src: url("./fonts/Geist-ExtraBold.ttf") format("truetype");
+  font-weight: 800; font-style: normal; font-display: swap; }
+
+:root {
+  /* ============================================================
+     PRIMITIVE COLORS — direct map to primitivecolors.tokens.json
+     Every ramp has 17 steps: 0, 25 (neutral only), 50, 100, 150,
+     200, 250, 300, 350, 400, 450, 500, 550, 600, 650, 700, 750.
+     Use these only when no semantic alias fits.
+     ============================================================ */
+
+  /* Neutral */
+  --color-neutral-0:    #FCFCFC;
+  --color-neutral-25:   #F7F7F7;
+  --color-neutral-50:   #F0F0F0;
+  --color-neutral-100:  #EBEBEB;
+  --color-neutral-150:  #E3E3E3;
+  --color-neutral-200:  #D9D9D9;
+  --color-neutral-250:  #CCCCCC;
+  --color-neutral-300:  #BEBEBE;
+  --color-neutral-350:  #A8A8A8;
+  --color-neutral-400:  #959595;
+  --color-neutral-450:  #767676;
+  --color-neutral-500:  #626262;
+  --color-neutral-550:  #4C4C4C;
+  --color-neutral-600:  #393939;
+  --color-neutral-650:  #272727;
+  --color-neutral-700:  #131313;
+  --color-neutral-750:  #0B0B0B;
+
+  /* Purple — Brand primary */
+  --color-purple-0:    #FBF3FF;
+  --color-purple-50:   #F7EEFC;
+  --color-purple-100:  #F3E8F8;
+  --color-purple-150:  #EEE0F5;
+  --color-purple-200:  #E5D3EE;
+  --color-purple-250:  #D1B4DF;
+  --color-purple-300:  #B388C9;
+  --color-purple-350:  #8D53AA;
+  --color-purple-400:  #82439B;
+  --color-purple-450:  #77368C;
+  --color-purple-500:  #552D78;
+  --color-purple-550:  #402465;
+  --color-purple-600:  #2D1D51;
+  --color-purple-650:  #1E163D;
+  --color-purple-700:  #110F2A;
+  --color-purple-750:  #080916;
+
+  /* Pink — Brand secondary */
+  --color-pink-0:    #FFF0FA;
+  --color-pink-50:   #FFEBF8;
+  --color-pink-100:  #FFE0F4;
+  --color-pink-150:  #FDD8F0;
+  --color-pink-200:  #FDC9E8;
+  --color-pink-250:  #F8A0D4;
+  --color-pink-300:  #EF5CB0;
+  --color-pink-350:  #E1007E;
+  --color-pink-400:  #C9006F;
+  --color-pink-450:  #B10060;
+  --color-pink-500:  #990053;
+  --color-pink-550:  #800045;
+  --color-pink-600:  #680038;
+  --color-pink-650:  #50002B;
+  --color-pink-700:  #38001E;
+  --color-pink-750:  #200011;
+
+  /* Blue — Info */
+  --color-blue-0:    #F0F6FF;
+  --color-blue-50:   #E7F0FF;
+  --color-blue-100:  #C8DEFF;
+  --color-blue-150:  #AACBFF;
+  --color-blue-200:  #8BB9FF;
+  --color-blue-250:  #6CA6FF;
+  --color-blue-300:  #4E94FF;
+  --color-blue-350:  #2F82FF;
+  --color-blue-400:  #1170FF;
+  --color-blue-450:  #0060F1;
+  --color-blue-500:  #0054D2;
+  --color-blue-550:  #0047B1;
+  --color-blue-600:  #003B93;
+  --color-blue-650:  #002E74;
+  --color-blue-700:  #002255;
+  --color-blue-750:  #001637;
+
+  /* Green — Success */
+  --color-green-0:    #EDFDF7;
+  --color-green-50:   #E3FCF4;
+  --color-green-100:  #C7FAEA;
+  --color-green-150:  #A6F7DD;
+  --color-green-200:  #8AF5D3;
+  --color-green-250:  #6EF2C8;
+  --color-green-300:  #52F0BE;
+  --color-green-350:  #31EDB1;
+  --color-green-400:  #15EAA6;
+  --color-green-450:  #12CE92;
+  --color-green-500:  #10B27F;
+  --color-green-550:  #0D9167;
+  --color-green-600:  #0A7553;
+  --color-green-650:  #08593F;
+  --color-green-700:  #053D2B;
+  --color-green-750:  #021C14;
+
+  /* Yellow — Warning */
+  --color-yellow-0:    #FDF8EC;
+  --color-yellow-50:   #FDF2E2;
+  --color-yellow-100:  #FBE5C6;
+  --color-yellow-150:  #F8D6A5;
+  --color-yellow-200:  #F6C888;
+  --color-yellow-250:  #F4BB6C;
+  --color-yellow-300:  #F2AE4F;
+  --color-yellow-350:  #F09F2E;
+  --color-yellow-400:  #EE9211;
+  --color-yellow-450:  #D1800F;
+  --color-yellow-500:  #B56F0D;
+  --color-yellow-550:  #935A0B;
+  --color-yellow-600:  #774909;
+  --color-yellow-650:  #5A3706;
+  --color-yellow-700:  #3E2604;
+  --color-yellow-750:  #1D1202;
+
+  /* ============================================================
+     SEMANTIC TOKENS — match semantic.tokens.json names exactly.
+     Prefer these in product code.
+     Naming preserves the Figma spelling (incl. "secundary").
+     ============================================================ */
+
+  /* bg.surface — page / card backgrounds */
+  --bg-surface-primary:                  var(--color-neutral-0);   /* #FCFCFC */
+  --bg-surface-primary-hovered:          var(--color-neutral-25);  /* #F7F7F7 */
+  --bg-surface-secundary:                var(--color-neutral-25);  /* #F7F7F7 */
+  --bg-surface-secundary-hovered:        var(--color-neutral-50);  /* #F0F0F0 */
+  --bg-surface-secundary-pressed:        var(--color-neutral-100); /* #EBEBEB */
+  --bg-surface-tertiary:                 var(--color-neutral-350); /* #A8A8A8 */
+  --bg-surface-brand:                    var(--color-purple-0);    /* #FBF3FF */
+  --bg-surface-brand-hovered:            var(--color-purple-50);   /* #F7EEFC */
+  --bg-surface-brand-selected:           var(--color-purple-150);  /* #EEE0F5 */
+  --bg-surface-disabled:                 var(--color-neutral-500); /* #626262 */
+  --bg-surface-invert:                   var(--color-neutral-750); /* #0B0B0B */
+  --bg-surface-invert-hovered:           var(--color-neutral-650); /* #272727 */
+  --bg-surface-invert-secundary:         var(--color-neutral-600); /* #393939 */
+  --bg-surface-invert-secundary-hovered: var(--color-neutral-650); /* #272727 */
+
+  /* bg.fill — solid action fills */
+  --bg-fill-accent-primary:    var(--color-purple-400);  /* #82439B */
+  --bg-fill-accent-secundary:  var(--color-pink-350);    /* #E1007E */
+  --bg-fill-accent-hovered:    var(--color-purple-500);  /* #552D78 */
+  --bg-fill-accent-pressed:    var(--color-purple-550);  /* #402465 */
+  --bg-fill-tonal-primary:     var(--color-purple-0);    /* #FBF3FF */
+  --bg-fill-tonal-hovered:     var(--color-purple-50);   /* #F7EEFC */
+  --bg-fill-tonal-pressed:     var(--color-purple-100);  /* #F3E8F8 */
+  --bg-fill-disabled:          var(--color-neutral-25);  /* #F7F7F7 */
+  --bg-fill-opacity-80:        rgba(11,11,11,0.80);
+
+  /* bg.warning */
+  --bg-warning-primary:           var(--color-yellow-150); /* #F8D6A5 */
+  --bg-warning-secundary:         var(--color-yellow-500); /* #B56F0D */
+  --bg-warning-tertiary:          var(--color-yellow-0);   /* #FDF8EC */
+  --bg-warning-tertiary-hovered:  var(--color-yellow-50);  /* #FDF2E2 */
+  --bg-warning-tertiary-pressed:  var(--color-yellow-100); /* #FBE5C6 */
+
+  /* bg.success */
+  --bg-success-primary:           var(--color-green-150); /* #A6F7DD */
+  --bg-success-secundary:         var(--color-green-600); /* #0A7553 */
+  --bg-success-tertiary:          var(--color-green-0);   /* #EDFDF7 */
+  --bg-success-tertiary-hovered:  var(--color-green-50);  /* #E3FCF4 */
+  --bg-success-tertiary-pressed:  var(--color-green-100); /* #C7FAEA */
+
+  /* bg.error */
+  --bg-error-primary:             var(--color-pink-150);  /* #FDD8F0 */
+  --bg-error-secundary:           var(--color-pink-400);  /* #C9006F */
+  --bg-error-tertiary:            var(--color-pink-0);    /* #FFF0FA */
+  --bg-error-tertiary-hovered:    var(--color-pink-50);   /* #FFEBF8 */
+  --bg-error-tertiary-pressed:    var(--color-pink-100);  /* #FFE0F4 */
+
+  /* bg.info */
+  --bg-info-primary:              var(--color-blue-150);  /* #AACBFF */
+  --bg-info-secundary:            var(--color-blue-500);  /* #0054D2 */
+  --bg-info-tertiary:             var(--color-blue-0);    /* #F0F6FF */
+  --bg-info-tertiary-hovered:     var(--color-blue-50);   /* #E7F0FF */
+  --bg-info-tertiary-pressed:     var(--color-blue-100);  /* #C8DEFF */
+
+  /* text */
+  --text-primary:           var(--color-neutral-750); /* #0B0B0B */
+  --text-primary-hovered:   var(--color-neutral-650); /* #272727 */
+  --text-secundary:         var(--color-neutral-600); /* #393939 */
+  --text-secundary-hovered: var(--color-neutral-550); /* #4C4C4C */
+  --text-tertiary:          var(--color-neutral-500); /* #626262 */
+  --text-disabled:          var(--color-neutral-450); /* #767676 */
+  --text-invert:            var(--color-neutral-0);   /* #FCFCFC */
+  --text-brand:             var(--color-purple-400);  /* #82439B */
+  --text-brand-hovered:     var(--color-purple-300);  /* #B388C9 */
+  --text-success:           var(--color-green-650);   /* #08593F */
+  --text-error:             var(--color-pink-450);    /* #B10060 */
+  --text-warning:           var(--color-yellow-650);  /* #5A3706 */
+  --text-info:              var(--color-blue-650);    /* #002E74 */
+
+  /* icon — same hex values, intent-named */
+  --icon-primary:           var(--color-neutral-750);
+  --icon-primary-hovered:   var(--color-neutral-650);
+  --icon-secundary:         var(--color-neutral-600);
+  --icon-secundary-hovered: var(--color-neutral-550);
+  --icon-tertiary:          var(--color-neutral-500);
+  --icon-disabled:          var(--color-neutral-450);
+  --icon-invert:            var(--color-neutral-0);
+  --icon-brand:             var(--color-purple-400);
+  --icon-success:           var(--color-green-650);
+  --icon-error:             var(--color-pink-450);
+  --icon-warning:           var(--color-yellow-650);
+  --icon-info:              var(--color-blue-650);
+
+  /* border (stroke) — same shape as bg/text */
+  --border-primary:           var(--color-neutral-100); /* #EBEBEB */
+  --border-secundary:         var(--color-neutral-200); /* #D9D9D9 */
+  --border-tertiary:          var(--color-neutral-300); /* #BEBEBE */
+  --border-brand:             var(--color-purple-350);  /* #8D53AA */
+  --border-warning:           var(--color-yellow-500);  /* #B56F0D */
+  --border-success:           var(--color-green-600);   /* #0A7553 */
+  --border-error:             var(--color-pink-400);    /* #C9006F */
+  --border-info:              var(--color-blue-500);    /* #0054D2 */
+  --border-disabled:          var(--color-neutral-300); /* #BEBEBE */
+  --border-invert-primary:    var(--color-neutral-750); /* #0B0B0B */
+  --border-invert-secundary:  var(--color-neutral-600); /* #393939 */
+
+  /* Brand gradient — used on favicon glyph + select hero moments */
+  --bg-fill-brand-gradient:
+    linear-gradient(135deg, #6E368C 0%, #91258F 22%,
+      #B41587 45%, #CC0980 64%, #DB027E 84%, #E1007E 100%);
+
+  /* ============================================================
+     SPACING — size.tokens.json  (space.N → N × 4 px, mostly)
+     ============================================================ */
+  --space-0:     0px;
+  --space-0_25:  1px;
+  --space-0_5:   2px;
+  --space-0_75:  3px;
+  --space-1:     4px;
+  --space-1_5:   6px;
+  --space-2:     8px;
+  --space-2_5:  10px;
+  --space-3:    12px;
+  --space-3_5:  14px;
+  --space-4:    16px;
+  --space-5:    20px;
+  --space-6:    24px;
+  --space-7:    28px;
+  --space-8:    32px;
+  --space-9:    36px;
+  --space-10:   40px;
+  --space-11:   44px;
+  --space-12:   48px;
+  --space-14:   56px;
+  --space-16:   64px;
+  --space-19:   76px;
+  --space-20:   80px;
+  --space-23:   92px;
+  --space-24:   96px;
+  --space-28:  112px;
+  --space-32:  128px;
+  --space-36:  144px;
+  --space-40:  160px;
+  --space-60:  240px;
+  --space-62:  248px;
+
+  /* Stroke widths */
+  --stroke-none:    0px;
+  --stroke-default: 1px;
+  --stroke-active:  2px;
+  --stroke-focused: 4px;
+
+  /* Radii */
+  --radius-none: 0px;
+  --radius-sm:   2px;
+  --radius-md:   4px;
+  --radius-lg:   8px;
+  --radius-xl:  12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+  --radius-5xl: 28px;
+  --radius-full: 99999px;
+
+  /* Icon sizes */
+  --icon-size-sm:   24px;
+  --icon-size-md:   32px;
+  --icon-size-lg:   44px;
+  --icon-size-xlg:  56px;
+  --icon-size-xxlg:112px;
+
+  /* ============================================================
+     TYPOGRAPHY — typography.tokens.json
+     family.Geist, weight (Thin → Black), size xxs (12) → 10xl (72),
+     line-height xxs (14) → 10xl (86).
+     ============================================================ */
+  --font-family-geist: "Geist", "Inter", system-ui,
+                       -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* weights (numeric value used in CSS) */
+  --font-weight-thin:       100;
+  --font-weight-extralight: 200;
+  --font-weight-light:      300;
+  --font-weight-regular:    400;
+  --font-weight-medium:     500;
+  --font-weight-semibold:   600;
+  --font-weight-bold:       700;
+  --font-weight-extrabold:  800;
+  --font-weight-black:      900;
+
+  /* size scale */
+  --font-size-xxs:   12px;
+  --font-size-xs:    14px;
+  --font-size-s:     16px;
+  --font-size-m:     20px;
+  --font-size-l:     24px;
+  --font-size-xl:    28px;
+  --font-size-xxl:   32px;
+  --font-size-3xl:   36px;
+  --font-size-4xl:   40px;
+  --font-size-5xl:   44px;
+  --font-size-6xl:   48px;
+  --font-size-7xl:   52px;
+  --font-size-8xl:   56px;
+  --font-size-9xl:   60px;
+  --font-size-10xl:  72px;
+
+  /* line-height scale (1:1 with size index) */
+  --line-height-xxs:  14px;
+  --line-height-xs:   16px;
+  --line-height-s:    20px;
+  --line-height-m:    24px;
+  --line-height-l:    30px;
+  --line-height-xl:   34px;
+  --line-height-xxl:  38px;
+  --line-height-3xl:  44px;
+  --line-height-4xl:  48px;
+  --line-height-5xl:  54px;
+  --line-height-6xl:  58px;
+  --line-height-7xl:  62px;
+  --line-height-8xl:  68px;
+  --line-height-9xl:  72px;
+  --line-height-10xl: 86px;
+
+  /* tracking */
+  --letter-spacing-tight:   -0.030em;
+  --letter-spacing-eyebrow:  0.100em;
+
+  /* ============================================================
+     ELEVATION — neutral black drop shadows.
+     Not in the token files; codified from Figma usage.
+     ============================================================ */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-2: 0 2px 4px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-3: 0 8px 24px rgba(0,0,0,0.10), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-focus: 0 0 0 4px rgba(130,67,155,0.20);  /* stroke-focused × purple/400 */
+}
+
+/* ============================================================
+   .sc-scope baseline — opt-in scope to apply system defaults.
+   ============================================================ */
+.sc-scope, .sc-scope * { box-sizing: border-box; }
+.sc-scope {
+  font-family: var(--font-family-geist);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-s);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  background: var(--bg-surface-primary);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   Type utility classes — composable presets.
+   Naming mirrors the Figma "style-set" page (Display / Headline /
+   Title / Body / Caption / Overline).
+   ============================================================ */
+.sc-display-lg  { font: var(--font-weight-bold)     var(--font-size-8xl)/var(--line-height-8xl) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-display-md  { font: var(--font-weight-semibold) var(--font-size-5xl)/var(--line-height-5xl) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-display-sm  { font: var(--font-weight-semibold) var(--font-size-3xl)/var(--line-height-3xl) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-headline-lg { font: var(--font-weight-semibold) var(--font-size-xxl)/var(--line-height-xxl) var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-headline-md { font: var(--font-weight-semibold) var(--font-size-xl)/var(--line-height-xl)   var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-headline-sm { font: var(--font-weight-semibold) var(--font-size-l)/var(--line-height-m)     var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-title-lg    { font: var(--font-weight-bold)     var(--font-size-m)/var(--line-height-m)     var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); }
+.sc-title-md    { font: var(--font-weight-semibold) var(--font-size-s)/var(--line-height-s)     var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); }
+.sc-title-sm    { font: var(--font-weight-semibold) var(--font-size-xs)/var(--line-height-s)    var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); }
+.sc-body-lg     { font: var(--font-weight-regular)  var(--font-size-s)/var(--line-height-m)     var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); }
+.sc-body-md     { font: var(--font-weight-regular)  var(--font-size-xs)/var(--line-height-s)    var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); }
+.sc-body-sm     { font: var(--font-weight-regular)  var(--font-size-xxs)/var(--line-height-xs)  var(--font-family-geist); letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); }
+.sc-caption     { font: var(--font-weight-regular)  var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist); color: var(--text-tertiary); }
+.sc-overline    { font: var(--font-weight-medium)   var(--font-size-xxs)/var(--line-height-xs)  var(--font-family-geist); letter-spacing: var(--letter-spacing-eyebrow); text-transform: uppercase; color: var(--text-tertiary); }
+
+/* Brand-treatment text — hero only. */
+.sc-text-gradient {
+  background: var(--bg-fill-brand-gradient);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; color: transparent;
+}

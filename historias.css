@@ -1,0 +1,89 @@
+/* =====================================================================
+   VIEW · Historias y evoluciones (#/historias-y-evoluciones)
+   Lista de pacientes con su última evolución.
+   Componente "List patient info" del DS: filas de paciente con foto +
+   iniciales, fecha de evolución (texto marca) y enfermedad · diagnóstico,
+   con estados de fila (Enabled / Hovered / Pressed).
+   ===================================================================== */
+
+/* Lista — contenedor sin borde, esquinas rectas */
+.he-list {
+  display: flex; flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--bg-surface-brand);
+  border: 0;
+  border-radius: 0;
+}
+
+.he-row {
+  display: grid;
+  grid-template-columns: 48px 1fr 24px;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  border: 0;
+  border-bottom: var(--stroke-default) solid var(--border-primary);
+  border-radius: 0;
+  background: var(--bg-surface-primary);
+  cursor: pointer;
+  transition: background 120ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+.he-row:hover { background: var(--bg-surface-secundary); }      /* Hovered · #F7F7F7 */
+.he-row:active { background: var(--color-neutral-100); }        /* Pressed · #EBEBEB */
+.he-row:focus-visible { outline: none; box-shadow: var(--shadow-focus, 0 0 0 4px rgba(130,67,155,0.20)); }
+
+/* Avatar — iniciales (tinte marca) o placeholder de foto (neutro) */
+.he-av {
+  flex: none;
+  width: 48px; height: 48px;
+  border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  overflow: hidden;
+  font: var(--font-weight-semibold) var(--font-size-xs)/1 var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+}
+.he-av.is-initials {
+  background: var(--bg-surface-brand-selected);
+  color: var(--text-brand);
+}
+.he-av.is-photo {
+  background: var(--bg-surface-secundary);
+  color: var(--icon-tertiary);
+}
+.he-av.is-photo .material-symbols-outlined { font-size: 28px; }
+
+/* Contenido — nombre + fecha de evolución + enfermedad · diagnóstico */
+.he-content { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.he-name {
+  font: var(--font-weight-semibold) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-primary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.he-evo {
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-brand);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.he-dx {
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+/* Chevron — sin borde */
+.he-chev {
+  flex: none;
+  display: grid; place-items: center;
+  border: 0;
+  background: transparent;
+  color: var(--icon-tertiary);
+}
+.he-chev .material-symbols-outlined { font-size: 24px; }
+
+@media (max-width: 720px) {
+  .he-evo, .he-dx { white-space: normal; }
+}

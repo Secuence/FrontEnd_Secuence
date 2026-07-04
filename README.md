@@ -1,7 +1,11 @@
 # Secuence — Frontend Dashboard
 
-Frontend de Secuence (React + TypeScript + Tailwind, sobre Vite). El diseño se
-origina en Claude Design (Figma) y se integra aquí con Claude Code.
+Frontend de Secuence. **No es una SPA de React**: es el sitio HTML/CSS/JS tal
+como lo exporta Claude Design (`index.html` + `auth-flow.html` + un archivo
+JS/CSS por vista), servido y empaquetado con Vite. Se eligió así después de
+intentar portar el export a React vista por vista — el export ya funciona,
+tiene su propia navegación (hash routing) e interactividad (tablas, filtros,
+diálogos); reescribirlo a mano solo agregaba riesgo sin necesidad real.
 
 ## Cómo correrlo
 
@@ -15,40 +19,38 @@ Antes de correrlo por primera vez, copia `.env.example` a `.env` y ajusta
 El repo ya trae un `.env` local apuntando a `https://localhost:5001` — nunca
 se sube a git (ver `.gitignore`).
 
-## Estructura de carpetas — por qué está así
-
-El diseño en Figma cambia todo el tiempo; la integración con el backend
-(login, tokens, llamadas API) no debería romperse cada vez que llega una
-versión nueva del diseño. Por eso el código está partido en dos mundos:
+## Estructura — qué es diseño y qué es integración
 
 ```
+index.html          → Vista principal (Indicadores, Alertas, Seguimientos,
+                       Historias, Roles y permisos, Mi perfil...), hash router.
+auth-flow.html       → Login / onboarding, autocontenido.
+*.css, *.js          → Un archivo por vista, tal como lo exporta Claude Design.
+assets/, bienvenida-assets/, fonts/ → Recursos estáticos del export.
+
 src/
-  ui/         → SOLO visual. Lo que exportas de Claude Design va aquí.
-               Se puede reemplazar completo sin miedo.
-  features/   → Lógica de negocio: conecta ui/ con services/ y hooks/.
-               NUNCA se sobrescribe al actualizar un diseño.
-  services/   → Única capa de llamadas HTTP (apiClient centralizado +
-               un archivo por entidad, ej. UserService.ts). Ningún
-               componente debe llamar a la API directo.
+  services/   → Única capa de llamadas HTTP (apiClient.ts centralizado +
+               un archivo por entidad, ej. UserService.ts). Los .js de arriba
+               importan desde aquí — nunca hacen fetch/axios sueltos.
   models/     → Interfaces TypeScript que reflejan los DTOs del backend
                ({Entidad}{Acción}Dto, ej. UserCreateDto).
-  hooks/      → Estado compartido (ej. useAuth: token JWT en memoria).
-  router/     → Rutas de la app y protección de rutas privadas.
+  state/      → authStore.ts: token JWT en memoria (sin localStorage).
   config/     → Lectura de variables de entorno (.env).
 ```
 
-**Regla de oro al integrar un nuevo diseño de Claude Design:** el archivo que
-reemplazas vive en `ui/`. Si ese componente necesita datos reales o manejar
-un evento, la conexión se hace en `features/`, importando el componente
-visual — nunca metas `fetch`/`axios` ni tokens dentro de `ui/`.
-Ejemplo completo del patrón: [`src/features/auth/LoginPage.tsx`](src/features/auth/LoginPage.tsx).
+**Regla al traer una nueva versión de Claude Design:** los archivos que se
+reemplazan son `index.html`/`auth-flow.html`/`*.css`/`*.js` en la raíz y sus
+carpetas de assets. Antes de sobrescribir un `.js` de vista, revisa si ya
+tiene una llamada real a `src/services/` integrada (ver Roles y permisos) —
+si la tiene, vuelve a aplicar esa integración sobre el archivo nuevo en vez
+de perderla.
 
 ## Reglas de seguridad (no negociables)
 
 - El token JWT nunca se guarda en `localStorage` sin protección — vive en
-  memoria de estado (`useAuth`, Zustand). Se pierde al refrescar la página;
-  es el trade-off de seguridad aceptado para datos clínicos.
-- Ninguna llamada HTTP se hace fuera de `services/apiClient.ts`.
+  memoria (`src/state/authStore.ts`). Se pierde al refrescar la página; es
+  el trade-off de seguridad aceptado para datos clínicos.
+- Ninguna llamada HTTP se hace fuera de `src/services/apiClient.ts`.
 - La URL del backend y cualquier dato sensible van en `.env`, nunca
   hardcodeados ni commiteados.
 - Todos los endpoints requieren `Authorization: Bearer <token>`, excepto
@@ -68,8 +70,9 @@ C# / .NET, REST, PostgreSQL, JWT Bearer. Endpoints documentados hasta ahora
 | DELETE | `/api/User/DeleteUser/{id}` | Sí |
 
 Pendiente por confirmar con el developer de backend: estructura exacta de
-response de cada endpoint, códigos HTTP específicos, ERD actualizado. No
-asumir — preguntar antes de construir sobre esos huecos.
+response de cada endpoint, códigos HTTP específicos, ERD actualizado. Hasta
+que no se documenten más endpoints, las vistas fuera de Login/Roles y
+permisos siguen mostrando datos de ejemplo (los mismos que trae el export).
 
 ## Control de versiones — flujo Dev → QA → Prod
 
@@ -83,4 +86,4 @@ en `Dev` (o en una rama corta desde `Dev`), y promueve con PR/merge hacia
 IA médica (alertas/indicadores clínicos), gestión documental, almacenamiento
 en la nube, integración con WhatsApp, WebSockets para notificaciones en
 tiempo real. No hace falta construir nada de esto ahora — la capa de
-`services/` está pensada para poder sumarlo sin reescribir la app.
+`src/services/` está pensada para poder sumarlo sin reescribir el sitio.
