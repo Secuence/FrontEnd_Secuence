@@ -64,9 +64,16 @@ de perderla.
 
 ## Reglas de seguridad (no negociables)
 
-- El token JWT nunca se guarda en `localStorage` sin protección — vive en
-  memoria (`src/state/authStore.ts`). Se pierde al refrescar la página; es
-  el trade-off de seguridad aceptado para datos clínicos.
+- El token JWT nunca se guarda en `localStorage` — vive en `sessionStorage`
+  (`src/state/authStore.ts`). Se decidió así el 2026-07-05: login (`auth-flow.html`)
+  y dashboard (`index.html`) son páginas separadas, así que una variable en
+  memoria pura se perdía al saltar de una a otra. `sessionStorage` sobrevive
+  ese salto pero se borra al cerrar la pestaña — no persiste entre sesiones
+  del navegador como sí haría `localStorage`.
+- `index.html` redirige a `auth-flow.html#/auth/login` si no hay sesión
+  activa, y `auth-flow.html` redirige de vuelta al dashboard si ya la hay.
+  El nombre mostrado en el drawer (`.nav-user .name`) sale del claim `name`
+  del JWT (`getUserName()` en `authStore.ts`), no de un valor fijo.
 - Ninguna llamada HTTP se hace fuera de `src/services/apiClient.ts`.
 - La URL del backend y cualquier dato sensible van en `.env`, nunca
   hardcodeados ni commiteados.

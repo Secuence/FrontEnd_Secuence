@@ -1087,7 +1087,7 @@
 
 <script type="module">
 import { UserService } from '/src/services/UserService.ts';
-import { setToken } from '/src/state/authStore.ts';
+import { setToken, isAuthenticated } from '/src/state/authStore.ts';
 
 /* ============================================================
    Secuence — single-file app
@@ -1493,8 +1493,9 @@ import { setToken } from '/src/state/authStore.ts';
 
   // ────────── Views ──────────
   function RenderLogin(view) {
-    // If already logged in, send to home (auth views are public-only).
-    if (appState.user.loggedIn) { navigate("#/inicio"); return; }
+    // Si ya hay una sesión real activa (sessionStorage), va directo al
+    // dashboard real — la pantalla de login es solo para usuarios sin sesión.
+    if (isAuthenticated()) { window.location.href = "index.html#/indicadores"; return; }
     unmountShell();
     const rememberedEmail = appState.data.rememberedEmail || "";
     const remember = !!appState.data.rememberSession;

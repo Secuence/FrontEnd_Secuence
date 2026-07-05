@@ -1,7 +1,15 @@
 import { MedicoService } from '/src/services/external/MedicoService.ts';
+import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
 
 (function () {
   "use strict";
+
+  /* Sin sesión → pantalla de login. Se corta acá mismo, antes de montar
+     nada del dashboard (evita el "flash" de contenido protegido). */
+  if (!isAuthenticated()) {
+    window.location.href = "auth-flow.html#/auth/login";
+    return;
+  }
 
   /* =====================================================================
      ROUTER (hash) — every drawer item maps to a route.
@@ -861,6 +869,34 @@ import { MedicoService } from '/src/services/external/MedicoService.ts';
     });
     card.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
+    });
+  })();
+
+  /* Nombre real del usuario autenticado (claim "name" del token) en la
+     tarjeta del drawer. Si por algo no está disponible, deja el texto que
+     ya trae el diseño en vez de mostrar algo vacío o inventado. */
+  (function () {
+    var name = getUserName();
+    if (!name) return;
+    var nameEl = document.querySelector(".nav-user .name");
+    var avatarEl = document.querySelector(".nav-user .avatar");
+    if (nameEl) nameEl.textContent = name;
+    if (avatarEl) {
+      var initials = name.trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
+      if (initials) avatarEl.textContent = initials;
+    }
+  })();
+
+  /* Botón de logout: cierra sesión (borra el token) y va al login.
+     stopPropagation para que no dispare también el click de la tarjeta
+     completa (que navega a otro lado). */
+  (function () {
+    var btn = document.querySelector(".nav-user .logout");
+    if (!btn) return;
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      logout();
+      window.location.href = "auth-flow.html#/auth/login";
     });
   })();
 
