@@ -887,24 +887,16 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     }
   })();
 
-  /* Botón de logout: cierra sesión (borra el token) y va al login.
-     stopPropagation para que no dispare también el click de la tarjeta
-     completa (que navega a otro lado). */
+  /* Tarjeta de usuario (drawer): TODA la tarjeta cierra sesión, no solo el
+     ícono — avatar, nombre, rol e ícono disparan el mismo logout real
+     (borra el token) + redirección al login. */
   (function () {
-    var btn = document.querySelector(".nav-user .logout");
-    if (!btn) return;
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
+    var card = document.querySelector(".nav-user");
+    if (!card) return;
+    function go() {
       logout();
       window.location.href = "auth-flow.html#/auth/login";
-    });
-  })();
-
-  /* Tarjeta de usuario (drawer) → redirige al login */
-  (function () {
-    var card = document.querySelector(".nav-user[data-href]");
-    if (!card) return;
-    function go() { location.href = card.dataset.href; }
+    }
     card.addEventListener("click", go);
     card.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
