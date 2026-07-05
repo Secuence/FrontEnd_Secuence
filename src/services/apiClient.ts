@@ -4,8 +4,14 @@ import { getToken, logout } from '@/state/authStore';
 
 // Capa única de llamadas HTTP. Ningún script del sitio debe usar
 // fetch/axios directamente: siempre pasa por este cliente centralizado.
+//
+// En dev (`npm run dev`) usamos ruta relativa para pasar por el proxy de
+// Vite (ver vite.config.ts) — el backend real todavía no tiene CORS
+// habilitado para llamadas desde el navegador. En build de producción se
+// llama directo a VITE_API_BASE_URL: eso SÍ requiere que el backend
+// permita el origen real del frontend por CORS antes de desplegar.
 export const apiClient = axios.create({
-  baseURL: env.apiBaseUrl,
+  baseURL: import.meta.env.DEV ? '' : env.apiBaseUrl,
   headers: { 'Content-Type': 'application/json' },
 });
 

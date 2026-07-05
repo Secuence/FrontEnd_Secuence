@@ -16,8 +16,19 @@ npm run dev
 
 Antes de correrlo por primera vez, copia `.env.example` a `.env` y ajusta
 `VITE_API_BASE_URL` con la URL del backend (Dev/QA/Prod tienen URLs distintas).
-El repo ya trae un `.env` local apuntando a `https://localhost:5001` — nunca
+El repo ya trae un `.env` local apuntando al backend real en Railway — nunca
 se sube a git (ver `.gitignore`).
+
+⚠ **El backend real todavía no tiene CORS configurado** (confirmado
+2026-07-05: `OPTIONS /api/User/Login` responde `405` sin cabeceras
+`Access-Control-*`). Esto bloquea cualquier llamada desde el navegador, no
+solo en local. Mientras el developer de backend no lo arregle:
+- En `npm run dev` no hace falta hacer nada — `vite.config.ts` ya tiene un
+  proxy que esquiva el problema (las peticiones pasan por el propio dev
+  server, no directo desde el navegador).
+- Un build de producción (`npm run build` / desplegado) **sí** necesitará
+  que el backend permita el origen real del frontend por CORS antes de
+  funcionar.
 
 ## Estructura — qué es diseño y qué es integración
 
@@ -71,12 +82,26 @@ C# / .NET, REST, PostgreSQL, JWT Bearer. Endpoints documentados hasta ahora
 |---|---|---|
 | POST | `/api/User/Login` | No |
 | POST | `/api/User/CreateUser` | Sí |
-| GET | `/api/User/GetAllUsers` | Sí |
-| PUT | `/api/User/UpdateUser/{id}` | Sí |
-| DELETE | `/api/User/DeleteUser/{id}` | Sí |
+| GET | `/api/User/GetAllUsers?pagNumber&pagSize&...` | Sí |
+| PUT | `/api/User/UpdateUser?id=` | Sí |
+| DELETE | `/api/User/DeleteUser?id=` | Sí |
 
-Pendiente por confirmar con el developer de backend: estructura exacta de
-response de cada endpoint, códigos HTTP específicos, ERD actualizado.
+Contrato confirmado el 2026-07-05 contra el Swagger real
+(`/swagger/v1/swagger.json` del backend) — difiere en varios puntos de la
+doc escrita original: `GetAllUsers` usa `pagNumber`/`pagSize` (no
+`pageNumber`/`pageSize`), `UpdateUser`/`DeleteUser` reciben `id` por query
+param (no como `/UpdateUser/{id}`), y `UserUpdate.status` /
+`UserCreate.policesAccepted` son `number`, no string/boolean.
+
+Toda respuesta viene envuelta en `{ ok, data, message, id }` — **incluso los
+errores de negocio llegan con status HTTP no estándar** (ej. login inválido
+devuelve 404, no 401). Usa siempre el campo `ok` para decidir éxito/error,
+nunca el status HTTP. La forma de `data` en un login exitoso todavía no está
+confirmada (sin credenciales válidas para probarla) — `UserService.login`
+la maneja de forma defensiva.
+
+Pendiente por confirmar con el developer de backend: forma real de `data`
+en cada respuesta exitosa, ERD actualizado, y sobre todo — **arreglar CORS**.
 
 ## Plataforma externa (Indicadores / Alertas / Seguimientos)
 

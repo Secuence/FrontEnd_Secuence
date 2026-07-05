@@ -1,7 +1,7 @@
 import { apiClient } from '@/services/apiClient';
 import type {
   UserLoginDto,
-  UserLoginResponseDto,
+  ApiEnvelope,
   UserCreateDto,
   UserUpdateDto,
   GetAllUsersParams,
@@ -9,8 +9,12 @@ import type {
 
 // Espejo de UserController en el backend (/api/User/*).
 export const UserService = {
-  login: async (data: UserLoginDto): Promise<UserLoginResponseDto> => {
-    const response = await apiClient.post<UserLoginResponseDto>('/api/User/Login', data);
+  // El backend envuelve toda respuesta en { ok, data, message, id } y usa
+  // status HTTP no estándar para errores de negocio (ej. login inválido =
+  // 404, no 401) — por eso devolvemos el sobre completo sin desenvolver, y
+  // dejamos que quien llama decida con `ok`, no con el status HTTP.
+  login: async (data: UserLoginDto): Promise<ApiEnvelope> => {
+    const response = await apiClient.post<ApiEnvelope>('/api/User/Login', data);
     return response.data;
   },
 

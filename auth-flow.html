@@ -1085,7 +1085,10 @@
   <main id="view"></main>
 </div>
 
-<script>
+<script type="module">
+import { UserService } from '/src/services/UserService.ts';
+import { setToken } from '/src/state/authStore.ts';
+
 /* ============================================================
    Secuence — single-file app
    · appState           (camelCase global)
@@ -1566,7 +1569,7 @@
     googleBtn.addEventListener("click", () => submitLogin({ provider: "google" }));
   }
 
-  function submitLogin(opts) {
+  async function submitLogin(opts) {
     opts = opts || {};
     const emailInput = document.getElementById("email");
     const passInput  = document.getElementById("password");
@@ -1624,13 +1627,61 @@
     targetBtn.insertBefore(spinner, targetBtn.firstChild);
     targetBtn.querySelector("span:last-child").textContent = "Ingresando…";
 
-    setTimeout(() => {
+    function restoreButton() {
+      targetBtn.removeAttribute("aria-busy");
+      targetBtn.removeAttribute("disabled");
+      spinner.remove();
+      leadEls.forEach((el, i) => { if (i === 0) el.style.display = ""; });
+      targetBtn.querySelector("span:last-child").textContent = originalLabel;
+    }
+
+    function showLoginError(message) {
+      const emailInput2 = document.getElementById("email");
+      const passInput2 = document.getElementById("password");
+      const passErr = document.getElementById("password-error");
+      emailInput2.setAttribute("aria-invalid", "true");
+      passInput2.setAttribute("aria-invalid", "true");
+      if (passErr) passErr.textContent = message;
+      restoreButton();
+    }
+
+    // Google: flujo simulado — no hay un backend real de OAuth con Google
+    // documentado todavía. No se inventa esa integración.
+    if (opts.provider === "google") {
+      setTimeout(() => {
+        appState.user.loggedIn = true;
+        appState.user.email = "usuario@gmail.com";
+        appState.user.name = appState.user.name || "Admin";
+        window.location.href = "index.html#/indicadores";
+      }, 900);
+      return;
+    }
+
+    // Login real contra el backend (POST /api/User/Login).
+    try {
+      const result = await UserService.login({ email, password });
+      if (!result || result.ok !== 1) {
+        showLoginError((result && result.message) || "No se pudo iniciar sesión. Intenta de nuevo.");
+        return;
+      }
+      // La forma exacta de `data` en éxito no está confirmada (Swagger no la
+      // documenta) — se busca el token en las formas más probables.
+      const payload = Array.isArray(result.data) ? result.data[0] : result.data;
+      const token = payload && (payload.token || payload.Token || payload.accessToken);
+      if (!token) {
+        console.error("Login exitoso pero no se encontró un token reconocible en la respuesta:", result);
+        showLoginError("Inició sesión, pero la respuesta del servidor no tiene el formato esperado. Revisa la consola y avisa al developer de backend.");
+        return;
+      }
+      setToken(token);
       appState.user.loggedIn = true;
-      appState.user.email = email || (opts.provider === "google" ? "usuario@gmail.com" : null);
-      appState.user.name  = email ? email.split("@")[0] : (appState.user.name || "Admin");
-      // Login correcto → entra al dashboard real (index · Indicadores).
+      appState.user.email = email;
+      appState.user.name = (payload && payload.fullName) || email.split("@")[0];
       window.location.href = "index.html#/indicadores";
-    }, 900);
+    } catch (err) {
+      const backendMessage = err && err.response && err.response.data && err.response.data.message;
+      showLoginError(backendMessage || "No se pudo conectar con el servidor. Intenta de nuevo.");
+    }
   }
 
   // Placeholder home — definitive role-based routing pending.
