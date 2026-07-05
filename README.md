@@ -126,8 +126,17 @@ consumen a través de esta capa. Cuando llegue el contrato real, solo hay que
 cambiar la implementación de estos 3 servicios (y `VITE_EXTERNAL_API_BASE_URL`
 en `.env`) — no hay que tocar `index.html` ni las vistas.
 
-"Historias y evoluciones" y "Mi perfil" no están definidas todavía — siguen
-con datos de ejemplo hasta que se aclare su fuente.
+## Fuera del MVP (2026-07-05)
+
+"Historias y evoluciones", "Roles y permisos" (+ "Nuevo usuario"/"Detalle de
+usuario") y "Mi perfil" no salen en esta primera versión del producto. Se
+quitaron del drawer y de las rutas (`app.js`, `var ROUTES`) — cualquier
+acceso directo por URL a esas pantallas redirige a Indicadores.
+
+El HTML/CSS/JS de esas vistas **no se borró**, sigue en el proyecto (en
+`index.html`, comentado el bloque del drawer correspondiente) por si vuelven
+después del MVP: alcanza con descomentar el nav en `index.html` y las
+entradas correspondientes en `var ROUTES` de `app.js`.
 
 ## Control de versiones — flujo Dev → QA → Prod
 

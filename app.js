@@ -16,18 +16,25 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
      Views with a real design render their content; the rest fall back to
      an honest "en construcción" placeholder (no invented data).
      ===================================================================== */
+  /* Fuera del MVP (2026-07-05): Historias y evoluciones, Roles y permisos
+     (+ Nuevo usuario, Detalle de usuario) y Mi perfil. Se quitan de ROUTES
+     a propósito — parseRoute() ya cae en DEFAULT_ROUTE ("indicadores") para
+     cualquier hash no reconocido, así que un acceso directo por URL a estas
+     rutas redirige solo con este cambio, sin lógica extra. El HTML/CSS/JS
+     de esas vistas queda intacto (ver comentario en index.html) por si
+     vuelven después del MVP — solo hay que descomentar las líneas de abajo. */
   var ROUTES = {
     "indicadores":      { view: "indicadores",      nav: "indicadores" },
-    "roles-y-permisos": { view: "roles-y-permisos", nav: "roles-y-permisos" },
-    "roles-permisos":   { view: "nuevo-usuario",    nav: "roles-y-permisos" },
-    "usuario":          { view: "detalle-usuario",  nav: "roles-y-permisos" },
+    // "roles-y-permisos": { view: "roles-y-permisos", nav: "roles-y-permisos" },
+    // "roles-permisos":   { view: "nuevo-usuario",    nav: "roles-y-permisos" },
+    // "usuario":          { view: "detalle-usuario",  nav: "roles-y-permisos" },
     "alertas":      { view: "alertas", nav: "alertas" },
     "seguimientos": { view: "seguimientos", nav: "seguimientos" },
     "seguimiento-detalle": { view: "seguimiento-detalle", nav: "seguimientos" },
-    "historias":    { view: "placeholder", nav: "historias",    title: "Historias",     icon: "description" },
-    "historias-y-evoluciones": { view: "historias-y-evoluciones", nav: "historias" },
-    "informacion-paciente": { view: "informacion-paciente", nav: "historias" },
-    "mi-perfil":    { view: "mi-perfil",   nav: "mi-perfil" },
+    // "historias":    { view: "placeholder", nav: "historias",    title: "Historias",     icon: "description" },
+    // "historias-y-evoluciones": { view: "historias-y-evoluciones", nav: "historias" },
+    // "informacion-paciente": { view: "informacion-paciente", nav: "historias" },
+    // "mi-perfil":    { view: "mi-perfil",   nav: "mi-perfil" },
     "bienvenida":   { view: "bienvenida",  nav: "indicadores" }
   };
   var DEFAULT_ROUTE = "indicadores";
@@ -42,6 +49,13 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
   }
 
   function applyRoute() {
+    var raw = (location.hash || "").replace(/^#\/?/, "").trim();
+    // Ruta fuera del MVP (o cualquier hash inválido): redirige de verdad —
+    // actualiza la URL visible a Indicadores, no solo el contenido mostrado.
+    if (raw && !ROUTES[raw]) {
+      location.hash = "#/" + DEFAULT_ROUTE;
+      return;
+    }
     var key = parseRoute();
     var cfg = ROUTES[key];
 
