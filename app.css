@@ -31,67 +31,69 @@ button { font-family: inherit; }
 
 /* ───────────── App shell ───────────── */
 #app {
-  display: grid;
-  grid-template-columns: 288px 1fr;
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
 }
 
 /* =====================================================================
-   COMPONENT · Navigation drawer
+   COMPONENT · Header + navegación por toggle buttons
+   Reemplaza el sidebar (2026-07-06). Mismos tokens de color que usaba
+   .nav-item en el drawer (default/hover/selected), en una barra horizontal.
    ===================================================================== */
-#sidebar {
-  background: #FFFFFF;
-  border-right: var(--stroke-default) solid var(--border-primary);
-  display: flex;
-  flex-direction: column;
-  padding: var(--space-3) var(--space-3) var(--space-3) 0;
-  overflow-y: auto;
-}
-.nav-logo { padding: var(--space-4) var(--space-7); flex: 0 0 auto; }
-.nav-logo img { height: 34px; width: auto; display: block; }
-
-.nav-section {
+#topHeader {
   flex: 0 0 auto;
-  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-7);
-  font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
-  letter-spacing: var(--letter-spacing-eyebrow);
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  padding: var(--space-3) var(--space-6);
+  background: #FFFFFF;
+  border-bottom: var(--stroke-default) solid var(--border-primary);
 }
-.nav-group { display: flex; flex-direction: column; gap: var(--space-1); }
+.header-logo { flex: 0 0 auto; }
+.header-logo img { height: 34px; width: auto; display: block; }
+
+.view-toggle {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  background: var(--bg-surface-secundary);
+  border: var(--stroke-default) solid var(--border-primary);
+  border-radius: var(--radius-full);
+}
 
 .nav-item {
   position: relative;
-  width: 100%;
-  height: 56px;
+  height: 44px;
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  padding: 0 var(--space-6) 0 var(--space-7);
+  gap: var(--space-2);
+  padding: 0 var(--space-5);
   border: none;
   background: transparent;
   text-align: left;
   text-decoration: none;
-  border-radius: 0 var(--radius-5xl) var(--radius-5xl) 0;
+  border-radius: var(--radius-full);
   color: var(--text-secundary);
   cursor: pointer;
   transition: background 120ms cubic-bezier(0.4,0,0.2,1),
               box-shadow 120ms cubic-bezier(0.4,0,0.2,1);
 }
 .nav-item .ico {
-  flex: 0 0 24px;
-  width: 24px; height: 24px;
+  flex: 0 0 22px;
+  width: 22px; height: 22px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 24px;
+  font-size: 22px;
   color: var(--icon-secundary);
 }
 .nav-item .lbl {
-  flex: 1 1 auto;
-  min-width: 0;
+  flex: 0 0 auto;
   font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-xs) var(--font-family-geist);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-secundary);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .nav-item .badge {
   flex: 0 0 auto;
@@ -104,6 +106,7 @@ button { font-family: inherit; }
   font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-secundary);
+  background: var(--bg-surface-primary);
 }
 .nav-item:hover         { background: var(--bg-surface-brand-hovered); }
 .nav-item:active        { background: var(--bg-fill-tonal-pressed); }
@@ -116,16 +119,8 @@ button { font-family: inherit; }
 }
 .nav-item.sel:hover     { background: var(--bg-surface-brand-hovered); }
 
-.nav-divider {
-  flex: 0 0 auto;
-  height: 1px;
-  background: var(--border-secundary);
-  margin: var(--space-3) var(--space-4) var(--space-2);
-}
-.nav-spacer { flex: 1 1 auto; min-height: var(--space-4); }
-
-/* user card (bottom of drawer) */
-.nav-user-wrap { flex: 0 0 auto; padding: var(--space-6) var(--space-3) var(--space-2); }
+/* user card (extremo derecho del header) */
+.nav-user-wrap { flex: 0 0 auto; }
 .nav-user {
   height: 48px;
   background: var(--bg-surface-brand);
@@ -790,9 +785,8 @@ button { font-family: inherit; }
    File uploader (Forms.jsx), Checkbox (Material check_box, icon-brand),
    Buttons (filled / text-brand).
    ===================================================================== */
-/* full-page route: hide the drawer, main spans full width */
-#app.is-fullpage { grid-template-columns: 1fr; }
-#app.is-fullpage #sidebar { display: none; }
+/* full-page route: oculta el header de navegación, main ocupa todo */
+#app.is-fullpage #topHeader { display: none; }
 
 .view[data-view="nuevo-usuario"].is-active { padding: 0; gap: 0; }
 .nu-page {
@@ -1075,31 +1069,14 @@ button { font-family: inherit; }
 .nu-footer .nu-actions { display: flex; align-items: center; gap: var(--space-6); }
 
 /* ───────────── Responsive ───────────── */
-.nav-toggle { display: none; }
 @media (max-width: 1100px) {
   .nu-grid2 { grid-template-columns: 1fr; }
   .nu-page { padding: var(--space-8) var(--space-10) var(--space-10); }
   .perm-checks { grid-template-columns: 1fr 1fr; }
 }
 @media (max-width: 768px) {
-  #app { grid-template-columns: 1fr; }
-  #sidebar {
-    position: fixed; inset: 0 auto 0 0; width: 288px; z-index: 30;
-    transform: translateX(-100%);
-    transition: transform 200ms cubic-bezier(0.4,0,0.2,1);
-    box-shadow: var(--shadow-3);
-  }
-  #app.sidebar-open #sidebar { transform: translateX(0); }
-  #app.sidebar-open::after {
-    content: ""; position: fixed; inset: 0; background: var(--bg-fill-opacity-80); z-index: 20;
-  }
-  .nav-toggle {
-    display: grid; place-items: center;
-    width: 56px; height: 56px; flex: 0 0 auto;
-    border: 0; background: transparent; border-radius: var(--radius-full);
-    color: var(--icon-secundary); cursor: pointer;
-  }
-  .nav-toggle:hover { background: var(--bg-surface-brand-hovered); }
+  #topHeader { flex-wrap: wrap; row-gap: var(--space-3); }
+  .view-toggle { order: 3; width: 100%; overflow-x: auto; }
   .view.is-active { padding: var(--space-6); }
   .topbar-title { font-size: var(--font-size-xxl); line-height: var(--line-height-xxl); }
   .nu-page { padding: var(--space-6); }

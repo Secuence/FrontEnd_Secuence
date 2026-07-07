@@ -23,12 +23,14 @@
 <body class="sc-scope">
 
 <div id="app">
-  <!-- ═══════════ Navigation drawer (shared shell) ═══════════ -->
-  <aside id="sidebar">
-    <div class="nav-logo"><img src="assets/logo-primary.svg" alt="Secuence"></div>
+  <!-- ═══════════ Header + navegación por toggle buttons (shared shell) ═══════════
+       Reemplaza el sidebar (2026-07-06): mismo rol de navegación entre
+       pantallas, mismos estados visuales (default/hover/selected reutilizan
+       los tokens de .nav-item), ahora en una barra horizontal arriba. -->
+  <header id="topHeader">
+    <div class="header-logo"><img src="assets/logo-primary.svg" alt="Secuence"></div>
 
-    <div class="nav-section">Gestión</div>
-    <nav class="nav-group" data-group="gestion">
+    <nav class="view-toggle" data-group="gestion">
       <a class="nav-item" data-route="indicadores" href="#/indicadores">
         <span class="ico material-symbols-outlined">monitoring</span>
         <span class="lbl">Indicadores</span>
@@ -43,23 +45,17 @@
         <span class="lbl">Seguimientos</span>
         <span class="badge">08</span>
       </a>
-    </nav>
 
-    <!-- Fuera del MVP (2026-07-05): Historias y evoluciones, Roles y
-         permisos y Mi perfil. Código conservado a propósito — si vuelven
-         después del MVP, basta con descomentar este bloque y las entradas
-         correspondientes en app.js (var ROUTES). Mientras tanto, esas rutas
-         no existen en ROUTES y cualquier acceso por URL cae en Indicadores.
-    <a class="nav-item" data-route="historias" href="#/historias-y-evoluciones">
-      <span class="ico material-symbols-outlined">description</span>
-      <span class="lbl">Historias y evoluciones</span>
-      <span class="badge">248</span>
-    </a>
-
-    <div class="nav-divider"></div>
-
-    <div class="nav-section">Configuraciones</div>
-    <nav class="nav-group" data-group="config">
+      <!-- Fuera del MVP (2026-07-05): Historias y evoluciones, Roles y
+           permisos y Mi perfil. Código conservado a propósito — si vuelven
+           después del MVP, basta con descomentar este bloque y las entradas
+           correspondientes en app.js (var ROUTES). Mientras tanto, esas rutas
+           no existen en ROUTES y cualquier acceso por URL cae en Indicadores.
+      <a class="nav-item" data-route="historias" href="#/historias-y-evoluciones">
+        <span class="ico material-symbols-outlined">description</span>
+        <span class="lbl">Historias y evoluciones</span>
+        <span class="badge">248</span>
+      </a>
       <a class="nav-item" data-route="roles-y-permisos" href="#/roles-y-permisos">
         <span class="ico material-symbols-outlined">manage_accounts</span>
         <span class="lbl">Roles y permisos</span>
@@ -68,10 +64,10 @@
         <span class="ico material-symbols-outlined">account_circle</span>
         <span class="lbl">Mi perfil</span>
       </a>
+      -->
     </nav>
-    -->
 
-    <div class="nav-spacer"></div>
+    <div class="topbar-grow"></div>
 
     <div class="nav-user-wrap">
       <div class="nav-user" role="link" tabindex="0" data-href="auth-flow.html#/auth/login" style="padding: 8px; height: 56px">
@@ -83,7 +79,7 @@
         <button class="logout" aria-label="Cerrar sesión"><span class="material-symbols-outlined">logout</span></button>
       </div>
     </div>
-  </aside>
+  </header>
 
   <!-- ═══════════ Main ═══════════ -->
   <main id="main">

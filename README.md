@@ -72,8 +72,8 @@ de perderla.
   del navegador como sí haría `localStorage`.
 - `index.html` redirige a `auth-flow.html#/auth/login` si no hay sesión
   activa, y `auth-flow.html` redirige de vuelta al dashboard si ya la hay.
-  El nombre mostrado en el drawer (`.nav-user .name`) sale del claim `name`
-  del JWT (`getUserName()` en `authStore.ts`), no de un valor fijo.
+  El nombre mostrado en la tarjeta de usuario (`.nav-user .name`) sale del
+  claim `name` del JWT (`getUserName()` en `authStore.ts`), no de un valor fijo.
 - Ninguna llamada HTTP se hace fuera de `src/services/apiClient.ts`.
 - La URL del backend y cualquier dato sensible van en `.env`, nunca
   hardcodeados ni commiteados.
@@ -126,17 +126,30 @@ consumen a través de esta capa. Cuando llegue el contrato real, solo hay que
 cambiar la implementación de estos 3 servicios (y `VITE_EXTERNAL_API_BASE_URL`
 en `.env`) — no hay que tocar `index.html` ni las vistas.
 
+## Navegación: header con toggle buttons (no sidebar)
+
+Desde el 2026-07-06 la navegación entre Indicadores/Alertas/Seguimientos ya
+no es un sidebar vertical — es una barra horizontal (`#topHeader` en
+`index.html`, estilos en `app.css`) con logo a la izquierda, los toggle
+buttons (`.view-toggle` + `.nav-item`) al centro/izquierda, y la tarjeta de
+usuario a la derecha. Reutiliza los mismos tokens de color que tenía el
+sidebar (`.nav-item` default/hover/selected), solo cambia la disposición de
+vertical a horizontal. El contenido (`#main`) ahora ocupa todo el ancho.
+
 ## Fuera del MVP (2026-07-05)
 
 "Historias y evoluciones", "Roles y permisos" (+ "Nuevo usuario"/"Detalle de
 usuario") y "Mi perfil" no salen en esta primera versión del producto. Se
-quitaron del drawer y de las rutas (`app.js`, `var ROUTES`) — cualquier
-acceso directo por URL a esas pantallas redirige a Indicadores.
+quitaron del header de navegación y de las rutas (`app.js`, `var ROUTES`) —
+cualquier acceso directo por URL a esas pantallas redirige a Indicadores.
+También se ocultaron (mismo criterio: comentado, no borrado) la tarjeta
+"Administración del equipo", y los botones de calendario/notificaciones/
+"Crear historia"/"Crear evolución médica" en Indicadores/Alertas/Seguimientos.
 
 El HTML/CSS/JS de esas vistas **no se borró**, sigue en el proyecto (en
-`index.html`, comentado el bloque del drawer correspondiente) por si vuelven
-después del MVP: alcanza con descomentar el nav en `index.html` y las
-entradas correspondientes en `var ROUTES` de `app.js`.
+`index.html`, comentado el bloque correspondiente) por si vuelven después
+del MVP: alcanza con descomentar el nav en `index.html` y las entradas
+correspondientes en `var ROUTES` de `app.js`.
 
 ## Control de versiones — flujo Dev → QA → Prod
 

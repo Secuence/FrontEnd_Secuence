@@ -41,7 +41,7 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
 
   var app     = document.getElementById("app");
   var views   = document.querySelectorAll(".view");
-  var navItems = document.querySelectorAll("#sidebar .nav-item");
+  var navItems = document.querySelectorAll("#topHeader .nav-item");
 
   function parseRoute() {
     var h = (location.hash || "").replace(/^#\/?/, "").trim();
@@ -98,27 +98,12 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     // selected nav item
     navItems.forEach(function (n) { n.classList.toggle("sel", n.dataset.route === cfg.nav); });
 
-    // close mobile drawer + reset scroll
-    app.classList.remove("sidebar-open");
+    // reset scroll
     document.getElementById("main").scrollTop = 0;
     window.scrollTo(0, 0);
   }
 
   window.addEventListener("hashchange", applyRoute);
-
-  /* ───────── Mobile drawer toggle (per-view buttons share the class) ───────── */
-  document.querySelectorAll(".nav-toggle").forEach(function (btn) {
-    btn.addEventListener("click", function (e) {
-      e.stopPropagation();
-      app.classList.toggle("sidebar-open");
-    });
-  });
-  app.addEventListener("click", function (e) {
-    if (app.classList.contains("sidebar-open") &&
-        !e.target.closest("#sidebar") && !e.target.closest(".nav-toggle")) {
-      app.classList.remove("sidebar-open");
-    }
-  });
 
   /* shared checkbox glyph toggle */
   function toggleCbx(btn, on) {
