@@ -886,6 +886,18 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     });
   })();
 
+  /* Card "Próximos seguimientos" (Indicadores) → toda la tarjeta, incluido
+     "Ver todos" (no tiene acción propia), navega a #/seguimientos. */
+  (function () {
+    var card = document.querySelector(".card-action[data-href]");
+    if (!card) return;
+    function go() { location.hash = card.dataset.href; }
+    card.addEventListener("click", go);
+    card.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
+    });
+  })();
+
   /* Nombre real del usuario autenticado (claim "name" del token) en la
      tarjeta del drawer. Si por algo no está disponible, deja el texto que
      ya trae el diseño en vez de mostrar algo vacío o inventado. */
