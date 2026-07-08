@@ -694,11 +694,7 @@
   });
 
   reportar.addEventListener("click", function () {
-    if (window.openStatusDialog) window.openStatusDialog({
-      type: "info", icon: "flag", title: "Reportar un problema",
-      desc: "Cuéntenos qué ocurrió al crear el seguimiento y nuestro equipo lo revisará.",
-      buttons: [{ label: "Entendido", variant: "tonal" }]
-    });
+    window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
   });
 
   /* ───────────────────── validación + crear ───────────────────── */

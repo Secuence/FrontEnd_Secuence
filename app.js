@@ -11,6 +11,12 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     return;
   }
 
+  /* URL compartida por todos los botones "Reportar problema" (Desempeño
+     médico, Nuevo seguimiento, Próximos seguimientos, Nuevo usuario) — un
+     solo lugar para actualizarla. Se abre en pestaña nueva para no sacar al
+     usuario de lo que estaba haciendo en el modal. */
+  window.SC_REPORT_FORM_URL = "https://forms.gle/Qb7BhWa6oHhoeZVc7";
+
   /* =====================================================================
      ROUTER (hash) — every drawer item maps to a route.
      Views with a real design render their content; the rest fall back to
@@ -727,6 +733,11 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     }
     document.getElementById("nuBack").addEventListener("click", goBack);
     document.getElementById("nuCancelar").addEventListener("click", goBack);
+
+    var nuReportar = document.getElementById("nuReportar");
+    if (nuReportar) nuReportar.addEventListener("click", function () {
+      window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
+    });
 
     /* ── Validación + diálogos (DS · System status) ──────────────────── */
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

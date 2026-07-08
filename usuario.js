@@ -527,12 +527,7 @@
     document.getElementById("duModalCerrar").addEventListener("click", closeMetricsModal);
     var mRep = document.getElementById("duModalReportar");
     if (mRep) mRep.addEventListener("click", function () {
-      if (window.openStatusDialog) window.openStatusDialog({
-        type: "info", icon: "flag",
-        title: "Reportar problema",
-        desc: "Describa la inconsistencia que encontró en estas métricas y nuestro equipo la revisará.",
-        buttons: [{ label: "Cancelar", variant: "text" }, { label: "Enviar reporte", variant: "tonal" }]
-      });
+      window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
     });
     /* Fuera del MVP (2026-07-06): botón "Editar usuario" quitado del modal
        (ver index.html) — llevaba a #/usuario, dentro de Roles y permisos,

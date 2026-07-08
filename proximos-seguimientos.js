@@ -361,6 +361,10 @@
 
   closeBtn.addEventListener("click", close);
   if (addBtn) addBtn.addEventListener("click", addFollowup);
+  var reportarBtn = document.getElementById("psReportar");
+  if (reportarBtn) reportarBtn.addEventListener("click", function () {
+    window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
+  });
   scrim.addEventListener("click", function (e) { if (e.target === scrim) close(); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && scrim.classList.contains("is-open")) close();
