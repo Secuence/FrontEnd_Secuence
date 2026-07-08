@@ -925,6 +925,16 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     });
   })();
 
+  /* "Reportar problema" del header (visible en todas las vistas) — mismo
+     formulario y comportamiento que los otros 4 botones del mismo nombre. */
+  (function () {
+    var btn = document.getElementById("headerReportar");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
+    });
+  })();
+
   /* =====================================================================
      Dialog · System status (DS)  — reusable modal controller.
      openStatusDialog({ type, icon, title, desc, buttons:[{label, variant,
