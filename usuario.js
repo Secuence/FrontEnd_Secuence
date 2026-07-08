@@ -507,7 +507,9 @@
   function openMetricsModal(u) {
     if (!u || !mScrim) return;
     mUser = u;
-    mBody.innerHTML = identityCard(u) + metricsBlock(u) + permsCard(u);
+    /* Fuera del MVP (2026-07-06): + permsCard(u) — sección "Resumen de
+       permisos", quitada del modal a pedido. */
+    mBody.innerHTML = identityCard(u) + metricsBlock(u);
     mBody.scrollTop = 0;
     mScrim.classList.add("is-open");
     mScrim.setAttribute("aria-hidden", "false");
@@ -532,7 +534,11 @@
         buttons: [{ label: "Cancelar", variant: "text" }, { label: "Enviar reporte", variant: "tonal" }]
       });
     });
-    document.getElementById("duModalEditar").addEventListener("click", function () {
+    /* Fuera del MVP (2026-07-06): botón "Editar usuario" quitado del modal
+       (ver index.html) — llevaba a #/usuario, dentro de Roles y permisos,
+       ruta ya sin destino. */
+    var mEditar = document.getElementById("duModalEditar");
+    if (mEditar) mEditar.addEventListener("click", function () {
       var u = mUser; closeMetricsModal();
       if (u) { window.__detailUser = u; location.hash = "#/usuario"; }
     });
