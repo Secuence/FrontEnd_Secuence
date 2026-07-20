@@ -1,0 +1,260 @@
+/* =====================================================================
+   Nueva historia (#/nueva-historia)
+   Página fullpage con drawer contextual (secciones 1–9) + formulario
+   largo de una sola columna. Componentes DS: Header page · Navigation
+   drawer (variante contextual) · Form inputs · Input select · Button
+   toggle · Slide toggle · File uploader · Progress bar · Dialog (modal
+   "Nuevo seguimiento").
+   Reutiliza clases globales ya cargadas: .ff/.ff-box (form-inputs.css),
+   .ff-select/.nu-menu/.menu-item/.nu-drop (app.css), .track (perfil.css),
+   .pg-track/.pg-fill/.ns-fu/.ns-q/.ns-sched/.ns-add-q/.ns-add-fu/.ns-select
+   (seguimiento.css), .du-modal/.hd/.ft/.bt (usuario.css), .nav-item (app.css),
+   .btn/.btn-filled/.nu-link (app.css).
+   ===================================================================== */
+
+.view[data-view="nueva-historia"].is-active { padding: 0; gap: 0; background: var(--bg-surface-primary); }
+
+.nh-page { display: flex; align-items: stretch; min-height: 100vh; }
+
+/* ───────────────────── Navigation drawer (contextual) ───────────────────── */
+.nh-nav {
+  flex: 0 0 260px; width: 260px;
+  position: sticky; top: 0; align-self: flex-start; height: 100vh;
+  overflow-y: auto;
+  border-right: var(--stroke-default) solid var(--border-primary);
+  background: var(--bg-surface-primary);
+  display: flex; flex-direction: column;
+  padding: var(--space-4) 0 var(--space-6);
+}
+.nh-nav-logo { padding: var(--space-4) var(--space-7); flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.nh-nav-logo-link { display: flex; align-items: center; gap: var(--space-2); border-radius: var(--radius-md); text-decoration: none; }
+.nh-nav-logo-link:hover { opacity: 0.85; }
+.nh-nav-logo-link:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nh-nav-logo img { height: 30px; width: auto; display: block; }
+.nh-nav-logo img.iso { display: none; }
+.nh-nav-collapse-btn {
+  flex: 0 0 auto; width: 32px; height: 32px; border: 0; border-radius: var(--radius-full);
+  background: transparent; color: var(--icon-secundary); cursor: pointer;
+  display: grid; place-items: center; transition: background-color 120ms ease;
+}
+.nh-nav-collapse-btn:hover { background: var(--bg-surface-brand-hovered); }
+.nh-nav-collapse-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nh-nav-collapse-btn .material-symbols-outlined { font-size: 20px; }
+.nh-nav-context {
+  padding: var(--space-2) var(--space-7) var(--space-4);
+  font: var(--font-weight-regular) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-tertiary);
+}
+.nh-nav-list { display: flex; flex-direction: column; gap: var(--space-1); padding: 0 var(--space-4); }
+.nh-nav-item {
+  position: relative;
+  width: 100%; box-sizing: border-box;
+  display: flex; align-items: center;
+  min-height: 44px; padding: var(--space-2) var(--space-4);
+  border: 0; background: transparent; border-radius: 0 var(--radius-5xl) var(--radius-5xl) 0;
+  text-align: left; cursor: pointer;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  color: var(--text-secundary);
+  transition: background-color 120ms ease, color 120ms ease;
+}
+.nh-nav-ic { font-size: 20px; flex: 0 0 auto; margin-right: var(--space-3); }
+.nh-nav-item:hover { background: var(--bg-surface-brand-hovered); }
+.nh-nav-item:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nh-nav-item.sel { background: var(--bg-surface-brand-selected); font-weight: var(--font-weight-bold); color: var(--text-primary); }
+
+/* tooltip is rendered as a fixed-position element by JS (see wireNavCollapse/
+   wireNav in nueva-historia.js & evolucion-clinica.js) so it can escape
+   .nh-nav's overflow-y:auto clipping — see .nav-tooltip in app.css */
+
+/* ───────────────────── compressed variant (manual + <1024px auto) ───────────────────── */
+.nh-nav.is-collapsed { flex-basis: 84px; width: 84px; }
+.nh-nav.is-collapsed .nh-nav-logo { justify-content: center; padding-left: var(--space-2); padding-right: var(--space-2); flex-direction: column; gap: var(--space-2); }
+.nh-nav.is-collapsed .nh-nav-logo-link { flex-direction: column; }
+.nh-nav.is-collapsed .nh-nav-logo img.full { display: none; }
+.nh-nav.is-collapsed .nh-nav-logo img.iso { display: block; height: 26px; width: auto; }
+.nh-nav.is-collapsed .nh-nav-context { display: none; }
+.nh-nav.is-collapsed .nh-nav-list { padding: 0 var(--space-2); align-items: center; }
+.nh-nav.is-collapsed .nh-nav-item { justify-content: center; padding: 0; width: 44px; height: 44px; border-radius: var(--radius-full); }
+.nh-nav.is-collapsed .nh-nav-item .nh-nav-ic { margin-right: 0; }
+.nh-nav.is-collapsed .nh-nav-item .nh-nav-txt { display: none; }
+
+@media (max-width: 1024px) {
+  .nh-nav:not(.is-force-expanded) { flex-basis: 84px; width: 84px; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-logo { justify-content: center; padding-left: var(--space-2); padding-right: var(--space-2); flex-direction: column; gap: var(--space-2); }
+  .nh-nav:not(.is-force-expanded) .nh-nav-logo-link { flex-direction: column; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-logo img.full { display: none; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-logo img.iso { display: block; height: 26px; width: auto; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-context { display: none; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-list { padding: 0 var(--space-2); align-items: center; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-item { justify-content: center; padding: 0; width: 44px; height: 44px; border-radius: var(--radius-full); }
+  .nh-nav:not(.is-force-expanded) .nh-nav-item .nh-nav-ic { margin-right: 0; }
+  .nh-nav:not(.is-force-expanded) .nh-nav-item .nh-nav-txt { display: none; }
+}
+
+/* ───────────────────── Main / scroll area ───────────────────── */
+.nh-main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; height: 100vh; }
+.nh-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; }
+.nh-content {
+  box-sizing: border-box;
+  width: 100%; max-width: 1640px; margin: 0 auto;
+  padding: var(--space-10) var(--space-12) var(--space-12);
+  display: flex; flex-direction: column; gap: var(--space-10);
+}
+
+/* header */
+.nh-header { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+.nh-header-left { display: flex; align-items: center; gap: var(--space-3); }
+/* Breadcrumb — reutiliza .ip-crumbs/.ip-crumb (paciente.css); alinea bajo
+   el título de esta pantalla (back button 44px + gap). */
+.nh-header + .ip-crumbs { padding-left: 56px; margin-top: calc(var(--space-3) * -1); }
+.nh-back {
+  flex: 0 0 44px; width: 44px; height: 44px; border: 0; padding: 0;
+  border-radius: var(--radius-full); background: transparent; color: var(--icon-primary);
+  display: grid; place-items: center; cursor: pointer;
+  transition: background-color 120ms ease;
+}
+.nh-back:hover { background: var(--bg-surface-secundary); }
+.nh-back:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nh-back .material-symbols-outlined { font-size: 26px; }
+.nh-title {
+  margin: 0;
+  font: var(--font-weight-bold) var(--font-size-4xl)/var(--line-height-4xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.nh-date { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; padding-top: var(--space-2); }
+.nh-date-lbl {
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-tertiary);
+}
+.nh-date-val {
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+
+/* section */
+.nh-section { display: flex; flex-direction: column; gap: var(--space-5); scroll-margin-top: var(--space-6); }
+.nh-section-head { display: flex; flex-direction: column; gap: var(--space-1); }
+.nh-section-title {
+  margin: 0;
+  font: var(--font-weight-bold) var(--font-size-xl)/var(--line-height-xl) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.nh-section-title.nh-sub {
+  font: var(--font-weight-bold) var(--font-size-m)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary);
+}
+.nh-section-sub {
+  margin: 0; max-width: 68ch;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); text-wrap: pretty;
+}
+.nh-section--row { flex-direction: row; align-items: flex-start; justify-content: space-between; gap: var(--space-4); }
+
+/* field grids */
+.nh-fields { display: flex; flex-direction: column; gap: var(--space-4); }
+.nh-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+.nh-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-4); }
+.nh-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
+.nh-grid-tel { display: grid; grid-template-columns: minmax(0,220px) minmax(0,1fr); gap: var(--space-4); }
+
+/* plain label above a control (género, tabaquismo, alcohol) */
+.nh-label {
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary);
+}
+.nh-labeled { display: flex; flex-direction: column; gap: var(--space-1); }
+
+/* ── Button toggle (segmented, 2 opciones) ── */
+.nh-seg { display: inline-flex; align-items: center; gap: var(--space-2); }
+.nh-seg-btn {
+  height: 44px; padding: 0 var(--space-5);
+  border: var(--stroke-default) solid var(--border-secundary); border-radius: var(--radius-full);
+  background: var(--bg-surface-primary); color: var(--text-secundary);
+  font: var(--font-weight-medium) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  cursor: pointer; transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease;
+}
+.nh-seg-btn:hover { background: var(--bg-surface-secundary); }
+.nh-seg-btn.sel { background: var(--bg-surface-brand-selected); border-color: var(--border-brand); color: var(--text-brand); font-weight: var(--font-weight-bold); }
+.nh-seg-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+
+/* ── Slide toggle (verde on) + texto ── */
+.nh-toggle-row { display: flex; align-items: flex-start; gap: var(--space-3); }
+.nh-track {
+  position: relative; width: 52px; height: 32px; flex: 0 0 auto; margin-top: 2px;
+  border-radius: var(--radius-full); border: 0; cursor: pointer; padding: 0;
+  background: var(--bg-surface-tertiary);
+  transition: background-color 160ms cubic-bezier(0.4,0,0.2,1);
+}
+.nh-track.on { background: var(--bg-success-secundary); }
+.nh-track::after {
+  content: ""; position: absolute; top: 8px; left: 8px;
+  width: 16px; height: 16px; border-radius: var(--radius-full);
+  background: var(--bg-surface-primary);
+  transition: transform 160ms cubic-bezier(0.4,0,0.2,1), width 160ms ease, height 160ms ease, top 160ms ease, left 160ms ease;
+}
+.nh-track.on::after { width: 24px; height: 24px; top: 4px; left: 4px; transform: translateX(20px); }
+.nh-track:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nh-toggle-tx {
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); text-wrap: pretty;
+}
+
+/* ── CIE fields con autocomplete ── */
+.nh-ac { position: relative; }
+.nh-ac-menu {
+  display: none; position: absolute; left: 0; right: 0; top: calc(100% + var(--space-1));
+  background: var(--bg-surface-primary); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-3); overflow: hidden; max-height: 268px; overflow-y: auto;
+  z-index: 8;
+}
+.nh-ac.is-open .nh-ac-menu { display: flex; flex-direction: column; }
+.nh-ac-empty {
+  padding: var(--space-3) var(--space-4);
+  font: var(--font-weight-regular) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  color: var(--text-tertiary);
+}
+
+/* ── Antecedentes ginecobstétricos ── */
+.nh-gineco-row { display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-4); align-items: start; }
+
+/* ── Uploader (reusa .nu-drop global) ── */
+.nh-uploader { display: flex; flex-direction: column; gap: var(--space-2); }
+
+/* ── Progress bar (reusa .pg-track/.pg-fill global) ── */
+.nh-avail { display: flex; align-items: center; gap: var(--space-4); }
+.nh-avail .pg-label {
+  flex: none;
+  font: var(--font-weight-regular) var(--font-size-s)/var(--line-height-m) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-secundary); white-space: nowrap;
+}
+
+/* ── Footer (sticky) ── */
+.nh-footer {
+  flex: 0 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-4);
+  padding: var(--space-5) var(--space-12);
+  border-top: var(--stroke-default) solid var(--border-primary);
+  background: var(--bg-surface-primary);
+  flex-wrap: wrap;
+}
+.nh-footer .nu-actions { display: flex; align-items: center; gap: var(--space-6); }
+.nh-footer .btn-filled:disabled {
+  background: var(--bg-fill-disabled, #F7F7F7); color: var(--text-disabled);
+  cursor: not-allowed;
+}
+
+/* ── Modal · Nuevo seguimiento (shell .scrim/.du-modal reutilizada) ── */
+.nh-seg-modal-body {
+  padding: var(--space-2) var(--space-8) 0;
+  display: flex; flex-direction: column; gap: var(--space-6);
+  max-height: 60vh; overflow-y: auto; overflow-x: visible;
+}
+.nh-seg-modal-foot { padding-top: var(--space-2); }
+
+@media (max-width: 720px) {
+  .nh-nav { display: none; }
+  .nh-grid-2, .nh-grid-3, .nh-grid-4, .nh-grid-tel, .nh-gineco-row { grid-template-columns: 1fr; }
+}

@@ -13,63 +13,68 @@
 <link rel="stylesheet" href="welcome.css">
 <link rel="stylesheet" href="historias.css">
 <link rel="stylesheet" href="paciente.css">
+<link rel="stylesheet" href="nueva-historia.css?v=4">
+<link rel="stylesheet" href="evolucion-clinica.css?v=3">
+<link rel="stylesheet" href="date-range-picker.css">
+<link rel="stylesheet" href="notificaciones.css?v=3">
 <link rel="stylesheet" href="seguimiento.css?v=20260625e">
 <link rel="stylesheet" href="seguimientos.css?v=20260626">
 <link rel="stylesheet" href="alertas.css?v=20260628b">
-<link rel="stylesheet" href="seguimiento-detalle.css?v=20260626">
+<link rel="stylesheet" href="seguimiento-detalle.css?v=20260628b">
 <link rel="stylesheet" href="proximos-seguimientos.css?v=20260626c">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0">
 </head>
 <body class="sc-scope">
 
 <div id="app">
-  <!-- ═══════════ Header + navegación por toggle buttons (shared shell) ═══════════
-       Reemplaza el sidebar (2026-07-06): mismo rol de navegación entre
-       pantallas, mismos estados visuales (default/hover/selected reutilizan
-       los tokens de .nav-item), ahora en una barra horizontal arriba. -->
-  <header id="topHeader">
-    <div class="header-logo"><img src="assets/logo-primary.svg" alt="Secuence"></div>
+  <!-- ═══════════ Navigation drawer (shared shell) ═══════════ -->
+  <aside id="sidebar">
+    <div class="nav-logo">
+      <a class="nav-logo-link" href="#/indicadores" id="navLogoLink" aria-label="Ir a Indicadores">
+        <img class="full" src="assets/logo-primary.svg" alt="Secuence">
+        <img class="iso" src="assets/secuence_favicon.svg" alt="Secuence">
+      </a>
+      <button class="nav-collapse-btn" id="navCollapseBtn" type="button" aria-label="Contraer/expandir menú"><span class="material-symbols-outlined">left_panel_close</span></button>
+    </div>
 
-    <nav class="view-toggle" data-group="gestion">
-      <a class="nav-item" data-route="indicadores" href="#/indicadores">
+    <div class="nav-section">Gestión</div>
+    <nav class="nav-group" data-group="gestion">
+      <a class="nav-item" data-route="indicadores" href="#/indicadores" data-tooltip="Indicadores">
         <span class="ico material-symbols-outlined">monitoring</span>
         <span class="lbl">Indicadores</span>
       </a>
-      <a class="nav-item" data-route="alertas" href="#/alertas">
+      <a class="nav-item" data-route="alertas" href="#/alertas" data-tooltip="Alertas">
         <span class="ico material-symbols-outlined">notifications</span>
         <span class="lbl">Alertas</span>
         <span class="badge">12</span>
       </a>
-      <a class="nav-item" data-route="seguimientos" href="#/seguimientos">
+      <a class="nav-item" data-route="seguimientos" href="#/seguimientos" data-tooltip="Seguimientos">
         <span class="ico material-symbols-outlined">show_chart</span>
         <span class="lbl">Seguimientos</span>
         <span class="badge">08</span>
       </a>
-
-      <!-- Fuera del MVP (2026-07-05): Historias y evoluciones, Roles y
-           permisos y Mi perfil. Código conservado a propósito — si vuelven
-           después del MVP, basta con descomentar este bloque y las entradas
-           correspondientes en app.js (var ROUTES). Mientras tanto, esas rutas
-           no existen en ROUTES y cualquier acceso por URL cae en Indicadores.
-      <a class="nav-item" data-route="historias" href="#/historias-y-evoluciones">
+      <a class="nav-item" data-route="historias" href="#/historias-y-evoluciones" data-tooltip="Historias y evoluciones">
         <span class="ico material-symbols-outlined">description</span>
         <span class="lbl">Historias y evoluciones</span>
         <span class="badge">248</span>
       </a>
-      <a class="nav-item" data-route="roles-y-permisos" href="#/roles-y-permisos">
+    </nav>
+
+    <div class="nav-divider"></div>
+
+    <div class="nav-section">Configuraciones</div>
+    <nav class="nav-group" data-group="config">
+      <a class="nav-item" data-route="roles-y-permisos" href="#/roles-y-permisos" data-tooltip="Roles y permisos">
         <span class="ico material-symbols-outlined">manage_accounts</span>
         <span class="lbl">Roles y permisos</span>
       </a>
-      <a class="nav-item" data-route="mi-perfil" href="#/mi-perfil">
+      <a class="nav-item" data-route="mi-perfil" href="#/mi-perfil" data-tooltip="Mi perfil">
         <span class="ico material-symbols-outlined">account_circle</span>
         <span class="lbl">Mi perfil</span>
       </a>
-      -->
     </nav>
 
-    <div class="topbar-grow"></div>
-
-    <button type="button" class="nu-link" id="headerReportar">Reportar problema</button>
+    <div class="nav-spacer"></div>
 
     <div class="nav-user-wrap">
       <div class="nav-user" role="link" tabindex="0" data-href="auth-flow.html#/auth/login" style="padding: 8px; height: 56px">
@@ -81,7 +86,7 @@
         <button class="logout" aria-label="Cerrar sesión"><span class="material-symbols-outlined">logout</span></button>
       </div>
     </div>
-  </header>
+  </aside>
 
   <!-- ═══════════ Main ═══════════ -->
   <main id="main">
@@ -97,12 +102,9 @@
             <input type="text" id="searchInput" placeholder="Buscar" aria-label="Buscar">
             <button class="trail" id="searchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
           </label>
-          <!-- Fuera del MVP (2026-07-06): calendario, notificaciones y
-               Crear historia. Comentado, no borrado, por si vuelven después.
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
-          <button class="btn btn-outlined"><span class="material-symbols-outlined">add</span>Crear historia</button>
-          -->
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
+          <button class="btn btn-outlined" id="indCrearHistoriaBtn"><span class="material-symbols-outlined">add</span>Crear historia</button>
           <button class="btn btn-filled" id="crearSeguimientoBtn"><span class="material-symbols-outlined">add</span>Crear seguimiento</button>
         </div>
       </div>
@@ -130,9 +132,7 @@
         </div>
       </section>
 
-      <!-- Fuera del MVP (2026-07-06): tarjeta "Administración del equipo"
-           (apunta a Roles y permisos, ya fuera de alcance). Comentado, no
-           borrado, por si vuelve después.
+      <!-- ───── Administración del equipo ───── -->
       <section class="team-card" role="link" tabindex="0" data-href="#/roles-permisos">
         <div class="team-media"><img src="assets/role-team-on.png" alt="Equipo médico de Secuence"></div>
         <div class="team-body">
@@ -143,10 +143,9 @@
           <a class="btn-tonal" href="#/roles-permisos"><span class="material-symbols-outlined">add</span>Agregar usuario</a>
         </div>
       </section>
-      -->
 
       <!-- ───── Próximos seguimientos ───── -->
-      <section class="card-action" role="link" tabindex="0" data-href="#/seguimientos">
+      <section class="card-action" id="indProximosSeguimientosCard" role="button" tabindex="0" style="cursor:pointer;">
         <div class="lead">
           <div class="icon-chip"><span class="material-symbols-outlined">monitoring</span></div>
           <div class="labels">
@@ -154,7 +153,7 @@
             <span class="subtitle">Hay 8 próximos seguimientos</span>
           </div>
         </div>
-        <button class="btn-tonal">Ver todos</button>
+        <button class="btn-tonal" id="indProximosSeguimientosBtn">Ver todos</button>
       </section>
 
       <!-- ───── Desempeño médico ───── -->
@@ -200,11 +199,8 @@
             <input type="text" id="alSearchInput" placeholder="Buscar" aria-label="Buscar">
             <button class="trail" id="alSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
           </label>
-          <!-- Fuera del MVP (2026-07-06): calendario y notificaciones.
-               Comentado, no borrado, por si vuelven después.
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
-          -->
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
         </div>
       </div>
 
@@ -268,10 +264,7 @@
             <span class="al-pri-title">Alertas prioritarias</span>
             <span class="al-pri-desc">Notificaciones críticas que se generan a partir de la historia médica del paciente y de sus respuestas durante el seguimiento.</span>
           </div>
-          <!-- Fuera del MVP (2026-07-06): Crear evolución médica.
-               Comentado, no borrado, por si vuelve después.
           <button class="al-share" type="button"><span class="material-symbols-outlined">share</span>Crear evolución médica</button>
-          -->
         </div>
         <div class="al-legend">
           <div class="al-legend-item"><span class="al-legend-ic al-leg-high"><span class="material-symbols-outlined">notification_important</span></span><span class="al-legend-tx">Alta: Alto riesgo de complicaciones</span></div>
@@ -319,11 +312,8 @@
             <input type="text" id="segSearchInput" placeholder="Buscar" aria-label="Buscar">
             <button class="trail" id="segSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
           </label>
-          <!-- Fuera del MVP (2026-07-06): calendario y notificaciones.
-               Comentado, no borrado, por si vuelven después.
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
-          -->
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
           <button class="btn btn-filled" data-open-seguimiento><span class="material-symbols-outlined">add</span>Crear seguimiento</button>
         </div>
       </div>
@@ -416,8 +406,8 @@
             <input type="text" id="rolesSearchInput" placeholder="Buscar" aria-label="Buscar">
             <button class="trail" id="rolesSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
           </label>
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
         </div>
       </div>
 
@@ -661,13 +651,23 @@
       <div class="sd-page" id="sdPage"></div>
     </section>
 
+    <!-- ════════════════════ VIEW · Nueva historia (#/nueva-historia) ════════════════════ -->
+    <section class="view" data-view="nueva-historia" data-screen-label="Nueva historia">
+      <div id="nhPage"></div>
+    </section>
+
+    <!-- ════════════════════ VIEW · Evolución clínica (#/evolucion-clinica) ════════════════════ -->
+    <section class="view" data-view="evolucion-clinica" data-screen-label="Evolución clínica">
+      <div id="ecPage"></div>
+    </section>
+
     <!-- ════════════════════ VIEW · Mi perfil ════════════════════ -->
     <section class="view" data-view="mi-perfil" data-screen-label="Mi perfil" style="padding: 24px; gap: 24px">
       <div class="topbar">
         <h1 class="topbar-title">Mi perfil</h1>
         <div class="topbar-grow"></div>
         <div class="topbar-tools">
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
         </div>
       </div>
 
@@ -958,8 +958,8 @@
         <h1 class="topbar-title" id="placeholderTitle">Sección</h1>
         <div class="topbar-grow"></div>
         <div class="topbar-tools">
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
         </div>
       </div>
       <div class="empty-view">
@@ -1005,9 +1005,7 @@
         <ul class="wlc-cap-list">
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Gestionar pacientes desde un solo lugar</li>
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Crear y programar seguimientos</li>
-          <!-- Fuera del MVP (2026-07-06): Historias y evoluciones.
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Registrar historias médicas y evoluciones clínicas</li>
-          -->
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Recibir alertas sobre cambios relevantes en pacientes</li>
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Visualizar indicadores clínicos y operativos</li>
           <li class="wlc-cap"><svg class="wlc-ast"><use href="#wlcAst"></use></svg>Monitorear adherencia a tratamientos y evolución médica</li>
@@ -1059,11 +1057,8 @@
         <p class="wlc-para">Para comenzar a utilizar Secuence, le recomendamos realizar estas primeras acciones:</p>
 
         <ul class="wlc-steps">
-          <!-- Fuera del MVP (2026-07-06): Mi perfil, Historias/pacientes
-               (destino de estos botones ya no existe en ROUTES).
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Complete su perfil profesional</span><button type="button" class="wlc-step-btn" id="wlcGoPerfil">Completar perfil</button></li>
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Agregue su primer paciente</span><button type="button" class="wlc-step-btn" id="wlcGoPaciente">Agregar paciente</button></li>
-          -->
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Configure un seguimiento</span><button type="button" class="wlc-step-btn" id="wlcGoSeguimiento">Configurar seguimiento</button></li>
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Explore la sección Indicadores para visualizar el estado general de sus pacientes</span><button type="button" class="wlc-step-btn" id="wlcGoIndicadores">Ver indicadores</button></li>
         </ul>
@@ -1147,11 +1142,8 @@
         <p class="wlc-para">Para comenzar a configurar su centro de salud en Secuence, te recomendamos:</p>
 
         <ul class="wlc-steps">
-          <!-- Fuera del MVP (2026-07-06): Mi perfil, Roles y permisos
-               (destino de estos botones ya no existe en ROUTES).
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Completar la información de su organización</span><button type="button" class="wlc-step-btn" id="wlcAdmCompletar">Completar información</button></li>
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Agregar usuarios y asignar roles y permisos</span><button type="button" class="wlc-step-btn" id="wlcAdmUsuario">Agregar usuario</button></li>
-          -->
           <li class="wlc-step"><svg class="wlc-ast"><use href="#wlcAst"></use></svg><span class="wlc-step-label">Explorar la sección Indicadores para monitorear la actividad clínica y operativa</span><button type="button" class="wlc-step-btn" id="wlcAdmIndicadores">Ver indicadores</button></li>
         </ul>
 
@@ -1175,10 +1167,9 @@
             <input type="text" id="heSearchInput" placeholder="Buscar" aria-label="Buscar">
             <button class="trail" id="heSearchTrail" aria-label="Buscar"><span class="material-symbols-outlined">search</span></button>
           </label>
-          <button class="icon-btn" aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
-          <button class="icon-btn" aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span></button>
-          <button class="btn btn-outlined"><span class="material-symbols-outlined">add</span>Crear evolución</button>
-          <button class="btn btn-filled"><span class="material-symbols-outlined">add</span>Crear historia</button>
+          <button class="icon-btn" data-cal-btn aria-label="Calendario"><span class="material-symbols-outlined">calendar_month</span></button>
+          <button class="icon-btn" data-notif-btn aria-label="Notificaciones"><span class="material-symbols-outlined">notifications</span><span class="notif-dot" data-notif-dot hidden></span></button>
+          <button class="btn btn-filled" id="heCrearHistoriaBtn"><span class="material-symbols-outlined">add</span>Crear historia</button>
         </div>
       </div>
 
@@ -1473,10 +1464,7 @@
       <div class="ft-left"><button class="bt bt-text-brand" id="duModalReportar" type="button">Reportar problema</button></div>
       <div class="ft-right">
         <button class="bt bt-text-brand" id="duModalCerrar" type="button">Cerrar</button>
-        <!-- Fuera del MVP (2026-07-06): Editar usuario (llevaba a Detalle
-             de usuario, dentro de Roles y permisos, ya sin ruta).
         <button class="bt bt-filled" id="duModalEditar" type="button"><span class="material-symbols-outlined">edit</span>Editar usuario</button>
-        -->
       </div>
     </div>
   </div>
@@ -1552,15 +1540,19 @@
   </div>
 </div>
 
-<script type="module" src="/app.js"></script>
-<script type="module" src="/perfil.js"></script>
-<script type="module" src="/usuario.js"></script>
-<script type="module" src="/paciente.js"></script>
-<script type="module" src="/seguimiento.js"></script>
-<script type="module" src="/seguimientos.js"></script>
-<script type="module" src="/alertas.js"></script>
-<script type="module" src="/seguimiento-detalle.js"></script>
-<script type="module" src="/proximos-seguimientos.js"></script>
+<script src="app.js?v=20260625e"></script>
+<script src="perfil.js"></script>
+<script src="usuario.js"></script>
+<script src="paciente.js?v=3"></script>
+<script src="nueva-historia.js?v=5"></script>
+<script src="evolucion-clinica.js?v=4"></script>
+<script src="date-range-picker.js"></script>
+<script src="notificaciones.js?v=3"></script>
+<script src="seguimiento.js?v=20260625g"></script>
+<script src="seguimientos.js?v=20260626"></script>
+<script src="alertas.js?v=20260628"></script>
+<script src="seguimiento-detalle.js?v=20260628c"></script>
+<script src="proximos-seguimientos.js?v=20260626c"></script>
 
 </body>
 </html>
@@ -1591,5 +1583,4 @@
 #ipPage [role="tablist"] { background-color: rgb(255, 255, 255) !important }
 #ipPage [role="tablist"] { padding: 16px 0px 16px 16px !important }
 #ipPage [role="tablist"] { padding: 16px 0px !important }
-#ipTabHis { background-color: rgb(255, 255, 255) !important }
 </style>

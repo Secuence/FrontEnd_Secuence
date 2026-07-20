@@ -25,6 +25,11 @@
   gap: var(--space-7);
 }
 
+/* direct-edit: match the tablist background to the surrounding surface in
+   this screen only (mapped from an inline style on .ip-tablist inside
+   #sdPage) */
+#sdPage .ip-tablist { background-color: var(--color-neutral-0); }
+
 /* ═════════════════════ Accordion (DS) ═════════════════════ */
 .sd-accordion {
   display: flex;

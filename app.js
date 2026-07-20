@@ -1,53 +1,32 @@
-import { MedicoService } from '/src/services/external/MedicoService.ts';
-import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
-
 (function () {
   "use strict";
-
-  /* Sin sesión → pantalla de login. Se corta acá mismo, antes de montar
-     nada del dashboard (evita el "flash" de contenido protegido). */
-  if (!isAuthenticated()) {
-    window.location.href = "auth-flow.html#/auth/login";
-    return;
-  }
-
-  /* URL compartida por todos los botones "Reportar problema" (Desempeño
-     médico, Nuevo seguimiento, Próximos seguimientos, Nuevo usuario) — un
-     solo lugar para actualizarla. Se abre en pestaña nueva para no sacar al
-     usuario de lo que estaba haciendo en el modal. */
-  window.SC_REPORT_FORM_URL = "https://forms.gle/Qb7BhWa6oHhoeZVc7";
 
   /* =====================================================================
      ROUTER (hash) — every drawer item maps to a route.
      Views with a real design render their content; the rest fall back to
      an honest "en construcción" placeholder (no invented data).
      ===================================================================== */
-  /* Fuera del MVP (2026-07-05): Historias y evoluciones, Roles y permisos
-     (+ Nuevo usuario, Detalle de usuario) y Mi perfil. Se quitan de ROUTES
-     a propósito — parseRoute() ya cae en DEFAULT_ROUTE ("indicadores") para
-     cualquier hash no reconocido, así que un acceso directo por URL a estas
-     rutas redirige solo con este cambio, sin lógica extra. El HTML/CSS/JS
-     de esas vistas queda intacto (ver comentario en index.html) por si
-     vuelven después del MVP — solo hay que descomentar las líneas de abajo. */
   var ROUTES = {
     "indicadores":      { view: "indicadores",      nav: "indicadores" },
-    // "roles-y-permisos": { view: "roles-y-permisos", nav: "roles-y-permisos" },
-    // "roles-permisos":   { view: "nuevo-usuario",    nav: "roles-y-permisos" },
-    // "usuario":          { view: "detalle-usuario",  nav: "roles-y-permisos" },
+    "roles-y-permisos": { view: "roles-y-permisos", nav: "roles-y-permisos" },
+    "roles-permisos":   { view: "nuevo-usuario",    nav: "roles-y-permisos" },
+    "usuario":          { view: "detalle-usuario",  nav: "roles-y-permisos" },
     "alertas":      { view: "alertas", nav: "alertas" },
     "seguimientos": { view: "seguimientos", nav: "seguimientos" },
     "seguimiento-detalle": { view: "seguimiento-detalle", nav: "seguimientos" },
-    // "historias":    { view: "placeholder", nav: "historias",    title: "Historias",     icon: "description" },
-    // "historias-y-evoluciones": { view: "historias-y-evoluciones", nav: "historias" },
-    // "informacion-paciente": { view: "informacion-paciente", nav: "historias" },
-    // "mi-perfil":    { view: "mi-perfil",   nav: "mi-perfil" },
+    "historias":    { view: "placeholder", nav: "historias",    title: "Historias",     icon: "description" },
+    "historias-y-evoluciones": { view: "historias-y-evoluciones", nav: "historias" },
+    "informacion-paciente": { view: "informacion-paciente", nav: "historias" },
+    "nueva-historia": { view: "nueva-historia", nav: "historias" },
+    "evolucion-clinica": { view: "evolucion-clinica", nav: "historias" },
+    "mi-perfil":    { view: "mi-perfil",   nav: "mi-perfil" },
     "bienvenida":   { view: "bienvenida",  nav: "indicadores" }
   };
   var DEFAULT_ROUTE = "indicadores";
 
   var app     = document.getElementById("app");
   var views   = document.querySelectorAll(".view");
-  var navItems = document.querySelectorAll("#topHeader .nav-item");
+  var navItems = document.querySelectorAll("#sidebar .nav-item");
 
   function parseRoute() {
     var h = (location.hash || "").replace(/^#\/?/, "").trim();
@@ -55,13 +34,6 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
   }
 
   function applyRoute() {
-    var raw = (location.hash || "").replace(/^#\/?/, "").trim();
-    // Ruta fuera del MVP (o cualquier hash inválido): redirige de verdad —
-    // actualiza la URL visible a Indicadores, no solo el contenido mostrado.
-    if (raw && !ROUTES[raw]) {
-      location.hash = "#/" + DEFAULT_ROUTE;
-      return;
-    }
     var key = parseRoute();
     var cfg = ROUTES[key];
 
@@ -69,7 +41,7 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     views.forEach(function (v) { v.classList.toggle("is-active", v.dataset.view === cfg.view); });
 
     // full-page route (Nuevo usuario · Bienvenida) hides the drawer
-    app.classList.toggle("is-fullpage", cfg.view === "nuevo-usuario" || cfg.view === "bienvenida" || cfg.view === "informacion-paciente" || cfg.view === "seguimiento-detalle");
+    app.classList.toggle("is-fullpage", cfg.view === "nuevo-usuario" || cfg.view === "bienvenida" || cfg.view === "informacion-paciente" || cfg.view === "seguimiento-detalle" || cfg.view === "nueva-historia" || cfg.view === "evolucion-clinica");
     if (cfg.view === "nuevo-usuario" && typeof window.__nuevoUsuarioReset === "function") {
       window.__nuevoUsuarioReset();
     }
@@ -89,6 +61,16 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
       window.__renderPaciente();
     }
 
+    // nueva historia render
+    if (cfg.view === "nueva-historia" && typeof window.__renderNuevaHistoria === "function") {
+      window.__renderNuevaHistoria();
+    }
+
+    // evolución clínica render
+    if (cfg.view === "evolucion-clinica" && typeof window.__renderEvolucionClinica === "function") {
+      window.__renderEvolucionClinica();
+    }
+
     // seguimiento detail render
     if (cfg.view === "seguimiento-detalle" && typeof window.__renderSeguimientoDetalle === "function") {
       window.__renderSeguimientoDetalle();
@@ -104,12 +86,27 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     // selected nav item
     navItems.forEach(function (n) { n.classList.toggle("sel", n.dataset.route === cfg.nav); });
 
-    // reset scroll
+    // close mobile drawer + reset scroll
+    app.classList.remove("sidebar-open");
     document.getElementById("main").scrollTop = 0;
     window.scrollTo(0, 0);
   }
 
   window.addEventListener("hashchange", applyRoute);
+
+  /* ───────── Mobile drawer toggle (per-view buttons share the class) ───────── */
+  document.querySelectorAll(".nav-toggle").forEach(function (btn) {
+    btn.addEventListener("click", function (e) {
+      e.stopPropagation();
+      app.classList.toggle("sidebar-open");
+    });
+  });
+  app.addEventListener("click", function (e) {
+    if (app.classList.contains("sidebar-open") &&
+        !e.target.closest("#sidebar") && !e.target.closest(".nav-toggle")) {
+      app.classList.remove("sidebar-open");
+    }
+  });
 
   /* shared checkbox glyph toggle */
   function toggleCbx(btn, on) {
@@ -148,12 +145,16 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     var ESPECS   = ["Cardiología", "Medicina interna", "Endocrinología", "Neumología", "Nefrología", "Pediatría", "Dermatología", "Ginecología", "Neurología"];
     var MESES    = ["ene.", "feb.", "mar.", "abr.", "may.", "jun."];
 
-    /* Cifras de "Desempeño médico" (Indicadores). Vienen de la plataforma
-       externa (pacientes/historias + médicos) — ver src/services/external/
-       MedicoService.ts. Todavía no existe el contrato real, así que por
-       ahora llega como datos de ejemplo; empieza vacío y se llena cuando
-       resuelve la promesa más abajo. */
-    var DESEMPENO = {};
+    /* Cifras canónicas de "Desempeño médico" (Indicadores). El store es la
+       única fuente de verdad: estos 5 médicos muestran las mismas métricas
+       y especialidad tanto en la tabla como en "Detalle de usuario". */
+    var DESEMPENO = {
+      "Camila Rojas":   { title: "Dra.", spec: "Cardiología",      pacientes: 128, alertas: 3, seguimientos: 42, adherencia: 94, estudios: 88, nps: 72 },
+      "Andrés Beltrán": { title: "Dr.",  spec: "Medicina interna", pacientes: 96,  alertas: 5, seguimientos: 37, adherencia: 88, estudios: 81, nps: 65 },
+      "Lucía Naranjo":  { title: "Dra.", spec: "Endocrinología",   pacientes: 74,  alertas: 2, seguimientos: 29, adherencia: 91, estudios: 90, nps: 78 },
+      "Tomás Quiroga":  { title: "Dr.",  spec: "Neumología",       pacientes: 58,  alertas: 7, seguimientos: 21, adherencia: 85, estudios: 76, nps: 61 },
+      "Mateo Salazar":  { title: "Dr.",  spec: "Nefrología",       pacientes: 112, alertas: 4, seguimientos: 33, adherencia: 92, estudios: 85, nps: 70 }
+    };
 
     function hash(s) { var h = 0; for (var i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) >>> 0; return h; }
     function rnd(seed, min, max) { var x = Math.sin(seed) * 10000; x = x - Math.floor(x); return Math.floor(min + x * (max - min + 1)); }
@@ -204,6 +205,18 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     }
 
     var users = RAW.map(enrich);
+    /* Aplicar las cifras canónicas de Desempeño médico sobre el store */
+    users.forEach(function (u) {
+      var d = DESEMPENO[u.name];
+      if (!d) return;
+      u.title = d.title;
+      u.espec = d.spec;
+      u.inDesempeno = true;
+      u.clinical = {
+        pacientes: d.pacientes, alertas: d.alertas, seguimientos: d.seguimientos,
+        adherencia: d.adherencia, estudios: d.estudios, nps: d.nps
+      };
+    });
     var listeners = [];
     function emit() { listeners.forEach(function (f) { f(); }); }
     return {
@@ -218,40 +231,30 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
       remove: function (u) { var i = users.indexOf(u); if (i >= 0) { users.splice(i, 1); emit(); } },
       setState: function (u, s) { u.state = s; emit(); },
       refresh: function () { emit(); },
-      onChange: function (fn) { listeners.push(fn); },
-      /* Aplica las cifras de Desempeño médico llegadas de la plataforma
-         externa (ver MedicoService) sobre el store de usuarios. */
-      applyDesempeno: function (list) {
-        list.forEach(function (d) {
-          DESEMPENO[d.nombre] = {
-            title: d.titulo, spec: d.especialidad,
-            pacientes: d.pacientesAtendidos, alertas: d.alertasPorAtender,
-            seguimientos: d.seguimientosEnCurso, adherencia: d.adherenciaTratamiento,
-            estudios: d.estudiosRealizados, nps: d.nps
-          };
-        });
-        users.forEach(function (u) {
-          var d = DESEMPENO[u.name];
-          if (!d) return;
-          u.title = d.title;
-          u.espec = d.spec;
-          u.inDesempeno = true;
-          u.clinical = {
-            pacientes: d.pacientes, alertas: d.alertas, seguimientos: d.seguimientos,
-            adherencia: d.adherencia, estudios: d.estudios, nps: d.nps
-          };
-        });
-        emit();
-      }
+      onChange: function (fn) { listeners.push(fn); }
     };
   })();
   window.SecuenceUserStore = SecuenceUserStore;
-  MedicoService.getDesempeno().then(function (data) { SecuenceUserStore.applyDesempeno(data); });
 
   /* =====================================================================
      VIEW · Indicadores — Desempeño médico table (unchanged behaviour)
      ===================================================================== */
   (function indicadores() {
+    var indProximosCard = document.getElementById("indProximosSeguimientosCard");
+    if (indProximosCard) {
+      indProximosCard.addEventListener("click", function () { location.hash = "#/seguimientos"; });
+      indProximosCard.addEventListener("keydown", function (e) {
+        if (e.key === "Enter" || e.key === " ") { e.preventDefault(); location.hash = "#/seguimientos"; }
+      });
+    }
+    var indCrearHistoriaBtn = document.getElementById("indCrearHistoriaBtn");
+    if (indCrearHistoriaBtn) indCrearHistoriaBtn.addEventListener("click", function () {
+      window.__selectedPaciente = null;
+      window.__selectedPacienteData = null;
+      window.__nuevaHistoriaOrigin = "indicadores";
+      location.hash = "#/nueva-historia";
+    });
+
     /* La tabla "Desempeño médico" lee del store (única fuente de verdad).
        Cada fila enlaza al usuario real para abrir "Detalle de usuario". */
     function buildDoctors() {
@@ -734,11 +737,6 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     document.getElementById("nuBack").addEventListener("click", goBack);
     document.getElementById("nuCancelar").addEventListener("click", goBack);
 
-    var nuReportar = document.getElementById("nuReportar");
-    if (nuReportar) nuReportar.addEventListener("click", function () {
-      window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
-    });
-
     /* ── Validación + diálogos (DS · System status) ──────────────────── */
     var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     var VALIDATED = [
@@ -882,56 +880,14 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     });
   })();
 
-  /* Card "Próximos seguimientos" (Indicadores) → toda la tarjeta, incluido
-     "Ver todos" (no tiene acción propia), navega a #/seguimientos. */
+  /* Tarjeta de usuario (drawer) → redirige al login */
   (function () {
-    var card = document.querySelector(".card-action[data-href]");
+    var card = document.querySelector(".nav-user[data-href]");
     if (!card) return;
-    function go() { location.hash = card.dataset.href; }
+    function go() { location.href = card.dataset.href; }
     card.addEventListener("click", go);
     card.addEventListener("keydown", function (e) {
       if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
-    });
-  })();
-
-  /* Nombre real del usuario autenticado (claim "name" del token) en la
-     tarjeta del drawer. Si por algo no está disponible, deja el texto que
-     ya trae el diseño en vez de mostrar algo vacío o inventado. */
-  (function () {
-    var name = getUserName();
-    if (!name) return;
-    var nameEl = document.querySelector(".nav-user .name");
-    var avatarEl = document.querySelector(".nav-user .avatar");
-    if (nameEl) nameEl.textContent = name;
-    if (avatarEl) {
-      var initials = name.trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase();
-      if (initials) avatarEl.textContent = initials;
-    }
-  })();
-
-  /* Tarjeta de usuario (drawer): TODA la tarjeta cierra sesión, no solo el
-     ícono — avatar, nombre, rol e ícono disparan el mismo logout real
-     (borra el token) + redirección al login. */
-  (function () {
-    var card = document.querySelector(".nav-user");
-    if (!card) return;
-    function go() {
-      logout();
-      window.location.href = "auth-flow.html#/auth/login";
-    }
-    card.addEventListener("click", go);
-    card.addEventListener("keydown", function (e) {
-      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); }
-    });
-  })();
-
-  /* "Reportar problema" del header (visible en todas las vistas) — mismo
-     formulario y comportamiento que los otros 4 botones del mismo nombre. */
-  (function () {
-    var btn = document.getElementById("headerReportar");
-    if (!btn) return;
-    btn.addEventListener("click", function () {
-      window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
     });
   })();
 
@@ -1158,6 +1114,14 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     var emptyEl  = document.getElementById("heEmpty");
     var rangeEl  = document.getElementById("heRange");
 
+    var heCrearHistoriaBtn = document.getElementById("heCrearHistoriaBtn");
+    if (heCrearHistoriaBtn) heCrearHistoriaBtn.addEventListener("click", function () {
+      window.__selectedPaciente = null;
+      window.__selectedPacienteData = null;
+      window.__nuevaHistoriaOrigin = "historias";
+      location.hash = "#/nueva-historia";
+    });
+
     function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 
     /* Datos de ejemplo realistas (es-CO). photo=true → placeholder de foto. */
@@ -1306,7 +1270,65 @@ import { isAuthenticated, logout, getUserName } from '/src/state/authStore.ts';
     render();
   })();
 
-  /* kick off the router */
+  /* ───────────────────────── tooltip fijo (escapa el overflow del #sidebar) ───────────────────────── */
+  (function navTooltips() {
+    var items = Array.prototype.slice.call(document.querySelectorAll(".nav-item[data-tooltip]"));
+    if (!items.length) return;
+    var tip = document.createElement("div");
+    tip.className = "nav-tooltip";
+    document.body.appendChild(tip);
+    var current = null;
+
+    function show(el) {
+      current = el;
+      tip.textContent = el.getAttribute("data-tooltip");
+      var r = el.getBoundingClientRect();
+      tip.style.top = (r.top + r.height / 2) + "px";
+      tip.style.left = (r.right + 8) + "px";
+      tip.classList.add("is-visible");
+    }
+    function hide() { current = null; tip.classList.remove("is-visible"); }
+
+    items.forEach(function (el) {
+      el.addEventListener("mouseenter", function () { show(el); });
+      el.addEventListener("mouseleave", hide);
+      el.addEventListener("focus", function () { show(el); });
+      el.addEventListener("blur", hide);
+    });
+    document.getElementById("sidebar").addEventListener("scroll", function () { if (current) hide(); });
+    window.addEventListener("resize", hide);
+  })();
+
+  /* ───────────────────────── drawer comprimido / expandido (manual + responsive) ───────────────────────── */
+  (function navCollapse() {
+    var appEl = document.getElementById("app");
+    var btn = document.getElementById("navCollapseBtn");
+    if (!appEl || !btn) return;
+    var KEY = "sc-nav-collapsed";
+
+    function applyIcon() {
+      var collapsed = appEl.classList.contains("nav-collapsed");
+      btn.querySelector(".material-symbols-outlined").textContent = collapsed ? "left_panel_open" : "left_panel_close";
+    }
+    var saved = localStorage.getItem(KEY);
+    if (saved === "1") appEl.classList.add("nav-collapsed");
+    applyIcon();
+
+    btn.addEventListener("click", function () {
+      var collapsed = appEl.classList.toggle("nav-collapsed");
+      appEl.classList.toggle("nav-force-expanded", !collapsed);
+      localStorage.setItem(KEY, collapsed ? "1" : "0");
+      applyIcon();
+    });
+  })();
+
+  /* kick off the router — deferred so later view scripts (paciente.js,
+     nueva-historia.js, evolucion-clinica.js, etc.) have registered their
+     window.__render* hooks before the first paint. */
   if (!location.hash) location.replace("#/indicadores");
-  applyRoute();
+  if (document.readyState === "complete") {
+    applyRoute();
+  } else {
+    window.addEventListener("load", applyRoute, { once: true });
+  }
 })();

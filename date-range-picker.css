@@ -1,0 +1,99 @@
+/* =====================================================================
+   Date range picker — popover compartido (topbar "Calendario")
+   Se ancla a cualquier botón [data-cal-btn]. Estilo Material simple:
+   grid de mes, flechas prev/next, hoy resaltado, selección de rango.
+   ===================================================================== */
+
+.drp-pop {
+  position: fixed; z-index: 60;
+  width: 328px; box-sizing: border-box;
+  background: var(--bg-surface-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-3);
+  padding: var(--space-4);
+  display: none;
+  flex-direction: column; gap: var(--space-3);
+}
+.drp-pop.is-open { display: flex; }
+
+.drp-head { display: flex; align-items: center; justify-content: space-between; }
+.drp-nav-btn {
+  width: 32px; height: 32px; border: 0; border-radius: var(--radius-full);
+  background: transparent; color: var(--icon-primary); cursor: pointer;
+  display: grid; place-items: center; transition: background-color 120ms ease;
+}
+.drp-nav-btn:hover { background: var(--bg-surface-secundary); }
+.drp-nav-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.drp-nav-btn .material-symbols-outlined { font-size: 20px; }
+.drp-month {
+  font: var(--font-weight-semibold) var(--font-size-s)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); color: var(--text-primary); text-transform: capitalize;
+}
+
+.drp-dow { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.drp-dow span {
+  text-align: center;
+  font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  color: var(--text-tertiary); text-transform: uppercase; letter-spacing: var(--letter-spacing-tight);
+}
+
+.drp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+.drp-day {
+  position: relative;
+  height: 32px; border: 0; background: transparent; cursor: pointer;
+  font: var(--font-weight-regular) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  color: var(--text-primary); border-radius: var(--radius-full);
+  display: grid; place-items: center;
+}
+.drp-day:disabled { visibility: hidden; cursor: default; }
+.drp-day:hover:not(:disabled) { background: var(--bg-surface-brand-hovered); }
+.drp-day:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.drp-day.is-today { color: var(--text-brand); font-weight: var(--font-weight-bold); }
+.drp-day.is-selected { background: var(--bg-fill-accent-primary); color: var(--text-invert); font-weight: var(--font-weight-medium); }
+.drp-day.is-in-range { background: var(--bg-surface-brand-selected); border-radius: 0; }
+.drp-day.is-range-start.is-in-range { border-radius: var(--radius-full) 0 0 var(--radius-full); }
+.drp-day.is-range-end.is-in-range { border-radius: 0 var(--radius-full) var(--radius-full) 0; }
+
+.drp-hint {
+  font: var(--font-weight-regular) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  color: var(--text-tertiary); text-align: center;
+}
+
+.drp-foot { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-3); padding-top: var(--space-1); }
+.drp-cancel {
+  height: 36px; padding: 0 var(--space-4); border: 0; background: transparent; cursor: pointer;
+  border-radius: var(--radius-full); color: var(--text-brand);
+  font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+}
+.drp-cancel:hover { background: var(--bg-surface-brand-hovered); }
+.drp-apply {
+  height: 36px; padding: 0 var(--space-5); border: 0; cursor: pointer;
+  border-radius: var(--radius-full); background: var(--bg-fill-accent-primary); color: var(--text-invert);
+  font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+}
+.drp-apply:hover { background: var(--bg-fill-accent-hovered); }
+.drp-apply:disabled { background: var(--bg-fill-disabled, #F7F7F7); color: var(--text-disabled); cursor: not-allowed; }
+
+/* botón calendario con filtro activo */
+.icon-btn[data-cal-btn].has-filter { background: var(--bg-surface-brand-selected); color: var(--text-brand); }
+
+/* chip de filtro activo, inyectado en .topbar-tools */
+.drp-chip {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  height: 40px; padding: 0 var(--space-2) 0 var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-brand-selected); color: var(--text-brand);
+  font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-s) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight); white-space: nowrap;
+}
+.drp-chip-rm {
+  width: 24px; height: 24px; border: 0; border-radius: var(--radius-full);
+  background: transparent; color: var(--text-brand); cursor: pointer;
+  display: grid; place-items: center;
+}
+.drp-chip-rm:hover { background: rgba(130,67,155,0.14); }
+.drp-chip-rm .material-symbols-outlined { font-size: 16px; }
+
+/* simulación de filtrado: breve pulso de opacidad sobre el contenido de la vista */
+.view.is-drp-filtering > *:not(.topbar) { animation: drpFade 380ms ease; }
+@keyframes drpFade { 0% { opacity: 0.35; } 100% { opacity: 1; } }

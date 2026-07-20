@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<link rel="stylesheet" href="_base.css" />
+<link rel="stylesheet" href="form-inputs.css" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+<title>Form inputs</title>
+<style>
+  body { padding: 24px 28px; background: var(--bg-surface-primary); }   /* #FCFCFC — notch bg matches */
+  .head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; }
+  .head .meta { font: 400 11px/14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--text-tertiary); }
+
+  /* ─────────────────────────────────────────────────────────────
+     Input · Form field — the component itself now lives in the shared
+     form-inputs.css (single source of truth, also loaded by the app
+     screens). This card only sets a preview width + layout scaffolding.
+     ───────────────────────────────────────────────────────────── */
+  .ff { width: 240px; }
+
+  /* Layout */
+  .section-label { font: 500 11px/14px var(--font-family-geist); letter-spacing: 0.10em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 12px; }
+  .fields-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 16px; align-items: start; }
+  .states-grid { display: grid; grid-template-columns: repeat(5, auto); gap: 16px; align-items: start; }
+  .state .cap { margin-top: 8px; padding: 0 2px; display: flex; flex-direction: column; gap: 1px; }
+  .state .cap .name { font: 500 12px/16px var(--font-family-geist); letter-spacing: -0.020em; color: var(--text-primary); }
+  .state .cap .tok  { font: 400 10px/14px ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: var(--text-tertiary); }
+  .divider { height: 1px; background: var(--border-primary); border: 0; margin: 24px 0; }
+</style>
+</head>
+<body>
+  <div class="head">
+    <span class="label">Form inputs</span>
+    <span class="meta">outlined · label flotante siempre · placeholder visible · 5 states</span>
+  </div>
+
+  <div class="section-label">Campos · interactivos</div>
+  <div class="fields-grid">
+    <!-- Required, empty — shows placeholder hint -->
+    <div class="ff">
+      <div class="ff-box">
+        <input class="ff-input" id="f-doc" placeholder="Escriba el documento" value="1 234 567 890" />
+        <label class="ff-label" for="f-doc">Documento/DNI <span class="req">(obligatorio)</span></label>
+      </div>
+      <div class="ff-support">Número de identificación del paciente.</div>
+    </div>
+
+    <!-- Suffix -->
+    <div class="ff">
+      <div class="ff-box">
+        <input class="ff-input" id="f-edad" placeholder="Ingrese edad" value="42" inputmode="numeric" />
+        <label class="ff-label" for="f-edad">Edad</label>
+        <span class="ff-suffix">años</span>
+      </div>
+      <div class="ff-support">Solo números enteros.</div>
+    </div>
+
+    <!-- Trailing icon (password visibility) -->
+    <div class="ff">
+      <div class="ff-box">
+        <input class="ff-input" id="f-pass" type="password" placeholder="Cree una contraseña" value="seguimiento" />
+        <label class="ff-label" for="f-pass">Contraseña</label>
+        <span class="ff-icon material-symbols-outlined" id="f-pass-toggle" role="button" aria-label="Mostrar contraseña">visibility</span>
+      </div>
+      <div class="ff-support">Mínimo 8 caracteres.</div>
+    </div>
+
+    <!-- Empty (placeholder hint) -->
+    <div class="ff">
+      <div class="ff-box">
+        <input class="ff-input" id="f-tel" placeholder="+57 300 000 0000" />
+        <label class="ff-label" for="f-tel">Teléfono</label>
+      </div>
+      <div class="ff-support">El label permanece flotante; el placeholder guía.</div>
+    </div>
+  </div>
+
+  <hr class="divider" />
+
+  <div class="section-label">Estados</div>
+  <div class="states-grid">
+    <div class="state">
+      <div class="ff is-floated">
+        <div class="ff-box">
+          <input class="ff-input" placeholder=" " value="Input text" readonly />
+          <label class="ff-label">Label</label>
+          <span class="ff-icon material-symbols-outlined">visibility</span>
+        </div>
+        <div class="ff-support">Supporting text</div>
+      </div>
+      <div class="cap"><span class="name">Default</span><span class="tok">border-secundary · label brand</span></div>
+    </div>
+
+    <div class="state">
+      <div class="ff is-floated is-hovered">
+        <div class="ff-box">
+          <input class="ff-input" placeholder=" " value="Input text" readonly />
+          <label class="ff-label">Label</label>
+          <span class="ff-icon material-symbols-outlined">visibility</span>
+        </div>
+        <div class="ff-support">Supporting text</div>
+      </div>
+      <div class="cap"><span class="name">Hovered</span><span class="tok">border #272727 · text 4C4C4C</span></div>
+    </div>
+
+    <div class="state">
+      <div class="ff is-floated is-focused">
+        <div class="ff-box">
+          <input class="ff-input" placeholder=" " value="Input text" readonly />
+          <label class="ff-label">Label</label>
+          <span class="ff-icon material-symbols-outlined">visibility</span>
+        </div>
+        <div class="ff-support">Supporting text</div>
+      </div>
+      <div class="cap"><span class="name">Focused</span><span class="tok">border-brand · sin glow</span></div>
+    </div>
+
+    <div class="state">
+      <div class="ff is-floated is-error">
+        <div class="ff-box">
+          <input class="ff-input" placeholder=" " value="Input text" readonly />
+          <label class="ff-label">Label</label>
+          <span class="ff-icon material-symbols-outlined">error</span>
+        </div>
+        <div class="ff-support">Supporting text</div>
+      </div>
+      <div class="cap"><span class="name">Error</span><span class="tok">border-error · label/text error · icon 990053</span></div>
+    </div>
+
+    <div class="state">
+      <div class="ff is-floated is-disabled">
+        <div class="ff-box">
+          <input class="ff-input" placeholder=" " value="Input text" disabled />
+          <label class="ff-label">Label</label>
+          <span class="ff-icon material-symbols-outlined">visibility</span>
+        </div>
+        <div class="ff-support">Supporting text</div>
+      </div>
+      <div class="cap"><span class="name">Disabled</span><span class="tok">bg-secundary · text-disabled · icon 626262</span></div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var input = document.getElementById('f-pass');
+      var toggle = document.getElementById('f-pass-toggle');
+      if (input && toggle) {
+        toggle.addEventListener('click', function () {
+          var show = input.type === 'password';
+          input.type = show ? 'text' : 'password';
+          toggle.textContent = show ? 'visibility_off' : 'visibility';
+          toggle.setAttribute('aria-label', show ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

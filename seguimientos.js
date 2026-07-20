@@ -4,31 +4,49 @@
    búsqueda + paginación. Misma lógica que la tabla de Roles y permisos.
    "Ver más" → detalle de seguimiento (aún en construcción).
    ===================================================================== */
-import { SeguimientoService } from '/src/services/external/SeguimientoService.ts';
-
 (function seguimientos() {
   "use strict";
 
   var AVATAR_COLORS = ["#82439B", "#C9006F", "#0A7553", "#0054D2", "#935A0B", "#4A1F60"];
 
-  /* Datos de seguimientos: vienen de la plataforma externa (ver
-     src/services/external/SeguimientoService.ts). Todavía no existe el
-     contrato real, así que por ahora llega como datos de ejemplo. */
-  var DATA = [];
+  /* Datos de ejemplo (es-CO). La secuencia de alertas de las 10 primeras
+     filas reproduce la del documento de referencia. */
+  var DATA = [
+    { name: "María Fernanda Gómez",   ult: "12 may. 2026", prox: "19 may. 2026", cons: "05 may. 2026", alert: "alta",  nps: 72 },
+    { name: "Carlos Andrés Beltrán",  ult: "11 may. 2026", prox: "18 may. 2026", cons: "04 may. 2026", alert: "media", nps: 64 },
+    { name: "Valentina Ríos Mejía",   ult: "10 may. 2026", prox: "17 may. 2026", cons: "03 may. 2026", alert: "media", nps: 80 },
+    { name: "Jorge Esteban Niño",     ult: "09 may. 2026", prox: "16 may. 2026", cons: "02 may. 2026", alert: "baja",  nps: 91 },
+    { name: "Lucía Naranjo Soto",     ult: "08 may. 2026", prox: "15 may. 2026", cons: "01 may. 2026", alert: "baja",  nps: 88 },
+    { name: "Tomás Quiroga Páez",     ult: "07 may. 2026", prox: "14 may. 2026", cons: "30 abr. 2026", alert: "baja",  nps: 85 },
+    { name: "Daniela Ospina Vargas",  ult: "06 may. 2026", prox: "13 may. 2026", cons: "29 abr. 2026", alert: "media", nps: 69 },
+    { name: "Mateo Salazar Cano",     ult: "05 may. 2026", prox: "12 may. 2026", cons: "28 abr. 2026", alert: "baja",  nps: 90 },
+    { name: "Camila Rojas Duarte",    ult: "04 may. 2026", prox: "11 may. 2026", cons: "27 abr. 2026", alert: "alta",  nps: 58 },
+    { name: "Andrés Felipe Mora",     ult: "03 may. 2026", prox: "10 may. 2026", cons: "26 abr. 2026", alert: "baja",  nps: 93 },
+    { name: "Paula Restrepo Lara",    ult: "02 may. 2026", prox: "09 may. 2026", cons: "25 abr. 2026", alert: "media", nps: 66 },
+    { name: "Santiago Cárdenas Ruiz", ult: "01 may. 2026", prox: "08 may. 2026", cons: "24 abr. 2026", alert: "baja",  nps: 87 },
+    { name: "Isabella Torres León",   ult: "30 abr. 2026", prox: "07 may. 2026", cons: "23 abr. 2026", alert: "alta",  nps: 61 },
+    { name: "Sebastián Pérez Díaz",   ult: "29 abr. 2026", prox: "06 may. 2026", cons: "22 abr. 2026", alert: "baja",  nps: 89 },
+    { name: "Mariana Castro Gil",     ult: "28 abr. 2026", prox: "05 may. 2026", cons: "21 abr. 2026", alert: "media", nps: 74 },
+    { name: "Nicolás Herrera Pino",   ult: "27 abr. 2026", prox: "04 may. 2026", cons: "20 abr. 2026", alert: "baja",  nps: 92 },
+    { name: "Sara Gutiérrez Vélez",   ult: "26 abr. 2026", prox: "03 may. 2026", cons: "19 abr. 2026", alert: "baja",  nps: 86 },
+    { name: "Emilio Vargas Acosta",   ult: "25 abr. 2026", prox: "02 may. 2026", cons: "18 abr. 2026", alert: "alta",  nps: 60 },
+    { name: "Antonia Mejía Cuervo",   ult: "24 abr. 2026", prox: "01 may. 2026", cons: "17 abr. 2026", alert: "media", nps: 70 },
+    { name: "Felipe Arango Suárez",   ult: "23 abr. 2026", prox: "30 abr. 2026", cons: "16 abr. 2026", alert: "baja",  nps: 94 },
+    { name: "Gabriela Pardo Nieto",   ult: "22 abr. 2026", prox: "29 abr. 2026", cons: "15 abr. 2026", alert: "baja",  nps: 84 },
+    { name: "Juan David Lozano",      ult: "21 abr. 2026", prox: "28 abr. 2026", cons: "14 abr. 2026", alert: "media", nps: 67 },
+    { name: "Valeria Ramírez Cano",   ult: "20 abr. 2026", prox: "27 abr. 2026", cons: "13 abr. 2026", alert: "baja",  nps: 90 },
+    { name: "Esteban Molina Rey",     ult: "19 abr. 2026", prox: "26 abr. 2026", cons: "12 abr. 2026", alert: "alta",  nps: 59 }
+  ];
 
   function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
   function initials(n) { return n.trim().split(/\s+/).slice(0, 2).map(function (w) { return w[0]; }).join("").toUpperCase(); }
   function colorFor(n) { var s = 0; for (var i = 0; i < n.length; i++) s += n.charCodeAt(i); return AVATAR_COLORS[s % AVATAR_COLORS.length]; }
   var ALERT_LABEL = { alta: "Alta", media: "Media", baja: "Baja" };
 
-  async function init() {
+  function init() {
     var view = document.querySelector('.view[data-view="seguimientos"]');
     if (!view || view.__wired) return;
     view.__wired = true;
-
-    DATA = (await SeguimientoService.getResumen()).map(function (d) {
-      return { name: d.paciente, ult: d.ultimoSeguimiento, prox: d.proximoSeguimiento, cons: d.ultimaConsulta, alert: d.alerta, nps: d.nps };
-    });
 
     var rowsHost = document.getElementById("segRows");
     var emptyEl  = document.getElementById("segEmpty");

@@ -31,69 +31,78 @@ button { font-family: inherit; }
 
 /* ───────────── App shell ───────────── */
 #app {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 288px 1fr;
   min-height: 100vh;
 }
 
 /* =====================================================================
-   COMPONENT · Header + navegación por toggle buttons
-   Reemplaza el sidebar (2026-07-06). Mismos tokens de color que usaba
-   .nav-item en el drawer (default/hover/selected), en una barra horizontal.
+   COMPONENT · Navigation drawer
    ===================================================================== */
-#topHeader {
-  flex: 0 0 auto;
-  display: flex;
-  align-items: center;
-  gap: var(--space-6);
-  padding: var(--space-3) var(--space-6);
+#sidebar {
   background: #FFFFFF;
-  border-bottom: var(--stroke-default) solid var(--border-primary);
-}
-.header-logo { flex: 0 0 auto; }
-.header-logo img { height: 34px; width: auto; display: block; }
-
-.view-toggle {
-  flex: 0 0 auto;
+  border-right: var(--stroke-default) solid var(--border-primary);
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1);
-  background: var(--bg-surface-secundary);
-  border: var(--stroke-default) solid var(--border-primary);
-  border-radius: var(--radius-full);
+  flex-direction: column;
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  overflow-y: auto;
 }
+.nav-logo { padding: var(--space-4) var(--space-7); flex: 0 0 auto; display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.nav-logo-link { display: flex; align-items: center; gap: var(--space-2); border-radius: var(--radius-md); text-decoration: none; }
+.nav-logo-link:hover { opacity: 0.85; }
+.nav-logo-link:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nav-logo img { height: 34px; width: auto; display: block; }
+.nav-collapse-btn {
+  flex: 0 0 auto; width: 32px; height: 32px; border: 0; border-radius: var(--radius-full);
+  background: transparent; color: var(--icon-secundary); cursor: pointer;
+  display: grid; place-items: center; transition: background-color 120ms ease;
+}
+.nav-collapse-btn:hover { background: var(--bg-surface-brand-hovered); }
+.nav-collapse-btn:focus-visible { outline: none; box-shadow: var(--shadow-focus); }
+.nav-collapse-btn .material-symbols-outlined { font-size: 20px; }
+
+.nav-section {
+  flex: 0 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-2) var(--space-7);
+  font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-eyebrow);
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.nav-group { display: flex; flex-direction: column; gap: var(--space-1); }
 
 .nav-item {
   position: relative;
-  height: 44px;
+  width: 100%;
+  height: 56px;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: 0 var(--space-5);
+  gap: var(--space-3);
+  padding: 0 var(--space-6) 0 var(--space-7);
   border: none;
   background: transparent;
   text-align: left;
   text-decoration: none;
-  border-radius: var(--radius-full);
+  border-radius: 0 var(--radius-5xl) var(--radius-5xl) 0;
   color: var(--text-secundary);
   cursor: pointer;
   transition: background 120ms cubic-bezier(0.4,0,0.2,1),
               box-shadow 120ms cubic-bezier(0.4,0,0.2,1);
 }
 .nav-item .ico {
-  flex: 0 0 22px;
-  width: 22px; height: 22px;
+  flex: 0 0 24px;
+  width: 24px; height: 24px;
   display: inline-flex; align-items: center; justify-content: center;
-  font-size: 22px;
+  font-size: 24px;
   color: var(--icon-secundary);
 }
 .nav-item .lbl {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
+  min-width: 0;
   font: var(--font-weight-medium) var(--font-size-xs)/var(--line-height-xs) var(--font-family-geist);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-secundary);
-  white-space: nowrap;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .nav-item .badge {
   flex: 0 0 auto;
@@ -106,7 +115,6 @@ button { font-family: inherit; }
   font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
   letter-spacing: var(--letter-spacing-tight);
   color: var(--text-secundary);
-  background: var(--bg-surface-primary);
 }
 .nav-item:hover         { background: var(--bg-surface-brand-hovered); }
 .nav-item:active        { background: var(--bg-fill-tonal-pressed); }
@@ -119,8 +127,33 @@ button { font-family: inherit; }
 }
 .nav-item.sel:hover     { background: var(--bg-surface-brand-hovered); }
 
-/* user card (extremo derecho del header) */
-.nav-user-wrap { flex: 0 0 auto; }
+/* tooltip — shows the item's name on hover (most useful in the compressed
+   drawer, where labels are hidden, but available at any width). Rendered
+   as a fixed-position element by JS so it can escape #sidebar's
+   overflow-y:auto clipping. */
+.nav-tooltip {
+  position: fixed; z-index: 200;
+  white-space: nowrap; pointer-events: none;
+  background: var(--bg-surface-invert); color: var(--text-invert);
+  font: var(--font-weight-medium) var(--font-size-xxs)/var(--line-height-xxs) var(--font-family-geist);
+  letter-spacing: var(--letter-spacing-tight);
+  padding: var(--space-1) var(--space-3); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-2);
+  opacity: 0; transform: translateY(-50%) translateX(-4px);
+  transition: opacity 120ms ease, transform 120ms ease;
+}
+.nav-tooltip.is-visible { opacity: 1; transform: translateY(-50%) translateX(0); }
+
+.nav-divider {
+  flex: 0 0 auto;
+  height: 1px;
+  background: var(--border-secundary);
+  margin: var(--space-3) var(--space-4) var(--space-2);
+}
+.nav-spacer { flex: 1 1 auto; min-height: var(--space-4); }
+
+/* user card (bottom of drawer) */
+.nav-user-wrap { flex: 0 0 auto; padding: var(--space-6) var(--space-3) var(--space-2); }
 .nav-user {
   height: 48px;
   background: var(--bg-surface-brand);
@@ -785,8 +818,33 @@ button { font-family: inherit; }
    File uploader (Forms.jsx), Checkbox (Material check_box, icon-brand),
    Buttons (filled / text-brand).
    ===================================================================== */
-/* full-page route: oculta el header de navegación, main ocupa todo */
-#app.is-fullpage #topHeader { display: none; }
+/* full-page route: hide the drawer, main spans full width */
+#app.is-fullpage { grid-template-columns: 1fr; }
+#app.is-fullpage #sidebar { display: none; }
+
+/* =====================================================================
+   COMPONENT · Navigation drawer — compressed variant
+   Toggle button lives next to the logo. Icons-only + isotype, no
+   labels/badges/section eyebrows/user name. Auto-collapses under
+   1024px; persists the user's manual choice via localStorage.
+   ===================================================================== */
+#app.nav-collapsed:not(.is-fullpage) { grid-template-columns: 84px 1fr; }
+#app.nav-collapsed #sidebar { width: 84px; padding-left: var(--space-2); padding-right: var(--space-2); }
+#app.nav-collapsed .nav-logo { justify-content: center; padding-left: var(--space-2); padding-right: var(--space-2); flex-direction: column; gap: var(--space-2); }
+#app.nav-collapsed .nav-logo-link { flex-direction: column; }
+#app.nav-collapsed .nav-logo img.full { display: none; }
+#app.nav-collapsed .nav-logo img.iso { display: block; height: 28px; width: auto; }
+#app.nav-collapsed .nav-logo img.full ~ .nav-collapse-btn { order: -1; }
+#app.nav-collapsed .nav-section { display: none; }
+#app.nav-collapsed .nav-item { justify-content: center; padding: 0; border-radius: var(--radius-full); }
+#app.nav-collapsed .nav-item .lbl,
+#app.nav-collapsed .nav-item .badge { display: none; }
+#app.nav-collapsed .nav-user-wrap { padding-left: var(--space-2); padding-right: var(--space-2); }
+#app.nav-collapsed .nav-user { justify-content: center; padding: var(--space-2) !important; gap: 0; }
+#app.nav-collapsed .nav-user .info,
+#app.nav-collapsed .nav-user .logout { display: none; }
+
+.nav-logo img.iso { display: none; }
 
 .view[data-view="nuevo-usuario"].is-active { padding: 0; gap: 0; }
 .nu-page {
@@ -1069,19 +1127,71 @@ button { font-family: inherit; }
 .nu-footer .nu-actions { display: flex; align-items: center; gap: var(--space-6); }
 
 /* ───────────── Responsive ───────────── */
+.nav-toggle { display: none; }
 @media (max-width: 1100px) {
   .nu-grid2 { grid-template-columns: 1fr; }
   .nu-page { padding: var(--space-8) var(--space-10) var(--space-10); }
   .perm-checks { grid-template-columns: 1fr 1fr; }
 }
+@media (max-width: 1024px) {
+  #app:not(.nav-force-expanded):not(.is-fullpage) { grid-template-columns: 84px 1fr; }
+  #app:not(.nav-force-expanded):not(.is-fullpage) #sidebar { width: 84px; padding-left: var(--space-2); padding-right: var(--space-2); }
+  #app:not(.nav-force-expanded) .nav-logo { justify-content: center; padding-left: var(--space-2); padding-right: var(--space-2); flex-direction: column; gap: var(--space-2); }
+  #app:not(.nav-force-expanded) .nav-logo-link { flex-direction: column; }
+  #app:not(.nav-force-expanded) .nav-logo img.full { display: none; }
+  #app:not(.nav-force-expanded) .nav-logo img.iso { display: block; height: 28px; width: auto; }
+  #app:not(.nav-force-expanded) .nav-section { display: none; }
+  #app:not(.nav-force-expanded) .nav-item { justify-content: center; padding: 0; border-radius: var(--radius-full); }
+  #app:not(.nav-force-expanded) .nav-item .lbl,
+  #app:not(.nav-force-expanded) .nav-item .badge { display: none; }
+  #app:not(.nav-force-expanded) .nav-user-wrap { padding-left: var(--space-2); padding-right: var(--space-2); }
+  #app:not(.nav-force-expanded) .nav-user { justify-content: center; padding: var(--space-2) !important; gap: 0; }
+  #app:not(.nav-force-expanded) .nav-user .info,
+  #app:not(.nav-force-expanded) .nav-user .logout { display: none; }
+}
+
 @media (max-width: 768px) {
-  #topHeader { flex-wrap: wrap; row-gap: var(--space-3); }
-  .view-toggle { order: 3; width: 100%; overflow-x: auto; }
+  #app { grid-template-columns: 1fr; }
+  #sidebar {
+    position: fixed; inset: 0 auto 0 0; width: 288px; z-index: 30;
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(0.4,0,0.2,1);
+    box-shadow: var(--shadow-3);
+  }
+  #app.sidebar-open #sidebar { transform: translateX(0); }
+  #app.sidebar-open::after {
+    content: ""; position: fixed; inset: 0; background: var(--bg-fill-opacity-80); z-index: 20;
+  }
+  .nav-toggle {
+    display: grid; place-items: center;
+    width: 56px; height: 56px; flex: 0 0 auto;
+    border: 0; background: transparent; border-radius: var(--radius-full);
+    color: var(--icon-secundary); cursor: pointer;
+  }
+  .nav-toggle:hover { background: var(--bg-surface-brand-hovered); }
   .view.is-active { padding: var(--space-6); }
   .topbar-title { font-size: var(--font-size-xxl); line-height: var(--line-height-xxl); }
   .nu-page { padding: var(--space-6); }
   .perm-checks { grid-template-columns: 1fr; }
   .perm-card { padding: var(--space-4); }
+}
+    transform: translateX(-100%);
+    transition: transform 200ms cubic-bezier(0.4,0,0.2,1);
+    box-shadow: var(--shadow-3);
+  }
+  #app.sidebar-open #sidebar { transform: translateX(0); }
+  #app.sidebar-open::after {
+    content: ""; position: fixed; inset: 0; background: var(--bg-fill-opacity-80); z-index: 20;
+  }
+  .nav-toggle {
+    display: grid; place-items: center;
+    width: 56px; height: 56px; flex: 0 0 auto;
+    border: 0; background: transparent; border-radius: var(--radius-full);
+    color: var(--icon-secundary); cursor: pointer;
+  }
+  .nav-toggle:hover { background: var(--bg-surface-brand-hovered); }
+  .view.is-active { padding: var(--space-6); }
+  .topbar-title { font-size: var(--font-size-xxl); line-height: var(--line-height-xxl); }
 }
 @media (max-width: 720px) {
   .search { width: 100%; order: 5; }

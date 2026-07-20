@@ -1,0 +1,36 @@
+/* preview-card base — used by every card in /preview */
+@import url("colors_and_type.css");
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-surface-primary);
+  font-family: var(--font-family-geist);
+  color: var(--text-secundary);
+  -webkit-font-smoothing: antialiased;
+}
+body {
+  padding: 20px 24px;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+.row { display: flex; flex-direction: row; }
+.col { display: flex; flex-direction: column; }
+.head {
+  display: flex; justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+}
+.label {
+  font: 500 11px/14px var(--font-family-geist);
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.meta {
+  font: 400 11px/14px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color: var(--text-tertiary);
+}
+.tok-mono {
+  font: 400 10px/14px ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}

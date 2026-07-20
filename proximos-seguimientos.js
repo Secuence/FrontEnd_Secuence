@@ -41,6 +41,18 @@
   var BASE = new Date(2026, 8, 13); /* fecha de referencia */
   var FREQ_OPTS = ["Horas", "Días", "Semanas"];
 
+  /* Seguimientos #1, #2 y de cierre son fijos en toda la app (mismo texto
+     que la modal "Nuevo seguimiento" de Nueva historia / Evolución clínica):
+     sus preguntas por defecto NO son editables ni eliminables, y no cambian
+     de orden. Sólo se puede: editar frecuencia/valor, y agregar preguntas
+     NUEVAS (esas sí editables/eliminables). Un seguimiento nuevo siempre se
+     inserta entre el #2 y el de cierre, y ese de cierre nunca se elimina. */
+  var DEFAULT_QS = {
+    1: ["¿Pudo iniciar el tratamiento indicado?", "¿Ha sentido alguna reacción adversa o molestia nueva tras haber iniciado el tratamiento indicado?", "¿Qué intensidad tiene su molestia o síntoma principal el día de hoy?", "¿Tienes alguna duda sobre las indicaciones?"],
+    2: ["¿Ha continuado con su tratamiento exactamente como se indicó?", "Comparado con el primer día, ¿cómo describiría la evolución de su síntoma principal hoy?", "¿Ha aparecido algún síntoma NUEVO que no tenía el día de la consulta?"],
+    cierre: ["¿Logró terminar todo el esquema de tratamiento por los días indicados?", "En términos generales, ¿considera que el problema por el que consultó ya se resolvió?", "Según cómo se siente, ¿necesita agendar una nueva consulta de control con su médico?"]
+  };
+
   function fmtDate(d) { return d.getDate() + " " + MESES[d.getMonth()] + " " + d.getFullYear(); }
   function freqDays(freq, num) {
     var n = parseInt(num, 10) || 0;
@@ -70,18 +82,24 @@
   ];
 
   var DIAS_POOL = [5, 8, 15, 30, 45, 60];
+  /* #1 y #2 (bloqueados) + 0–2 seguimientos intermedios creados por el
+     usuario (mock, sus preguntas SÍ son editables) + cierre (bloqueado). */
   function buildSchedule(name) {
     var s = seed(name + "|prox");
-    var n = 2 + (s % 3); /* 2–4 próximos seguimientos */
-    var out = [];
-    for (var i = 0; i < n; i++) {
-      var dias = DIAS_POOL[(s >> i) % DIAS_POOL.length];
-      var qn = 3 + ((s >> (i + 2)) % 2); /* 3–4 preguntas */
+    var extra = s % 3; /* 0–2 intermedios */
+    var out = [
+      { freq: "Horas", num: 36, lockedQuestions: DEFAULT_QS[1].slice(), userQuestions: [], locked: true, cierre: false },
+      { freq: "Horas", num: 36, lockedQuestions: DEFAULT_QS[2].slice(), userQuestions: [], locked: true, cierre: false }
+    ];
+    for (var i = 0; i < extra; i++) {
+      var dias = DIAS_POOL[(s >> (i + 3)) % DIAS_POOL.length];
+      var qn = 1 + ((s >> (i + 5)) % 2); /* 1–2 preguntas propias */
       var qs = [];
-      var start = (s >> (i + 1)) % Q_BANK.length;
+      var start = (s >> (i + 2)) % Q_BANK.length;
       for (var k = 0; k < qn; k++) qs.push(Q_BANK[(start + k) % Q_BANK.length]);
-      out.push({ freq: "Días", num: dias, preguntas: qs });
+      out.push({ freq: "Días", num: dias, lockedQuestions: [], userQuestions: qs, locked: false, cierre: false });
     }
+    out.push({ freq: "Días", num: 8, lockedQuestions: DEFAULT_QS.cierre.slice(), userQuestions: [], locked: true, cierre: true });
     return out;
   }
   /* devuelve (y memoiza) el horario del paciente para la sesión */
@@ -113,18 +131,22 @@
         '<div class="menu nu-menu" role="listbox">' + items + '</div>' +
       '</div>';
   }
-  function questionRow(text) {
+  function questionRow(text, locked) {
+    if (locked) {
+      return '<div class="ns-q ns-q--locked"><input class="ns-q-input" type="text" value="' + esc(text) + '" disabled aria-readonly="true"></div>';
+    }
     return '<div class="ns-q"><input class="ns-q-input" type="text" value="' + esc(text) + '" placeholder="Escriba la pregunta del seguimiento">' +
       '<button class="ns-q-rm" type="button" aria-label="Quitar pregunta"><span class="material-symbols-outlined">close</span></button></div>';
   }
 
   /* ── Markup · seguimiento en modo LECTURA ── */
   function readMarkup(it, idx, list, open) {
-    var qs = it.preguntas.map(function (q) { return '<li>' + esc(q) + '</li>'; }).join("");
+    var qs = it.lockedQuestions.concat(it.userQuestions).map(function (q) { return '<li>' + esc(q) + '</li>'; }).join("");
+    var titleTx = it.cierre ? "Seguimiento #" + (idx + 1) + " (seguimiento de cierre)" : "Seguimiento #" + (idx + 1) + ": " + diasLabel(it.freq, it.num);
     return '<div class="ps-fu' + (open ? ' is-open' : '') + '" data-ps-item data-idx="' + idx + '">' +
         '<button class="ps-head" type="button" data-ps-head aria-expanded="' + (open ? 'true' : 'false') + '">' +
           '<div class="ps-labels">' +
-            '<span class="ps-title">Seguimiento: ' + esc(diasLabel(it.freq, it.num)) + '</span>' +
+            '<span class="ps-title">' + esc(titleTx) + '</span>' +
             '<span class="ps-sub">Fecha de respuesta: ' + esc(fechaFor(list, idx)) + '</span>' +
           '</div>' +
           '<span class="ps-chev"><span class="material-symbols-outlined">expand_more</span></span>' +
@@ -139,14 +161,22 @@
       '</div>';
   }
 
-  /* ── Markup · seguimiento en modo EDICIÓN ── */
+  /* ── Markup · seguimiento en modo EDICIÓN ──
+     Las preguntas por defecto (lockedQuestions) se muestran deshabilitadas,
+     sin opción de editarlas ni eliminarlas — sólo se puede ajustar
+     frecuencia/valor y agregar preguntas nuevas (o editar/eliminar las que
+     el propio usuario haya agregado). El botón eliminar seguimiento sólo
+     aparece en seguimientos NO bloqueados (creados por el usuario). */
   function editMarkup(it, idx) {
-    var qs = it.preguntas.map(function (q) { return questionRow(q); }).join("");
+    var lockedRows = it.lockedQuestions.map(function (q) { return questionRow(q, true); }).join("");
+    var userRows = it.userQuestions.map(function (q) { return questionRow(q, false); }).join("");
+    var titleTx = it.cierre ? "Seguimiento #" + (idx + 1) + " (seguimiento de cierre)" : "Editar seguimiento #" + (idx + 1);
+    var delBtn = it.locked ? "" : '<button class="ns-fu-del" type="button" data-ps-del aria-label="Eliminar seguimiento"><span class="material-symbols-outlined">delete</span></button>';
     return '<div class="ps-fu is-open ps-fu--editing" data-ps-item data-idx="' + idx + '">' +
         '<div class="ps-edit">' +
           '<div class="ns-fu-head">' +
-            '<span class="ns-fu-title">Editar seguimiento</span>' +
-            '<button class="ns-fu-del" type="button" data-ps-del aria-label="Eliminar seguimiento"><span class="material-symbols-outlined">delete</span></button>' +
+            '<span class="ns-fu-title">' + esc(titleTx) + '</span>' +
+            delBtn +
           '</div>' +
           '<span class="ps-edit-lbl">Frecuencia del seguimiento</span>' +
           '<div class="ns-grid-freq">' +
@@ -155,7 +185,7 @@
               '<input class="ff-input ps-num" type="text" inputmode="numeric" value="' + esc(it.num) + '"></div></div>' +
           '</div>' +
           '<span class="ns-q-label">Preguntas</span>' +
-          '<div class="ns-qs" data-ps-qs>' + qs + '</div>' +
+          '<div class="ns-qs" data-ps-qs>' + lockedRows + userRows + '</div>' +
           '<button class="ns-add-q" type="button" data-ps-addq><span class="material-symbols-outlined">add</span>Agregar pregunta</button>' +
           '<div class="ps-edit-err" data-ps-err><span class="material-symbols-outlined">error</span>Cada seguimiento debe tener al menos una pregunta y una frecuencia válida.</div>' +
           '<div class="ps-edit-actions">' +
@@ -229,20 +259,23 @@
     var node = nodeByIdx(idx);
     if (!node) return;
     var list = getSchedule(currentName);
+    var it = list[idx];
     var sel = node.querySelector(".ns-select");
     var freq = sel ? sel.getAttribute("data-value") : "Días";
     var num = parseInt((node.querySelector(".ps-num") || {}).value, 10);
-    var inputs = node.querySelectorAll(".ns-q-input");
-    var preguntas = [];
-    Array.prototype.forEach.call(inputs, function (i) {
+    /* sólo las filas NO bloqueadas se leen/gu   ardan como preguntas propias del usuario */
+    var editableInputs = node.querySelectorAll(".ns-q-input:not(:disabled)");
+    var userQuestions = [];
+    Array.prototype.forEach.call(editableInputs, function (i) {
       var t = (i.value || "").trim();
-      if (t) preguntas.push(t);
+      if (t) userQuestions.push(t);
     });
-    if (!num || num < 1 || preguntas.length < 1) {
+    var totalQuestions = it.lockedQuestions.length + userQuestions.length;
+    if (!num || num < 1 || totalQuestions < 1) {
       node.classList.add("is-error");
       return;
     }
-    list[idx] = { freq: freq, num: num, preguntas: preguntas };
+    list[idx] = { freq: freq, num: num, lockedQuestions: it.lockedQuestions, userQuestions: userQuestions, locked: it.locked, cierre: it.cierre };
     /* re-render de TODO: cambiar un intervalo desplaza las fechas siguientes */
     var openIdx = idx;
     render();
@@ -268,6 +301,8 @@
   }
 
   function deleteItem(idx) {
+    var list = getSchedule(currentName);
+    if (list[idx] && list[idx].locked) return; /* #1, #2 y cierre no se eliminan */
     var node = nodeByIdx(idx);
     if (!node) return;
     var head = node.querySelector(".ns-fu-head");
@@ -295,10 +330,11 @@
 
   function addFollowup() {
     var list = getSchedule(currentName);
-    list.push({ freq: "Días", num: 7, preguntas: [""] });
-    var idx = list.length - 1;
+    var cierreIdx = list.length - 1; /* el cierre siempre es el último */
+    var idx = cierreIdx; /* el nuevo se inserta justo antes del de cierre */
+    list.splice(idx, 0, { freq: "Días", num: 7, lockedQuestions: [], userQuestions: [""], locked: false, cierre: false });
     render();
-    /* convertir el último a edición y marcarlo como nuevo */
+    /* convertir el recién insertado a edición y marcarlo como nuevo */
     var node = nodeByIdx(idx);
     var tmp = document.createElement("div");
     tmp.innerHTML = editMarkup(list[idx], idx);
@@ -308,7 +344,7 @@
     Array.prototype.forEach.call(ed.querySelectorAll(".ns-select"), initSelect);
     var body = scrim.querySelector(".du-modal-body");
     if (body) body.scrollTop = body.scrollHeight;
-    var inp = ed.querySelector(".ns-q-input");
+    var inp = ed.querySelector(".ns-q-input:not(:disabled)");
     if (inp) inp.focus();
   }
 
@@ -361,10 +397,6 @@
 
   closeBtn.addEventListener("click", close);
   if (addBtn) addBtn.addEventListener("click", addFollowup);
-  var reportarBtn = document.getElementById("psReportar");
-  if (reportarBtn) reportarBtn.addEventListener("click", function () {
-    window.open(window.SC_REPORT_FORM_URL, "_blank", "noopener");
-  });
   scrim.addEventListener("click", function (e) { if (e.target === scrim) close(); });
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && scrim.classList.contains("is-open")) close();

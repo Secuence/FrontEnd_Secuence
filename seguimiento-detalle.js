@@ -380,18 +380,97 @@
         '</div>' +
       '</div>' +
 
-      /* Accordion · seguimientos */
-      '<div class="sd-accordion">' + accs + '</div>';
+      /* Tabs + acciones (mismo patrón que Información del paciente; Seguimientos
+         seleccionado por defecto en esta pantalla) */
+      '<div class="ip-tabs-row">' +
+        '<div class="ip-tablist" role="tablist" aria-label="Vista del paciente">' +
+          '<button class="ip-tab" role="tab" id="sdTabSeg" aria-controls="sdPanelSeg" aria-selected="true" tabindex="0">' +
+            '<span class="material-symbols-outlined">show_chart</span>Seguimientos' +
+          '</button>' +
+          '<button class="ip-tab" role="tab" id="sdTabHis" aria-controls="sdPanelHis" aria-selected="false" tabindex="-1">' +
+            '<span class="material-symbols-outlined">description</span>Historia' +
+          '</button>' +
+        '</div>' +
+        '<div class="ip-actions">' +
+          '<button class="bt-text" type="button" id="sdCrearEvolucion"><span class="material-symbols-outlined">add</span><span>Crear evolución</span></button>' +
+          '<button class="bt-tonal" type="button" id="sdCrearHistoria"><span class="material-symbols-outlined">add</span><span>Crear historia</span></button>' +
+        '</div>' +
+      '</div>' +
 
-    wire(row, source, c);
+      /* Paneles */
+      '<div class="ip-panelarea">' +
+        '<div class="ip-tabpanel" role="tabpanel" id="sdPanelSeg" aria-labelledby="sdTabSeg">' +
+          '<div class="sd-accordion">' + accs + '</div>' +
+        '</div>' +
+        '<div class="ip-tabpanel" role="tabpanel" id="sdPanelHis" aria-labelledby="sdTabHis" hidden>' +
+          '<div class="ip-co-card">' +
+            '<div class="ip-co-content">' +
+              '<span class="ip-co-title">¡Bienvenido a Secuence!</span>' +
+              '<span class="ip-co-sub">Fecha: ' + TODAY + '</span>' +
+              '<span class="ip-co-body">En esta sección podrás ver las historias de tus pacientes por especialidad. Secuence es una plataforma que ayuda a los profesionales de la salud a dar continuidad al cuidado de sus pacientes.</span>' +
+            '</div>' +
+            '<div class="ip-co-footer">' +
+              '<button class="ip-co-act" type="button">Ver más</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    wire(row, source, c, p);
   }
 
-  function wire(row, source, c) {
+  function wire(row, source, c, p) {
     /* volver al origen */
     var back = document.getElementById("sdBack");
     if (back) back.addEventListener("click", function () {
       if (history.length > 1) history.back();
       else location.hash = SOURCE_HASH[source] || "#/seguimientos";
+    });
+
+    /* tabs (DS boxed) — selección + teclado, mismo patrón que Información del paciente */
+    var tablist = page.querySelector('.ip-tablist[role="tablist"]');
+    if (tablist) {
+      var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+      var select = function (tab, focus) {
+        tabs.forEach(function (t) {
+          var on = t === tab;
+          t.setAttribute("aria-selected", on ? "true" : "false");
+          t.tabIndex = on ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !on;
+        });
+        if (focus) tab.focus();
+      };
+      tabs.forEach(function (tab, i) {
+        tab.addEventListener("click", function () { select(tab, false); });
+        tab.addEventListener("keydown", function (e) {
+          var n = null;
+          if (e.key === "ArrowRight" || e.key === "ArrowDown") n = tabs[(i + 1) % tabs.length];
+          else if (e.key === "ArrowLeft" || e.key === "ArrowUp") n = tabs[(i - 1 + tabs.length) % tabs.length];
+          else if (e.key === "Home") n = tabs[0];
+          else if (e.key === "End") n = tabs[tabs.length - 1];
+          if (n) { e.preventDefault(); select(n, true); }
+        });
+      });
+    }
+
+    /* "Crear historia" / "Crear evolución" → mismos flujos que Información del
+       paciente, usando los datos de ESTE paciente; el origen se guarda para
+       que el botón "←" de esas pantallas vuelva aquí. */
+    var pForNav = { name: row.name, date: p.ultimaConsulta, base: c.base, dx: c.dx };
+    var crearHistoria = document.getElementById("sdCrearHistoria");
+    if (crearHistoria) crearHistoria.addEventListener("click", function () {
+      window.__selectedPaciente = pForNav;
+      window.__selectedPacienteData = p;
+      window.__nuevaHistoriaOrigin = "seguimiento-detalle";
+      location.hash = "#/nueva-historia";
+    });
+    var crearEvolucion = document.getElementById("sdCrearEvolucion");
+    if (crearEvolucion) crearEvolucion.addEventListener("click", function () {
+      window.__selectedPaciente = pForNav;
+      window.__selectedPacienteData = p;
+      window.__evolucionClinicaOrigin = "seguimiento-detalle";
+      location.hash = "#/evolucion-clinica";
     });
 
     /* acordeón */
